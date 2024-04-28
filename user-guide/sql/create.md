@@ -1,8 +1,8 @@
 # CREATE
 
-In Polars, the `SQLContext` provides a way to execute SQL statements against `LazyFrames` and `DataFrames` using SQL syntax. One of the SQL statements that can be executed using `SQLContext` is the `CREATE TABLE` statement, which is used to create a new table.
+Polars では、`SQLContext` を使用して、SQL 構文で `LazyFrames` と `DataFrames` に対して SQL 文を実行することができます。その `SQLContext` を使用して実行できる SQL 文の 1 つに `CREATE TABLE` 文があり、これは新しいテーブルを作成するために使用します。
 
-The syntax for the `CREATE TABLE` statement in Polars is as follows:
+Polars での `CREATE TABLE` 文の構文は次のとおりです:
 
 ```
 CREATE TABLE table_name
@@ -10,19 +10,43 @@ AS
 SELECT ...
 ```
 
-In this syntax, `table_name` is the name of the new table that will be created, and `SELECT ...` is a SELECT statement that defines the data that will be inserted into the table.
+この構文では、`table_name` は新たに作成されるテーブルの名前であり、`SELECT ...` はテーブルに挿入されるデータを定義する SELECT 文です。
 
-Here's an example of how to use the `CREATE TABLE` statement in Polars:
+Polars での `CREATE TABLE` 文の使用例を次に示します:
 
-{{code_block('user-guide/sql/create','create',['SQLregister','SQLexecute'])}}
+[register](https://docs.pola.rs/py-polars/html/reference/api/polars.SQLContext.register.html#polars.SQLContext.register), [execute](https://docs.pola.rs/py-polars/html/reference/api/polars.SQLContext.execute.html)
 
-```python exec="on" result="text" session="user-guide/sql"
---8<-- "python/user-guide/sql/create.py:setup"
---8<-- "python/user-guide/sql/create.py:create"
+```python
+data = {"name": ["Alice", "Bob", "Charlie", "David"], "age": [25, 30, 35, 40]}
+df = pl.LazyFrame(data)
+
+ctx = pl.SQLContext(my_table=df, eager_execution=True)
+
+result = ctx.execute(
+    """
+    CREATE TABLE older_people
+    AS
+    SELECT * FROM my_table WHERE age > 30
+"""
+)
+
+print(ctx.execute("SELECT * FROM older_people"))
 ```
 
-In this example, we use the `execute()` method of the `SQLContext` to execute a `CREATE TABLE` statement that creates a new table called `older_people` based on a SELECT statement that selects all rows from the `my_table` DataFrame where the `age` column is greater than 30.
+```
+shape: (2, 2)
+┌─────────┬─────┐
+│ name    ┆ age │
+│ ---     ┆ --- │
+│ str     ┆ i64 │
+╞═════════╪═════╡
+│ Charlie ┆ 35  │
+│ David   ┆ 40  │
+└─────────┴─────┘
+```
 
-!!! note Result
+この例では、`SQLContext` の `execute()` メソッドを使用して `CREATE TABLE` 文を実行し、`my_table DataFrame` から `age` 列が 30 より大きいすべての行を選択する SELECT 文に基づいて `older_people` という新しいテーブルを作成します。
 
-    Note that the result of a `CREATE TABLE` statement is not the table itself. The table is registered in the `SQLContext`. In case you want to turn the table back to a `DataFrame` you can use a `SELECT * FROM ...` statement
+> [!NOTE]
+> 
+> `CREATE TABLE` 文の結果はテーブルそのものではないことに注意してください。テーブルは `SQLContext` に登録されます。テーブルを `DataFrame` に戻したい場合は、`SELECT * FROM ...` 文を使用できます。
