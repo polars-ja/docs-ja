@@ -1,16 +1,16 @@
-# クエリの実行
+# Query execution
 
-Reddit データセットの例クエリは次のとおりです:
+Our example query on the Reddit dataset is:
 
 {{code_block('user-guide/lazy/execution','df',['scan_csv'])}}
 
-上記のコードを Reddit CSV で実行しても、クエリは評価されません。その代わり、Polars は各行のコードを取り込み、内部クエリグラフに追加し、クエリグラフを最適化します。
+If we were to run the code above on the Reddit CSV the query would not be evaluated. Instead Polars takes each line of code, adds it to the internal query graph and optimizes the query graph.
 
-コードを実行すると、Polars はデフォルトで最適化されたクエリグラフを実行します。
+When we execute the code Polars executes the optimized query graph by default.
 
-### 完全なデータセットでの実行
+### Execution on the full dataset
 
-クエリを完全なデータセットで実行するには、クエリの `.collect` メソッドを呼び出します。
+We can execute our query on the full dataset by calling the `.collect` method on the query.
 
 {{code_block('user-guide/lazy/execution','collect',['scan_csv','collect'])}}
 
@@ -33,29 +33,29 @@ shape: (14_029, 6)
 └─────────┴───────────────────────────┴─────────────┴────────────┴───────────────┴────────────┘
 ```
 
-上記では、1,000万行からプレディケートにマッチする行が14,029行あることがわかります。
+Above we see that from the 10 million rows there are 14,029 rows that match our predicate.
 
-デフォルトの `collect` メソッドでは、Polars はすべてのデータを1つのバッチとして処理します。これは、クエリのメモリ使用量がピークに達した時点で、すべてのデータが使用可能なメモリに収まる必要があることを意味します。
+With the default `collect` method Polars processes all of your data as one batch. This means that all the data has to fit into your available memory at the point of peak memory usage in your query.
 
-!!! 警告  `LazyFrame` オブジェクトの再利用
+!!! warning "Reusing `LazyFrame` objects"
 
     Remember that `LazyFrame`s are query plans i.e. a promise on computation and is not guaranteed to cache common subplans. This means that every time you reuse it in separate downstream queries after it is defined, it is computed all over again. If you define an operation on a `LazyFrame` that doesn't maintain row order (such as a `group_by`), then the order will also change every time it is run. To avoid this, use `maintain_order=True` arguments for such operations.
 
-### 警告 「`LazyFrame` オブジェクトの再利用」
+### Execution on larger-than-memory data
 
-Polars は、_streaming_ mode を使用してデータをバッチ処理することができます。ストリーミングモードを使用するには、 `collect` に `streaming=True` 引数を渡します。
+If your data requires more memory than you have available Polars may be able to process the data in batches using _streaming_ mode. To use streaming mode you simply pass the `streaming=True` argument to `collect`
 
 {{code_block('user-guide/lazy/execution','stream',['scan_csv','collect'])}}
 
-[ストリーミングの詳細](streaming.md)を参照。
+We look at [streaming in more detail here](streaming.md).
 
-### 部分的なデータセットでの実行
+### Execution on a partial dataset
 
-大きなデータセットに対してクエリを書いたり、最適化したり、チェックしたりしているときに、利用可能なデータをすべてクエリすると、開発に時間がかかることがあります。
+While you're writing, optimizing or checking your query on a large dataset, querying all available data may lead to a slow development process.
 
-代わりに `.fetch` メソッドでクエリを実行することができます。`.fetch` メソッドは `n_rows` というパラメータを受け取り、データソースからその行数を `fetch` しようとします。しかし、遅延APIはクエリの各段階で行数をカウントしないため、行数を保証することはできないです。
+You can instead execute the query with the `.fetch` method. The `.fetch` method takes a parameter `n_rows` and tries to 'fetch' that number of rows at the data source. The number of rows cannot be guaranteed, however, as the lazy API does not count how many rows there are at each stage of the query.
 
-ここでは、ソースファイルから100行を `.fetch` し、predicate を適用しています。
+Here we "fetch" 100 rows from the source file and apply the predicates.
 
 {{code_block('user-guide/lazy/execution','partial',['scan_csv','collect','fetch'])}}
 

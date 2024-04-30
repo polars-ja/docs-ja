@@ -1,37 +1,35 @@
-# Usage
+以下のように翻訳しました。
 
-With the lazy API, Polars doesn't run each query line-by-line but instead processes the full query end-to-end. To get the most out of Polars it is important that you use the lazy API because:
+# 使用方法
 
-- the lazy API allows Polars to apply automatic query optimization with the query optimizer
-- the lazy API allows you to work with larger than memory datasets using streaming
-- the lazy API can catch schema errors before processing the data
+レイジーAPIを使うと、Polarsは各クエリを行ごとに実行するのではなく、完全なクエリを最後まで処理します。 Polarsを最大限に活用するには、クエリオプティマイザーによる自動クエリ最適化、メモリ以上のデータセットでのストリーミング、データ処理前のスキーマエラーの検出などの理由から、レイジーAPIを使うことが重要です。
 
-Here we see how to use the lazy API starting from either a file or an existing `DataFrame`.
+ここでは、ファイルまたは既存の `DataFrame` からレイジーAPIを使う方法を見ていきます。
 
-## Using the lazy API from a file
+## ファイルからレイジーAPIを使う
 
-In the ideal case we would use the lazy API right from a file as the query optimizer may help us to reduce the amount of data we read from the file.
+理想的には、クエリオプティマイザーがファイルから読み込むデータ量を削減できるため、ファイルからレイジーAPIを使うのが良いでしょう。
 
-We create a lazy query from the Reddit CSV data and apply some transformations.
+Reddit の CSV データからレイジークエリを作成し、いくつかの変換を適用します。
 
-By starting the query with `pl.scan_csv` we are using the lazy API.
+`pl.scan_csv` で始めることで、レイジーAPIを使っています。
 
 {{code_block('user-guide/lazy/using','dataframe',['scan_csv','with_columns','filter','col'])}}
 
-A `pl.scan_` function is available for a number of file types including CSV, IPC, Parquet and JSON.
+`pl.scan_` 関数は、CSV、IPC、Parquet、JSON などの様々なファイル形式に対応しています。
 
-In this query we tell Polars that we want to:
+このクエリでは、以下のことを指定しています:
 
-- load data from the Reddit CSV file
-- convert the `name` column to uppercase
-- apply a filter to the `comment_karma` column
+- Reddit の CSV ファイルからデータを読み込む
+- `name` 列を大文字に変換する
+- `comment_karma` 列にフィルターを適用する
 
-The lazy query will not be executed at this point. See this page on [executing lazy queries](execution.md) for more on running lazy queries.
+このレイジークエリは、この時点では実行されません。レイジークエリの実行については、[レイジークエリの実行](execution.md) のページを参照してください。
 
-## Using the lazy API from a `DataFrame`
+## `DataFrame` からレイジーAPIを使う
 
-An alternative way to access the lazy API is to call `.lazy` on a `DataFrame` that has already been created in memory.
+レイジーAPIにアクセスする別の方法は、メモリ上に作成済みの `DataFrame` に対して `.lazy` を呼び出すことです。
 
 {{code_block('user-guide/lazy/using','fromdf',['lazy'])}}
 
-By calling `.lazy` we convert the `DataFrame` to a `LazyFrame`.
+`.lazy` を呼び出すことで、`DataFrame` を `LazyFrame` に変換します。
