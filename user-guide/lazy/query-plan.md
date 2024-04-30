@@ -1,11 +1,11 @@
-# Query plan
+# クエリプラン
 
-For any lazy query Polars has both:
+Polarsでは、遅延クエリには以下の2つがあります:
 
-- a non-optimized plan with the set of steps code as we provided it and
-- an optimized plan with changes made by the query optimizer
+- 提供したコードの手順セットのままの非最適化プラン
+- クエリオプティマイザーによる変更を加えた最適化プラン
 
-We can understand both the non-optimized and optimized query plans with visualization and by printing them as text.
+非最適化プランと最適化プランの両方を、視覚化や文字列出力で理解することができます。
 
 <div style="display:none">
 ```python exec="on" result="text" session="user-guide/lazy/query-plan"
@@ -13,7 +13,7 @@ We can understand both the non-optimized and optimized query plans with visualiz
 ```
 </div>
 
-Below we consider the following query:
+以下のクエリを考えてみましょう:
 
 {{code_block('user-guide/lazy/query-plan','plan',[])}}
 
@@ -21,13 +21,13 @@ Below we consider the following query:
 --8<-- "python/user-guide/lazy/query-plan.py:plan"
 ```
 
-## Non-optimized query plan
+## 非最適化クエリプラン
 
-### Graphviz visualization
+### Graphvizによる視覚化
 
-To create visualizations of the query plan, [Graphviz should be installed](https://graphviz.org/download/) and added to your PATH.
+クエリプランの視覚化には、[Graphvizをインストールし](https://graphviz.org/download/)、PATHに追加する必要があります。
 
-First we visualize the non-optimized plan by setting `optimized=False`.
+まず、`optimized=False`を設定して非最適化プランを視覚化します。
 
 {{code_block('user-guide/lazy/query-plan','showplan',['show_graph'])}}
 
@@ -35,15 +35,15 @@ First we visualize the non-optimized plan by setting `optimized=False`.
 --8<-- "python/user-guide/lazy/query-plan.py:createplan"
 ```
 
-The query plan visualization should be read from bottom to top. In the visualization:
+クエリプランの視覚化は、下から上に向けて読みます。視覚化では:
 
-- each box corresponds to a stage in the query plan
-- the `sigma` stands for `SELECTION` and indicates any filter conditions
-- the `pi` stands for `PROJECTION` and indicates choosing a subset of columns
+- 各ボックスがクエリプランの段階を表しています
+- `sigma`は`SELECTION`を表し、フィルター条件を示しています
+- `pi`は`PROJECTION`を表し、列のサブセットを選択していることを示しています
 
-### Printed query plan
+### クエリプランの出力
 
-We can also print the non-optimized plan with `explain(optimized=False)`
+`explain(optimized=False)`で非最適化プランを出力することもできます。
 
 {{code_block('user-guide/lazy/query-plan','describe',['explain'])}}
 
@@ -59,16 +59,16 @@ FILTER [(col("comment_karma")) > (0)] FROM WITH_COLUMNS:
     PROJECT */6 COLUMNS
 ```
 
-The printed plan should also be read from bottom to top. This non-optimized plan is roughly equal to:
+出力されたプランも、下から上に向けて読みます。この非最適化プランは概ね以下のようなものです:
 
-- read from the `data/reddit.csv` file
-- read all 6 columns (where the * wildcard in PROJECT \*/6 COLUMNS means take all columns)
-- transform the `name` column to uppercase
-- apply a filter on the `comment_karma` column
+- `data/reddit.csv`ファイルから読み込む
+- 6つの列すべて(PROJECT \*/6 COLUMNS のワイルドカード*は全列を意味する)を読み込む
+- `name`列を大文字に変換する
+- `comment_karma`列にフィルターを適用する
 
-## Optimized query plan
+## 最適化クエリプラン
 
-Now we visualize the optimized plan with `show_graph`.
+次に、`show_graph`で最適化プランを視覚化します。
 
 {{code_block('user-guide/lazy/query-plan','show',['show_graph'])}}
 
@@ -76,7 +76,7 @@ Now we visualize the optimized plan with `show_graph`.
 --8<-- "python/user-guide/lazy/query-plan.py:createplan2"
 ```
 
-We can also print the optimized plan with `explain`
+`explain`で最適化プランを出力することもできます。
 
 {{code_block('user-guide/lazy/query-plan','optimized',['explain'])}}
 
@@ -89,10 +89,10 @@ We can also print the optimized plan with `explain`
     SELECTION: [(col("comment_karma")) > (0)]
 ```
 
-The optimized plan is to:
+最適化プランは以下のようになっています:
 
-- read the data from the Reddit CSV
-- apply the filter on the `comment_karma` column while the CSV is being read line-by-line
-- transform the `name` column to uppercase
+- RedditのCSVデータを読み込む
+- 行単位でCSVを読み込みながら、`comment_karma`列にフィルターを適用する
+- `name`列を大文字に変換する
 
-In this case the query optimizer has identified that the `filter` can be applied while the CSV is read from disk rather than reading the whole file into memory and then applying the filter. This optimization is called _Predicate Pushdown_.
+この場合、クエリオプティマイザーは、メモリ上に全データを読み込んでからフィルターを適用するのではなく、CSVの読み込み時にフィルターを適用できることを見つけました。これは_Predicate Pushdown_と呼ばれる最適化です。

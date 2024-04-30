@@ -1,17 +1,17 @@
-# Optimizations
+# 最適化
 
-If you use Polars' lazy API, Polars will run several optimizations on your query. Some of them are executed up front,
-others are determined just in time as the materialized data comes in.
+Polars の遅延 API を使用すると、Polars はクエリに対していくつかの最適化を実行します。それらの中には、前もって実行されるものもあれば、
+マテリアライズされたデータが入ってきたときに、その時点で決定されるものもあります。
 
-Here is a non-complete overview of optimizations done by polars, what they do and how often they run.
+ここでは、Polars によって実行される最適化の概要、実行内容、実行頻度について説明します。
 
-| Optimization               | Explanation                                                                                                  | runs                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------- |
-| Predicate pushdown         | Applies filters as early as possible/ at scan level.                                                         | 1 time                        |
-| Projection pushdown        | Select only the columns that are needed at the scan level.                                                   | 1 time                        |
-| Slice pushdown             | Only load the required slice from the scan level. Don't materialize sliced outputs (e.g. join.head(10)).     | 1 time                        |
-| Common subplan elimination | Cache subtrees/file scans that are used by multiple subtrees in the query plan.                              | 1 time                        |
-| Simplify expressions       | Various optimizations, such as constant folding and replacing expensive operations with faster alternatives. | until fixed point             |
-| Join ordering              | Estimates the branches of joins that should be executed first in order to reduce memory pressure.            | 1 time                        |
-| Type coercion              | Coerce types such that operations succeed and run on minimal required memory.                                | until fixed point             |
-| Cardinality estimation     | Estimates cardinality in order to determine optimal group by strategy.                                       | 0/n times; dependent on query |
+| Optimization               | Explanation                | runs          |
+| -------------------------- |----------------------------|---------------|
+| Predicate pushdown         | 可能な限り早く／スキャンレベルでフィルターを適用する。| 1 回           |
+| Projection pushdown        | スキャン・レベルで必要な列のみを選択する。      | 1 回           |
+| Slice pushdown             | スキャンレベルから必要なスライスだけをロードする。スライスされた出力を実体化しない（例：join.head(10)）。 | 1 回           |
+| Common subplan elimination | クエリプラン内の複数のサブツリーで使用されるサブツリー/ファイルスキャンをキャッシュします。 | 1 回           |
+| Simplify expressions       | 定数の折りたたみや、高価な演算をより高速な代替演算に置き換えるなど、様々な最適化します。 | 定点まで          |
+| Join ordering              | メモリへの負担を減らすために最初に実行されるべき結合の枝を推定する。 | 1 回           |
+| Type coercion              | 演算が成功し、必要最小限のメモリで実行されるように型を強制する。 | 定点まで          |
+| Cardinality estimation     | 最適なグループ化戦略を決定するためにカーディナリティを推定する。 | 0/n 回; クエリに依存 |

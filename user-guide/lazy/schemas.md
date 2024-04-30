@@ -1,6 +1,6 @@
-# Schema
+# スキーマ
 
-The schema of a Polars `DataFrame` or `LazyFrame` sets out the names of the columns and their datatypes. You can see the schema with the `.schema` method on a `DataFrame` or `LazyFrame`
+Polars の `DataFrame` または `LazyFrame` のスキーマは、列の名前とデータ型を定義します。 `DataFrame` または `LazyFrame` の `.schema` メソッドを使ってスキーマを確認できます。
 
 {{code_block('user-guide/lazy/schema','schema',['DataFrame','lazy'])}}
 
@@ -9,17 +9,17 @@ The schema of a Polars `DataFrame` or `LazyFrame` sets out the names of the colu
 --8<-- "python/user-guide/lazy/schema.py:schema"
 ```
 
-The schema plays an important role in the lazy API.
+スキーマは、遅延 API で重要な役割を果たします。
 
-## Type checking in the lazy API
+## 遅延 API でのタイプチェック
 
-One advantage of the lazy API is that Polars will check the schema before any data is processed. This check happens when you execute your lazy query.
+遅延 API の利点の 1 つは、Polars がデータを処理する前にスキーマをチェックすることです。このチェックは、遅延クエリを実行するときに行われます。
 
-We see how this works in the following simple example where we call the `.round` expression on the integer `bar` column.
+整数の `bar` 列に `.round` 式を呼び出す以下の簡単な例で、この仕組みがわかります。
 
 {{code_block('user-guide/lazy/schema','lazyround',['lazy','with_columns'])}}
 
-The `.round` expression is only valid for columns with a floating point dtype. Calling `.round` on an integer column means the operation will raise an `InvalidOperationError` when we evaluate the query with `collect`. This schema check happens before the data is processed when we call `collect`.
+`.round` 式は、浮動小数点型の列でのみ有効です。整数列に `.round` を呼び出すと、`collect` でクエリを評価したときに `InvalidOperationError` が発生します。このスキーマチェックは、データを処理する前の `collect` の呼び出し時に行われます。
 
 {{code_block('user-guide/lazy/schema','typecheck',[])}}
 
@@ -28,35 +28,37 @@ The `.round` expression is only valid for columns with a floating point dtype. C
 --8<-- "python/user-guide/lazy/schema.py:typecheck"
 ```
 
-If we executed this query in eager mode the error would only be found once the data had been processed in all earlier steps.
+このクエリをイーガーモードで実行すると、エラーは最初のステップでデータが処理された後にのみ見つかります。
 
-When we execute a lazy query Polars checks for any potential `InvalidOperationError` before the time-consuming step of actually processing the data in the pipeline.
+遅延クエリを実行すると、Polars は時間のかかるデータ処理の前に、潜在的な `InvalidOperationError` をチェックします。
 
-## The lazy API must know the schema
+## 遅延 API にはスキーマが必要
 
-In the lazy API the Polars query optimizer must be able to infer the schema at every step of a query plan. This means that operations where the schema is not knowable in advance cannot be used with the lazy API.
+遅延 API では、Polars のクエリオプティマイザがクエリプランのあらゆるステップでスキーマを推測できる必要があります。これは、事前にスキーマが分からない操作は遅延 API で使えないことを意味します。
 
-The classic example of an operation where the schema is not knowable in advance is a `.pivot` operation. In a `.pivot` the new column names come from data in one of the columns. As these column names cannot be known in advance a `.pivot` is not available in the lazy API.
+事前にスキーマが分からない操作の典型例は `.pivot` 操作です。`.pivot` では、新しい列名がある列のデータから決まります。これらの列名は事前に分からないため、`.pivot` は遅延 API では使えません。
 
-## Dealing with operations not available in the lazy API
+## 遅延 API で使えない操作への対処
 
-If your pipeline includes an operation that is not available in the lazy API it is normally best to:
+パイプラインに遅延 API で使えない操作が含まれる場合は、通常以下のようにするのが最善です:
 
-- run the pipeline in lazy mode up until that point
-- execute the pipeline with `.collect` to materialize a `DataFrame`
-- do the non-lazy operation on the `DataFrame`
-- convert the output back to a `LazyFrame` with `.lazy` and continue in lazy mode
+- その操作までは遅延モードで実行
+- `.collect` でパイプラインを実行し、`DataFrame` を具体化
+- `DataFrame` で非遅延の操作を実行
+- 出力を再び `LazyFrame` に変換 (`lazy`) し、遅延モードで続行
+- `.filter` などの操作を行う
+- 最後に `.collect` でクエリを実行し、`DataFrame` を取得
 
-We show how to deal with a non-lazy operation in this example where we:
+以下の例では、この手順を示しています:
 
-- create a simple `DataFrame`
-- convert it to a `LazyFrame` with `.lazy`
-- do a transformation using `.with_columns`
-- execute the query before the pivot with `.collect` to get a `DataFrame`
-- do the `.pivot` on the `DataFrame`
-- convert back in lazy mode
-- do a `.filter`
-- finish by executing the query with `.collect` to get a `DataFrame`
+- 簡単な `DataFrame` を作成
+- `.lazy` で `LazyFrame` に変換
+- `.with_columns` で変換
+- `.collect` でクエリを実行し `DataFrame` を取得
+- `DataFrame` で `.pivot` を実行
+- 再び `LazyFrame` に変換 (`lazy`)
+- `.filter` を実行
+- 最後に `.collect` でクエリを実行し `DataFrame` を取得
 
 {{code_block('user-guide/lazy/schema','lazyeager',['collect','pivot','filter'])}}
 
