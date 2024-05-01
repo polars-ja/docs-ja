@@ -1,34 +1,34 @@
-# Aggregation
+# 集計（Aggregation）
 
-Polars implements a powerful syntax defined not only in its lazy API, but also in its eager API. Let's take a look at what that means.
+Polars は、lazy API だけでなく、eager API でも強力な構文を実装しています。それがどういう意味かを見ていきましょう。
 
-We can start with the simple [US congress `dataset`](https://github.com/unitedstates/congress-legislators).
+米国議会データセット（[US congress `dataset`](https://github.com/unitedstates/congress-legislators)）から始めましょう。
 
 {{code_block('user-guide/expressions/aggregation','dataframe',['DataFrame','Categorical'])}}
 
-#### Basic aggregations
+#### 基本的な集計
 
-You can easily combine different aggregations by adding multiple expressions in a
-`list`. There is no upper bound on the number of aggregations you can do, and you can
-make any combination you want. In the snippet below we do the following aggregations:
+`list` に複数の式を追加することで、簡単に異なる集計を組み合わせられます。
+集計の数に上限はなく、好きな組み合わせを作成できます。
+以下のスニペットでは、次のような集計を行っています:
 
-Per GROUP `"first_name"` we
+`"first_name"` グループごとに
 
 <!-- dprint-ignore-start -->
 
-- count the number of rows in the group:
-    - short form: `pl.count("party")`
-    - full form: `pl.col("party").count()`
-- aggregate the gender values groups:
-    - full form: `pl.col("gender")`
-- get the first value of column `"last_name"` in the group:
-    - short form: `pl.first("last_name")` (not available in Rust)
-    - full form: `pl.col("last_name").first()`
+- `"party"` 列の行数をカウントします:
+    - 短縮形: `pl.count("party")`
+    - 完全形: `pl.col("party").count()`
+- `"gender"` 値をグループ化して集計します:
+    - 完全形: `pl.col("gender")`
+- グループ内の `"last_name"` 列の最初の値を取得します:
+    - 短縮形: `pl.first("last_name")`（Rustでは使えません）
+    - 完全形: `pl.col("last_name").first()`
 
 <!-- dprint-ignore-end -->
 
-Besides the aggregation, we immediately sort the result and limit to the top `5` so that
-we have a nice summary overview.
+集計の後、結果をすぐにソートし、上位 `5` 件に制限して、
+わかりやすい概要を得ています。
 
 {{code_block('user-guide/expressions/aggregation','basic',['group_by'])}}
 
@@ -38,11 +38,11 @@ we have a nice summary overview.
 --8<-- "python/user-guide/expressions/aggregation.py:basic"
 ```
 
-#### Conditionals
+#### 条件式
 
-It's that easy! Let's turn it up a notch. Let's say we want to know how
-many delegates of a "state" are "Pro" or "Anti" administration. We could directly query
-that in the aggregation without the need of a `lambda` or grooming the `DataFrame`.
+簡単ですね！さらに進めましょう。
+"state" の代表者が "Pro" または "Anti" 政権かどうかを知りたいとします。
+`lambda` や `DataFrame` の整理に頼ることなく、集計の中で直接クエリを使えます。
 
 {{code_block('user-guide/expressions/aggregation','conditional',['group_by'])}}
 
@@ -50,7 +50,7 @@ that in the aggregation without the need of a `lambda` or grooming the `DataFram
 --8<-- "python/user-guide/expressions/aggregation.py:conditional"
 ```
 
-Similarly, this could also be done with a nested GROUP BY, but that doesn't help show off some of these nice features. 😉
+同様のことは、ネストされた GROUP BY でも行えますが、これらの素晴らしい機能を示すのに役立ちません。 😉
 
 {{code_block('user-guide/expressions/aggregation','nested',['group_by'])}}
 
@@ -58,17 +58,17 @@ Similarly, this could also be done with a nested GROUP BY, but that doesn't help
 --8<-- "python/user-guide/expressions/aggregation.py:nested"
 ```
 
-#### Filtering
+#### フィルタリング
 
-We can also filter the groups. Let's say we want to compute a mean per group, but we
-don't want to include all values from that group, and we also don't want to filter the
-rows from the `DataFrame` (because we need those rows for another aggregation).
+グループをフィルタリングすることもできます。
+グループごとの平均を計算したいが、そのグループのすべての値を含めたくない、
+また `DataFrame` の行をフィルタリングしたくない（別の集計に必要なため）場合などです。
 
-In the example below we show how this can be done.
+以下の例では、これがどのように行えるかを示しています。
 
 !!! note
 
-    Note that we can make Python functions for clarity. These functions don't cost us anything. That is because we only create Polars expressions, we don't apply a custom function over a `Series` during runtime of the query. Of course, you can make functions that return expressions in Rust, too.
+    Python 関数を明確にするためのメモ。これらの関数にはコストがかかりません。なぜなら、Polars エクスプレッションのみを作成し、クエリの実行時にカスタム関数を `Series` 上で適用しないためです。もちろん、Rust でもエクスプレッションを返す関数を作ることができます。
 
 {{code_block('user-guide/expressions/aggregation','filter',['group_by'])}}
 
@@ -76,9 +76,9 @@ In the example below we show how this can be done.
 --8<-- "python/user-guide/expressions/aggregation.py:filter"
 ```
 
-#### Sorting
+#### ソート
 
-It's common to see a `DataFrame` being sorted for the sole purpose of managing the ordering during a GROUP BY operation. Let's say that we want to get the names of the oldest and youngest politicians per state. We could SORT and GROUP BY.
+GROUP BY 操作の順序を管理するために、`DataFrame` をソートすることは一般的です。州ごとの最年長および最年少の政治家の名前を取得したいとします。その際は、SORT と GROUP BY を使うことができます。
 
 {{code_block('user-guide/expressions/aggregation','sort',['group_by'])}}
 
@@ -86,7 +86,7 @@ It's common to see a `DataFrame` being sorted for the sole purpose of managing t
 --8<-- "python/user-guide/expressions/aggregation.py:sort"
 ```
 
-However, **if** we also want to sort the names alphabetically, this breaks. Luckily we can sort in a `group_by` context separate from the `DataFrame`.
+ただし、**もし** 名前をアルファベット順にソートしたい場合、これは機能しません。幸いにも、`group_by` 式で `DataFrame` とは別にソートができます。
 
 {{code_block('user-guide/expressions/aggregation','sort2',['group_by'])}}
 
@@ -94,7 +94,7 @@ However, **if** we also want to sort the names alphabetically, this breaks. Luck
 --8<-- "python/user-guide/expressions/aggregation.py:sort2"
 ```
 
-We can even sort by another column in the `group_by` context. If we want to know if the alphabetically sorted name is male or female we could add: `pl.col("gender").sort_by("first_name").first().alias("gender")`
+`group_by` 式の中で別の列を基準にソートすることもできます。アルファベット順にソートされた名前が男性か女性かを知りたい場合は：`pl.col("gender").sort_by("first_name").first().alias("gender")` と記述できます。
 
 {{code_block('user-guide/expressions/aggregation','sort3',['group_by'])}}
 
@@ -102,25 +102,24 @@ We can even sort by another column in the `group_by` context. If we want to know
 --8<-- "python/user-guide/expressions/aggregation.py:sort3"
 ```
 
-### Do not kill parallelization
+### 並列処理を阻害しない
 
-!!! warning "Python Users Only"
+!!! warning "Python ユーザーのみ"
 
-    The following section is specific to Python, and doesn't apply to Rust. Within Rust, blocks and closures (lambdas) can, and will, be executed concurrently.
+    以下のセクションは Python に固有のものであり、Rust には適用されません。Rust では、ブロックとクロージャ(ラムダ)を並行して実行できるためです。
 
-We have all heard that Python is slow, and does "not scale." Besides the overhead of
-running "slow" bytecode, Python has to remain within the constraints of the Global
-Interpreter Lock (GIL). This means that if you were to use a `lambda` or a custom Python
-function to apply during a parallelized phase, Polars speed is capped running Python
-code preventing any multiple threads from executing the function.
+Python は遅くて "スケールしない" というのは、誰もが耳にしたことがあるでしょう。
+"遅い" バイトコードを実行するオーバーヘッドに加えて、Python は Global Interpreter Lock（GIL）の制約の中にいなければなりません。
+つまり、並列化フェーズで `lambda` やカスタム Python 関数を使用する場合、
+Polars の速度は Python コードの実行によって制限され、
+複数のスレッドが関数を実行することを妨げます。
 
-This all feels terribly limiting, especially because we often need those `lambda` functions in a
-`.group_by()` step, for example. This approach is still supported by Polars, but
-keeping in mind bytecode **and** the GIL costs have to be paid. It is recommended to try to solve your queries using the expression syntax before moving to `lambdas`. If you want to learn more about using `lambdas`, go to the [user defined functions section](./user-defined-functions.md).
+これはとてもうっとうしい制限に感じられますが、特に `.group_by()` ステップでは `lambda` 関数が必要になることが多いです。
+このアプローチは Polars でまだサポートされていますが、バイトコード **と** GIL のコストを支払う必要があることを念頭に置いてください。エクスプレッションの構文を使ってクエリを解決することをお勧めします。
+`lambda` の使用については、[ユーザー定義関数セクション](./user-defined-functions.md) を参照してください。
 
-### Conclusion
+### まとめ
 
-In the examples above we've seen that we can do a lot by combining expressions. By doing so we delay the use of custom Python functions that slow down the queries (by the slow nature of Python AND the GIL).
+上記の例では、エクスプレッションを組み合わせることで多くのことができることを見てきました。そうすることで、（Python と GIL の遅い性質によって）クエリを遅くする Python のカスタム関数の使用を遅らせられます。
 
-If we are missing a type expression let us know by opening a
-[feature request](https://github.com/pola-rs/polars/issues/new/choose)!
+もしエクスプレッションのタイプが見つからない場合は、[feature request](https://github.com/pola-rs/polars/issues/new/choose)を開いてお知らせください！
