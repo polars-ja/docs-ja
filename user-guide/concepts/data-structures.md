@@ -1,11 +1,11 @@
-# Data structures
+# データ構造
 
-The core base data structures provided by Polars are `Series` and `DataFrame`.
+Polars が提供するコアとなる基本データ構造は `Series` と `DataFrame` です。
 
 ## Series
 
-Series are a 1-dimensional data structure. Within a series all elements have the same [Data Type](data-types/overview.md) .
-The snippet below shows how to create a simple named `Series` object.
+Series は 1 次元のデータ構造です。Series 内のすべての要素は同じ [データ型](data-types/overview.md) を持ちます。
+以下のスニペットは、単純な名前付き `Series` オブジェクトの作成方法を示しています。
 
 {{code_block('user-guide/concepts/data-structures','series',['Series'])}}
 
@@ -15,7 +15,7 @@ The snippet below shows how to create a simple named `Series` object.
 
 ## DataFrame
 
-A `DataFrame` is a 2-dimensional data structure that is backed by a `Series`, and it can be seen as an abstraction of a collection (e.g. list) of `Series`. Operations that can be executed on a `DataFrame` are very similar to what is done in a `SQL` like query. You can `GROUP BY`, `JOIN`, `PIVOT`, but also define custom functions.
+`DataFrame` は 2 次元のデータ構造で、`Series` によってバックアップされています。`DataFrame` は `Series` のコレクション（リストなど）の抽象化と見なすことができます。`DataFrame` で実行できる操作は `SQL` クエリと非常によく似ています。`GROUP BY`、`JOIN`、`PIVOT` を行うことができ、カスタム関数を定義することもできます。
 
 {{code_block('user-guide/concepts/data-structures','dataframe',['DataFrame'])}}
 
@@ -23,13 +23,13 @@ A `DataFrame` is a 2-dimensional data structure that is backed by a `Series`, an
 --8<-- "python/user-guide/concepts/data-structures.py:dataframe"
 ```
 
-### Viewing data
+### データの表示
 
-This part focuses on viewing data in a `DataFrame`. We will use the `DataFrame` from the previous example as a starting point.
+このセクションでは、`DataFrame` 内のデータの表示方法について説明します。前の例で使用した `DataFrame` を起点として使用します。
 
 #### Head
 
-The `head` function shows by default the first 5 rows of a `DataFrame`. You can specify the number of rows you want to see (e.g. `df.head(10)`).
+`head` 関数は、デフォルトで `DataFrame` の最初の 5 行を表示します。表示する行数を指定することもできます（例: `df.head(10)`）。
 
 {{code_block('user-guide/concepts/data-structures','head',['head'])}}
 
@@ -39,7 +39,7 @@ The `head` function shows by default the first 5 rows of a `DataFrame`. You can 
 
 #### Tail
 
-The `tail` function shows the last 5 rows of a `DataFrame`. You can also specify the number of rows you want to see, similar to `head`.
+`tail` 関数は、`DataFrame` の最後の 5 行を表示します。`head` と同様に、表示する行数を指定することができます。
 
 {{code_block('user-guide/concepts/data-structures','tail',['tail'])}}
 
@@ -49,7 +49,7 @@ The `tail` function shows the last 5 rows of a `DataFrame`. You can also specify
 
 #### Sample
 
-If you want to get an impression of the data of your `DataFrame`, you can also use `sample`. With `sample` you get an _n_ number of random rows from the `DataFrame`.
+`DataFrame` のデータの概要を把握したい場合は、`sample` を使用することができます。`sample` を使うと、`DataFrame` からランダムに _n_ 行を取得できます。
 
 {{code_block('user-guide/concepts/data-structures','sample',['sample'])}}
 
@@ -59,7 +59,7 @@ If you want to get an impression of the data of your `DataFrame`, you can also u
 
 #### Describe
 
-`Describe` returns summary statistics of your `DataFrame`. It will provide several quick statistics if possible.
+`Describe` は、`DataFrame` の要約統計量を返します。可能な場合は、いくつかの基本的な統計量を提供します。
 
 {{code_block('user-guide/concepts/data-structures','describe',['describe'])}}
 
