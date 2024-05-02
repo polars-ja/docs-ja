@@ -1,28 +1,28 @@
 # Lazy / eager API
 
-Polars supports two modes of operation: lazy and eager. In the eager API the query is executed immediately while in the lazy API the query is only evaluated once it is 'needed'. Deferring the execution to the last minute can have significant performance advantages and is why the Lazy API is preferred in most cases. Let us demonstrate this with an example:
+Polars は 2 つの動作モードをサポートしています: lazy と eager です。eager API では、クエリが即座に実行されますが、lazy API では、クエリが「必要」とされるまで評価されません。最後の瞬間まで実行を遅らせることで、大幅なパフォーマンスの向上が期待できるため、ほとんどの場合 Lazy API が好ましいです。例を使って説明します:
 
 {{code_block('user-guide/concepts/lazy-vs-eager','eager',['read_csv'])}}
 
-In this example we use the eager API to:
+この例では、eager API を使って以下を行っています:
 
-1. Read the iris [dataset](https://archive.ics.uci.edu/dataset/53/iris).
-1. Filter the dataset based on sepal length
-1. Calculate the mean of the sepal width per species
+1. iris [dataset](https://archive.ics.uci.edu/dataset/53/iris) を読み込む
+1. データセットをsepal length でフィルタリングする
+1. 種ごとのsepal width の平均を計算する
 
-Every step is executed immediately returning the intermediate results. This can be very wasteful as we might do work or load extra data that is not being used. If we instead used the lazy API and waited on execution until all the steps are defined then the query planner could perform various optimizations. In this case:
+各ステップが即座に実行され、中間結果が返されます。しかし、使われていないデータを読み込んだり、不要な処理を行ったりするなど、無駄が生じる可能性があります。代わりに lazy API を使い、すべてのステップが定義されてから実行するようにすれば、クエリプランナーが最適化を行うことができます:
 
-- Predicate pushdown: Apply filters as early as possible while reading the dataset, thus only reading rows with sepal length greater than 5.
-- Projection pushdown: Select only the columns that are needed while reading the dataset, thus removing the need to load additional columns (e.g. petal length & petal width)
+- Predicate pushdown: データセットの読み込み時に可能な限り早くフィルタを適用し、sepal length が 5 より大きい行のみ読み込む
+- Projection pushdown: 必要なカラム（sepal width）のみ読み込み、不要なカラム（petal length & petal width）は読み込まない
 
 {{code_block('user-guide/concepts/lazy-vs-eager','lazy',['scan_csv'])}}
 
-These will significantly lower the load on memory & CPU thus allowing you to fit bigger datasets in memory and process faster. Once the query is defined you call `collect` to inform Polars that you want to execute it. In the section on Lazy API we will go into more details on its implementation.
+これらの最適化により、メモリと CPU の負荷が大幅に軽減され、より大きなデータセットをメモリ上で処理し、高速に処理できるようになります。クエリの定義が完了したら、`collect` を呼び出して実行を指示します。Lazy API の実装については、後の章で詳しく説明します。
 
 !!! info "Eager API"
 
-    In many cases the eager API is actually calling the lazy API under the hood and immediately collecting the result. This has the benefit that within the query itself optimization(s) made by the query planner can still take place.
+    多くの場合、eager API は内部で lazy API を呼び出し、即座に結果を収集しています。これにより、クエリ内部での最適化も行われます。
 
-### When to use which
+### 使い分け
 
-In general the lazy API should be preferred unless you are either interested in the intermediate results or are doing exploratory work and don't know yet what your query is going to look like.
+一般的に、lazy API を使うことをお勧めします。ただし、中間結果に興味がある場合や、探索的な作業を行っていて、クエリの形が確定していない場合は、eager API を使うことも検討してください。

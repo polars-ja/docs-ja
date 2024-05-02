@@ -1,11 +1,11 @@
 # Concepts
 
-The `Concepts` chapter describes the core concepts of the Polars API. Understanding these will help you optimise your queries on a daily basis. We will cover the following topics:
+`Concepts` 章では、Polars API の中核となる概念について説明します。これらを理解することで、日々のクエリを最適化することができます。以下のトピックを取り上げます:
 
-- [Data Types: Overview](data-types/overview.md)
-- [Data Types: Categoricals](data-types/categoricals.md)
-- [Data structures](data-structures.md)
-- [Contexts](contexts.md)
-- [Expressions](expressions.md)
-- [Lazy vs eager](lazy-vs-eager.md)
-- [Streaming](streaming.md)
+- [データ型: 概要](data-types/overview.md)
+- [データ型: カテゴリカル](data-types/categoricals.md)
+- [データ構造](data-structures.md)
+- [コンテキスト](contexts.md)
+- [エクスプレッション](expressions.md)
+- [Lazy vs Eager](lazy-vs-eager.md)
+- [ストリーミング](streaming.md)
