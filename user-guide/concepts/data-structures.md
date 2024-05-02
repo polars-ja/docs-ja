@@ -15,7 +15,7 @@ Series は 1 次元のデータ構造です。Series 内のすべての要素は
 
 ## DataFrame
 
-`DataFrame` は 2 次元のデータ構造で、`Series` によってバックアップされています。`DataFrame` は `Series` のコレクション（リストなど）の抽象化と見なすことができます。`DataFrame` で実行できる操作は `SQL` クエリと非常によく似ています。`GROUP BY`、`JOIN`、`PIVOT` を行うことができ、カスタム関数を定義することもできます。
+`DataFrame` は 2 次元のデータ構造であり、 `Series` のコレクション（リストなど）の抽象化と見なすことができます。`DataFrame` で実行できる操作は `SQL` クエリと非常によく似ています。`GROUP BY`、`JOIN`、`PIVOT` を行うことができ、カスタム関数を定義することもできます。
 
 {{code_block('user-guide/concepts/data-structures','dataframe',['DataFrame'])}}
 
@@ -25,7 +25,7 @@ Series は 1 次元のデータ構造です。Series 内のすべての要素は
 
 ### データの表示
 
-このセクションでは、`DataFrame` 内のデータの表示方法について説明します。前の例で使用した `DataFrame` を起点として使用します。
+このセクションでは、`DataFrame` 内のデータの表示方法について説明します。前の例で使用した `DataFrame` を使用します。
 
 #### Head
 
