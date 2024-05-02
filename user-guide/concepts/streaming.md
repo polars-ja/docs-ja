@@ -1,16 +1,16 @@
-# Streaming API
+# ストリーミングインターフェース
 
-One additional benefit of the lazy API is that it allows queries to be executed in a streaming manner. Instead of processing the data all-at-once Polars can execute the query in batches allowing you to process datasets that are larger-than-memory.
+lazy APIの追加の利点の1つは、クエリをストリーミング方式で実行できることです。Polarsは一度に全てのデータを処理するのではなく、バッチ処理することで、メモリ以上のデータセットを処理できます。
 
-To tell Polars we want to execute a query in streaming mode we pass the `streaming=True` argument to `collect`
+Polarsにクエリをストリーミングモードで実行させるには、`collect`メソッドに`streaming=True`引数を渡します。
 
 {{code_block('user-guide/concepts/streaming','streaming',['collect'])}}
 
-## When is streaming available?
+## いつストリーミングが利用可能か
 
-Streaming is still in development. We can ask Polars to execute any lazy query in streaming mode. However, not all lazy operations support streaming. If there is an operation for which streaming is not supported Polars will run the query in non-streaming mode.
+ストリーミングは現在開発中です。Polarsに任意のlazyクエリをストリーミングモードで実行させることができます。ただし、すべてのlazyオペレーションがストリーミングをサポートしているわけではありません。ストリーミングがサポートされていないオペレーションがある場合、Polarsはノンストリーミングモードでクエリを実行します。
 
-Streaming is supported for many operations including:
+ストリーミングは以下のようなオペレーションでサポートされています:
 
 - `filter`,`slice`,`head`,`tail`
 - `with_columns`,`select`
@@ -21,11 +21,11 @@ Streaming is supported for many operations including:
 - `explode`,`melt`
 - `scan_csv`,`scan_parquet`,`scan_ipc`
 
-This list is not exhaustive. Polars is in active development, and more operations can be added without explicit notice.
+この一覧は完全なものではありません。Polarsは活発に開発が進められており、明示的な通知なしに、より多くのオペレーションがストリーミングに対応される可能性があります。
 
-### Example with supported operations
+### ストリーミングをサポートするオペレーションの例
 
-To determine which parts of your query are streaming, use the `explain` method. Below is an example that demonstrates how to inspect the query plan. More information about the query plan can be found in the chapter on the [Lazy API](https://docs.pola.rs/user-guide/lazy/query-plan/).
+クエリのどの部分がストリーミングされるかを確認するには、`explain`メソッドを使用します。以下の例では、クエリプランの検査方法を示しています。クエリプランの詳細については、[Lazy API](https://docs.pola.rs/user-guide/lazy/query-plan/)の章を参照してください。
 
 {{code_block('user-guide/concepts/streaming', 'example',['explain'])}}
 
@@ -35,7 +35,7 @@ To determine which parts of your query are streaming, use the `explain` method. 
 --8<-- "python/user-guide/concepts/streaming.py:example"
 ```
 
-### Example with non-streaming operations
+### ストリーミングをサポートしないオペレーションの例
 
 {{code_block('user-guide/concepts/streaming', 'example2',['explain'])}}
 

@@ -1,14 +1,14 @@
-# Categorical data
+# カテゴリカルデータ
 
-Categorical data represents string data where the values in the column have a finite set of values (usually way smaller than the length of the column). You can think about columns on gender, countries, currency pairings, etc. Storing these values as plain strings is a waste of memory and performance as we will be repeating the same string over and over again. Additionally, in the case of joins we are stuck with expensive string comparisons.
+カテゴリカルデータは、カラムの値が有限のセットの文字列データを表します（通常、カラムの長さよりはるかに小さい）。性別、国、通貨ペアリングなどのカラムを考えることができます。これらの値を単純な文字列として保存すると、同じ文字列を繰り返し保存することになり、メモリとパフォーマンスの無駄になります。さらに、結合の場合、高価な文字列比較に困ってしまいます。
 
-That is why Polars supports encoding string values in dictionary format. Working with categorical data in Polars can be done with two different DataTypes: `Enum`,`Categorical`. Both have their own use cases which we will explain further on this page.
-First we will look at what a categorical is in Polars.
+そのため、Polarsはディクショナリ形式でストリング値をエンコーディングすることをサポートしています。Polarsでカテゴリカルデータを扱うには、`Enum`と`Categorical`の2つの異なるデータ型を使用できます。それぞれに固有の使用例があり、このページでさらに説明します。
+まずは、Polarsでカテゴリカルとは何かを見ていきましょう。
 
-In Polars a categorical is defined as a string column which is encoded by a dictionary. A string column would be split into two elements: encodings and the actual string values.
+Polarsでは、カテゴリカルは、ディクショナリでエンコーディングされた文字列カラムと定義されます。文字列カラムは2つの要素に分割されます: エンコーディングと実際の文字列値。
 
 <table>
-<tr><th>String Column </th><th>Categorical Column</th></tr>
+<tr><th>文字列カラム </th><th>カテゴリカルカラム</th></tr>
 <tr><td>
 <table>
     <thead>
@@ -104,25 +104,25 @@ In Polars a categorical is defined as a string column which is encoded by a dict
 </tr>
 </table>
 
-The physical `0` in this case encodes (or maps) to the value 'Polar Bear', the value `1` encodes to 'Panda Bear' and the value `2` to 'Brown Bear'. This encoding has the benefit of only storing the string values once. Additionally, when we perform operations (e.g. sorting, counting) we can work directly on the physical representation which is much faster than the working with string data.
+この場合、物理的な`0`は'Polar Bear'にエンコーディングされ、値`1`は'Panda Bear'、値`2`は'Brown Bear'にエンコーディングされます。このエンコーディングにより、文字列値を1回しか保存する必要がなくなります。さらに、操作（ソート、カウントなど）を物理的な表現で直接行うことができるため、文字列データを扱うよりも高速です。
 
 ### `Enum` vs `Categorical`
 
-Polars supports two different DataTypes for working with categorical data: `Enum` and `Categorical`. When the categories are known up front use `Enum`. When you don't know the categories or they are not fixed then you use `Categorical`. In case your requirements change along the way you can always cast from one to the other.
+Polarsは、カテゴリカルデータを扱うために2つの異なるデータ型をサポートしています: `Enum`と`Categorical`。カテゴリが事前に分かっている場合は`Enum`を使用します。カテゴリが分からないか固定されていない場合は`Categorical`を使用します。要件が変わっていく場合は、いつでも片方から他方にキャストできます。
 
 {{code_block('user-guide/concepts/data-types/categoricals','example',[])}}
 
-From the code block above you can see that the `Enum` data type requires the upfront while the categorical data type infers the categories.
+上記のコードブロックから、`Enum`データ型は事前にカテゴリを要求するのに対し、`Categorical`データ型はカテゴリを推論することがわかります。
 
-#### `Categorical` data type
+#### `Categorical`データ型
 
-The `Categorical` data type is a flexible one. Polars will add categories on the fly if it sees them. This sounds like a strictly better version compared to the `Enum` data type as we can simply infer the categories, however inferring comes at a cost. The main cost here is we have no control over our encodings.
+`Categorical`データ型は柔軟なものです。Polarsは新しいカテゴリを見つけるたびに追加します。これは`Enum`データ型に比べて明らかに優れているように聞こえますが、推論にはコストがかかります。ここでの主なコストは、エンコーディングを制御できないことです。
 
-Consider the following scenario where we append the following two categorical `Series`
+次のシナリオを考えてみましょう。2つのカテゴリカル`Series`を追加する場合
 
 {{code_block('user-guide/concepts/data-types/categoricals','append',[])}}
 
-Polars encodes the string values in order as they appear. So the series would look like this:
+Polarsは文字列値を出現順にエンコーディングします。そのため、`Series`は次のようになります:
 
 <table>
 <tr><th>cat_series </th><th>cat2_series</th></tr>
@@ -208,120 +208,3 @@ Polars encodes the string values in order as they appear. So the series would lo
         </tr>
     </tbody>
 </table>
-
-</td>
-<td>
-
-<table>
-    <thead>
-        <tr>
-            <th>Categories</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Panda</td>
-        </tr>
-        <tr>
-            <td>Brown</td>
-        </tr>
-        <tr>
-            <td>Polar</td>
-        </tr>
-    </tbody>
-</table>
-
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
-
-Combining the `Series` becomes a non-trivial task which is expensive as the physical value of `0` represents something different in both `Series`. Polars does support these types of operations for convenience, however in general these should be avoided due to its slower performance as it requires making both encodings compatible first before doing any merge operations.
-
-##### Using the global string cache
-
-One way to handle this problem is to enable a `StringCache`. When you enable the `StringCache` strings are no longer encoded in the order they appear on a per-column basis. Instead, the string cache ensures a single encoding for each string. The string `Polar` will always map the same physical for all categorical columns made under the string cache.
-Merge operations (e.g. appends, joins) are cheap as there is no need to make the encodings compatible first, solving the problem we had above.
-
-{{code_block('user-guide/concepts/data-types/categoricals','global_append',[])}}
-
-However, the string cache does come at a small performance hit during construction of the `Series` as we need to look up / insert the string value in the cache. Therefore, it is preferred to use the `Enum` Data Type if you know your categories in advance.
-
-#### `Enum data type`
-
-In the `Enum` data type we specify the categories in advance. This way we ensure categoricals from different columns or different datasets have the same encoding and there is no need for expensive re-encoding or cache lookups.
-
-{{code_block('user-guide/concepts/data-types/categoricals','enum_append',[])}}
-
-Polars will raise an `OutOfBounds` error when a value is encountered which is not specified in the `Enum`.
-
-{{code_block('user-guide/concepts/data-types/categoricals','enum_error',[])}}
-
-```python exec="on" result="text" session="user-guide/datatypes/categoricals"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:setup"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:enum_error"
-```
-
-### Comparisons
-
-The following types of comparisons operators are allowed for categorical data:
-
-- Categorical vs Categorical
-- Categorical vs String
-
-#### `Categorical` Type
-
-For the `Categorical` type comparisons are valid if they have the same global cache set or if they have the same underlying categories in the same order.
-
-{{code_block('user-guide/concepts/data-types/categoricals','global_equality',[])}}
-
-```python exec="on" result="text" session="user-guide/datatypes/categoricals"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:setup"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:global_equality"
-```
-
-For `Categorical` vs `String` comparisons Polars uses lexical ordering to determine the result:
-
-{{code_block('user-guide/concepts/data-types/categoricals','str_compare_single',[])}}
-
-```python exec="on" result="text" session="user-guide/datatypes/categoricals"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:str_compare_single"
-```
-
-{{code_block('user-guide/concepts/data-types/categoricals','str_compare',[])}}
-
-```python exec="on" result="text" session="user-guide/datatypes/categoricals"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:str_compare"
-```
-
-#### `Enum` Type
-
-For `Enum` type comparisons are valid if they have the same categories.
-
-{{code_block('user-guide/concepts/data-types/categoricals','equality',[])}}
-
-```python exec="on" result="text" session="user-guide/datatypes/categoricals"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:equality"
-```
-
-For `Enum` vs `String` comparisons the order within the categories is used instead of lexical ordering. In order for a comparison to be valid all values in the `String` column should be present in the `Enum` categories list.
-
-{{code_block('user-guide/concepts/data-types/categoricals','str_enum_compare_error',[])}}
-
-```python exec="on" result="text" session="user-guide/datatypes/categoricals"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:str_enum_compare_error"
-```
-
-{{code_block('user-guide/concepts/data-types/categoricals','str_enum_compare_single',[])}}
-
-```python exec="on" result="text" session="user-guide/datatypes/categoricals"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:str_enum_compare_single"
-```
-
-{{code_block('user-guide/concepts/data-types/categoricals','str_enum_compare',[])}}
-
-```python exec="on" result="text" session="user-guide/datatypes/categoricals"
---8<-- "python/user-guide/concepts/data-types/categoricals.py:str_enum_compare"
-```

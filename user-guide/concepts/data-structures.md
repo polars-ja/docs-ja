@@ -5,7 +5,7 @@ Polars が提供するコアとなる基本データ構造は `Series` と `Data
 ## Series
 
 Series は 1 次元のデータ構造です。Series 内のすべての要素は同じ [データ型](data-types/overview.md) を持ちます。
-以下のスニペットは、単純な名前付き `Series` オブジェクトの作成方法を示しています。
+以下のスニペットは、簡単な名前付き `Series` オブジェクトの作成方法を示しています。
 
 {{code_block('user-guide/concepts/data-structures','series',['Series'])}}
 
