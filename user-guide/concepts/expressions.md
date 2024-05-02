@@ -1,55 +1,50 @@
-# Expressions
+# エクスプレッション
 
-Polars has a powerful concept called expressions that is central to its very fast performance.
+Polars には、非常に高速なパフォーマンスの中心となる強力な概念であるエクスプレッションがあります。
 
-Expressions are at the core of many data science operations:
+エクスプレッションは、多くのデータサイエンス操作の中核にあります:
 
-- taking a sample of rows from a column
-- multiplying values in a column
-- extracting a column of years from dates
-- convert a column of strings to lowercase
-- and so on!
+- カラムからの行のサンプリング
+- カラム内の値の乗算
+- 日付からの年のカラムの抽出
+- 文字列カラムを小文字に変換
+- などなど!
 
-However, expressions are also used within other operations:
+しかし、エクスプレッションは他の操作でも使用されます:
 
-- taking the mean of a group in a `group_by` operation
-- calculating the size of groups in a `group_by` operation
-- taking the sum horizontally across columns
+- `group_by` 操作でのグループの平均の取得
+- `group_by` 操作でのグループサイズの計算
+- 列にわたる合計の取得
 
-Polars performs these core data transformations very quickly by:
+Polars は、これらのコアデータ変換を以下によって非常に高速に実行します:
 
-- automatic query optimization on each expression
-- automatic parallelization of expressions on many columns
+- 各エクスプレッションの自動クエリ最適化
+- 多数のカラムでのエクスプレッションの自動並列化
 
-An expression is a tree of operations that describe how to construct one or more
-Series. As the outputs are Series, it is straightforward to
-apply a sequence of expressions (similar to method chaining in pandas) each of which
-transforms the output from the previous step.
+エクスプレッションは、1つ以上の Series を構築する方法を記述する操作のツリーです。出力が Series であるため、前のステップからの出力を変換する一連のエクスプレッション（pandas のメソッドチェーンに似ています）を簡単に適用できます。
 
-If this seems abstract and confusing - don't worry! People quickly develop an intuition for expressions
-just by looking at a few examples. We'll do that next!
+これが抽象的で混乱しているように感じられる場合は心配しないでください! 人々は、いくつかの例を見るだけで、エクスプレッションに対する直感を素早く身につけます。次にそれを行いましょう!
 
-## Examples
+## 例
 
-The following is an expression:
+以下はエクスプレッションです:
 
 {{code_block('user-guide/concepts/expressions','example1',['col','sort','head'])}}
 
-The snippet above says:
+上記のスニペットは以下のことを意味しています:
 
-1. Select column "foo"
-1. Then sort the column (not in reversed order)
-1. Then take the first two values of the sorted output
+1. "foo" カラムを選択する
+1. その後、カラムをソートする（逆順ではない）
+1. ソート済みの出力の最初の2つの値を取得する
 
-The power of expressions is that every expression produces a new expression, and that they
-can be _piped_ together. You can run an expression by passing them to one of Polars execution contexts.
+エクスプレッションの力は、すべてのエクスプレッションが新しいエクスプレッションを生成し、それらを_パイプ_できることです。 Polars の実行コンテキストの1つに渡してエクスプレッションを実行できます。
 
-Here we run two expressions by running `df.select`:
+ここでは `df.select` を使って2つのエクスプレッションを実行しています:
 
 {{code_block('user-guide/concepts/expressions','example2',['select'])}}
 
-All expressions are run in parallel, meaning that separate Polars expressions are **embarrassingly parallel**. Note that within an expression there may be more parallelization going on.
+すべてのエクスプレッションは並列に実行されるため、個別の Polars エクスプレッションは**恥ずかしいほど並列**です。ただし、エクスプレッション内部でさらに並列化が行われる可能性があることに注意してください。
 
-## Conclusion
+## 結論
 
-This is the tip of the iceberg in terms of possible expressions. There are a ton more, and they can be combined in a variety of ways. This page is intended to get you familiar with the concept of expressions, in the section on [expressions](../expressions/operators.md) we will dive deeper.
+可能なエクスプレッションの氷山の一角にすぎません。さらに多くのものがあり、さまざまな方法で組み合わせることができます。このページは、[エクスプレッション](../expressions/operators.md)のセクションで深く掘り下げていく前に、エクスプレッションの概念に慣れていただくことを目的としています。
