@@ -1,18 +1,18 @@
-# Introduction
+# はじめに
 
-While Polars supports interaction with SQL, it's recommended that users familiarize themselves with
-the [expression syntax](../concepts/expressions.md) to produce more readable and expressive code. As the DataFrame
-interface is primary, new features are typically added to the expression API first. However, if you already have an
-existing SQL codebase or prefer the use of SQL, Polars does offers support for this.
+Polars は SQL との連携をサポートしていますが、より読みやすく表現力のあるコードを書くためには、
+[エクスプレッション構文](../concepts/expressions.md) に慣れることをお勧めします。
+DataFrame インターフェースが Polars の主要機能であるため、新機能は通常まずエクスプレッション API に追加されます。
+しかし、既存の SQL コードベースを持っているユーザーや SQL の使用を好むユーザー向けに、Polars は SQL をサポートしています。
 
 !!! note Execution
 
-    There is no separate SQL engine because Polars translates SQL queries into [expressions](../concepts/expressions.md), which are then executed using its own engine. This approach ensures that Polars maintains its performance and scalability advantages as a native DataFrame library, while still providing users with the ability to work with SQL.
+    Polars には固有の SQL エンジンはありません。なぜなら Polars は SQL クエリを [エクスプレッション](../concepts/expressions.md) に変換し、独自のエンジンを使って実行するためです。このアプローチにより、純粋な DataFrame ライブラリとしての Polars のパフォーマンスとスケーラビリティの利点を維持しつつ、SQL を使用する機能を提供しています。
 
-## Context
+## コンテキスト
 
-Polars uses the `SQLContext` object to manage SQL queries. The context contains a mapping of `DataFrame` and `LazyFrame`
-identifier names to their corresponding datasets[^1]. The example below starts a `SQLContext`:
+Polars は SQL クエリを管理するために `SQLContext` オブジェクトを使用します。このコンテキストには、`DataFrame` と `LazyFrame` 
+の識別子名とそれに対応するデータセット [^1] のマッピングが含まれます。以下の例では `SQLContext` を開始しています：
 
 {{code_block('user-guide/sql/intro','context',['SQLContext'])}}
 
@@ -21,12 +21,12 @@ identifier names to their corresponding datasets[^1]. The example below starts a
 --8<-- "python/user-guide/sql/intro.py:context"
 ```
 
-## Register Dataframes
+## DataFrameの登録
 
-There are several ways to register DataFrames during `SQLContext` initialization.
+`SQLContext` の初期化時に DataFrame を登録する方法はいくつかあります。
 
-- register all `LazyFrame` and `DataFrame` objects in the global namespace.
-- register explicitly via a dictionary mapping, or kwargs.
+- グローバル名前空間内のすべての `LazyFrame` および `DataFrame` オブジェクトを登録する方法
+- 辞書マッピングまたは kwargs を使って明示的に登録する方法
 
 {{code_block('user-guide/sql/intro','register_context',['SQLContext'])}}
 
@@ -34,7 +34,7 @@ There are several ways to register DataFrames during `SQLContext` initialization
 --8<-- "python/user-guide/sql/intro.py:register_context"
 ```
 
-We can also register Pandas DataFrames by converting them to Polars first.
+Pandas DataFrame も、Polars に変換することで登録できます。
 
 {{code_block('user-guide/sql/intro','register_pandas',['SQLContext'])}}
 
@@ -44,26 +44,24 @@ We can also register Pandas DataFrames by converting them to Polars first.
 
 !!! note Pandas
 
-    Converting a Pandas DataFrame backed by Numpy will trigger a potentially expensive conversion; however, if the Pandas DataFrame is already backed by Arrow then the conversion will be significantly cheaper (and in some cases close to free).
+    Numpy をバックエンドとして使用している Pandas DataFrame を変換すると、変換のコストが高くなる可能性があります。しかし、Arrow をバックエンドとして使用している場合、変換のコストを大幅に抑えることができます (場合によってはほぼゼロに近くなります)。
 
-Once the `SQLContext` is initialized, we can register additional Dataframes or unregister existing Dataframes with:
+`SQLContext` が初期化されたら、以下の方法で追加の DataFrame を登録したり、既存の DataFrame を登録解除できます：
 
 - `register`
 - `register_globals`
 - `register_many`
 - `unregister`
 
-## Execute queries and collect results
+## クエリの実行と結果の収集
 
-SQL queries are always executed in lazy mode to take advantage of the full set of query planning optimizations, so we
-have two options to collect the result:
+SQL クエリは、クエリ計画の最適化を最大限に活用するために、常に遅延モードで実行されます。
+そのため、結果を収集するには2つの方法があります：
 
-- Set the parameter `eager_execution` to True in `SQLContext`; this ensures that Polars automatically collects the
-  LazyFrame results from `execute` calls.
-- Set the parameter `eager` to True when executing a query with `execute`, or explicitly collect the result
-  using `collect`.
+- `SQLContext` の `eager_execution` パラメーターを True に設定してください。これにより Polars は `execute` 呼び出しから LazyFrame の結果を自動的に収集するようになります。
+- `execute` でクエリを実行する際に `eager` パラメーターを True に設定するか、`collect` を使用して明示的に結果を収集してください。
 
-We execute SQL queries by calling `execute` on a `SQLContext`.
+SQL クエリは `SQLContext` の `execute` を呼び出して実行します。
 
 {{code_block('user-guide/sql/intro','execute',['SQLregister','SQLexecute'])}}
 
@@ -71,20 +69,20 @@ We execute SQL queries by calling `execute` on a `SQLContext`.
 --8<-- "python/user-guide/sql/intro.py:execute"
 ```
 
-## Execute queries from multiple sources
+## 複数のソースからのクエリ実行
 
-SQL queries can be executed just as easily from multiple sources.
-In the example below, we register:
+同様に、複数のソースから SQL クエリを実行することも簡単にできます。
+以下の例では、次のものを登録しています：
 
-- a CSV file (loaded lazily)
-- a NDJSON file (loaded lazily)
-- a Pandas DataFrame
+- CSV ファイル (遅延読み込み)
+- NDJSON ファイル (遅延読み込み)
+- Pandas DataFrame
 
-And join them together using SQL.
-Lazy reading allows to only load the necessary rows and columns from the files.
+そして SQL を使って、これらを結合します。
+遅延読み込みを使用すると、ファイルから必要な行と列のみを読み込むことができます。
 
-In the same way, it's possible to register cloud datalakes (S3, Azure Data Lake). A PyArrow dataset can point to the
-datalake, then Polars can read it with `scan_pyarrow_dataset`.
+同様に、クラウドのデータレイク（S3, Azure Data Lake）を登録することもできます。
+PyArrow データセットがデータレイクを指すようにし、`scan_pyarrow_dataset` を使って Polars で読み込むことができます。
 
 {{code_block('user-guide/sql/intro','execute_multiple_sources',['SQLregister','SQLexecute'])}}
 
@@ -94,29 +92,29 @@ datalake, then Polars can read it with `scan_pyarrow_dataset`.
 --8<-- "python/user-guide/sql/intro.py:clean_multiple_sources"
 ```
 
-[^1]: Additionally it also tracks the [common table expressions](./cte.md) as well.
+[^1]: 加えて、[共通テーブルエクスプレッション](./cte.md) も管理します。
 
-## Compatibility
+## 互換性
 
-Polars does not support the complete SQL specification, but it does support a subset of the most common statement types.
+Polars は SQL 仕様全体をサポートしているわけではありませんが、最も一般的なステートメントタイプのサブセットをサポートしています。
 
 !!! note Dialect
 
-    Where possible, Polars aims to follow PostgreSQL syntax definitions and function behaviour.
+    可能な限り、Polars は PostgreSQL の構文定義と関数の動作に従うことを目指しています。
 
-For example, here is a non-exhaustive list of some of the supported functionality:
+例えば、サポートされている機能の一部は以下の通りです：
 
-- Write a `CREATE` statements: `CREATE TABLE xxx AS ...`
-- Write a `SELECT` statements containing:`WHERE`,`ORDER`,`LIMIT`,`GROUP BY`,`UNION` and `JOIN` clauses ...
-- Write Common Table Expressions (CTE's) such as: `WITH tablename AS`
-- Explain a query: `EXPLAIN SELECT ...`
-- List registered tables: `SHOW TABLES`
-- Drop a table: `DROP TABLE tablename`
-- Truncate a table: `TRUNCATE TABLE tablename`
+- `CREATE` ステートメント： `CREATE TABLE xxx AS ...`
+- `SELECT` ステートメント： `WHERE`、`ORDER`、`LIMIT`、`GROUP BY`、`UNION`、 `JOIN` 句など
+- 共通テーブル式 (CTE) ： `WITH tablename AS` など
+- クエリを説明する： `EXPLAIN SELECT ...`
+- 登録済みのテーブルを一覧表示する： `SHOW TABLES`
+- テーブルを削除する： `DROP TABLE tablename`
+- テーブルを空にする： `TRUNCATE TABLE tablename`
 
-The following are some features that are not yet supported:
+以下は、まだサポートされていない機能の一部です：
 
-- `INSERT`, `UPDATE` or `DELETE` statements
-- Meta queries such as `ANALYZE`
+- `INSERT`、`UPDATE`、`DELETE` ステートメント
+- `ANALYZE` などのメタクエリ
 
-In the upcoming sections we will cover each of the statements in more detail.
+今後のセクションでは、各ステートメントについてより詳しく説明します。
