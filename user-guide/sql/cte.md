@@ -1,8 +1,8 @@
-# Common Table Expressions
+# 共通テーブルエクスプレッション
 
-Common Table Expressions (CTEs) are a feature of SQL that allow you to define a temporary named result set that can be referenced within a SQL statement. CTEs provide a way to break down complex SQL queries into smaller, more manageable pieces, making them easier to read, write, and maintain.
+共通テーブルエクスプレッション (Common Table Expressions、CTEs) は、SQL の機能の1つで、SQL ステートメント内で参照できる一時的な名前付き結果セットを定義することができます。CTE は複雑な SQL クエリを小さく、より管理しやすく分割することで、クエリの可読性、記述性、メンテナンス性を向上させることができます。
 
-A CTE is defined using the `WITH` keyword followed by a comma-separated list of subqueries, each of which defines a named result set that can be used in subsequent queries. The syntax for a CTE is as follows:
+CTE は、 `WITH` キーワードを使って定義され、カンマ区切りのサブクエリのリストで構成されます。各サブクエリは、後続のクエリで使用できる名前付きの結果セットを定義します。CTE の構文は以下の通りです。
 
 ```
 WITH cte_name AS (
@@ -11,11 +11,11 @@ WITH cte_name AS (
 SELECT ...
 ```
 
-In this syntax, `cte_name` is the name of the CTE, and `subquery` is the subquery that defines the result set. The CTE can then be referenced in subsequent queries as if it were a table or view.
+上記の `cte_name` は CTE の名前、`subquery` は結果セットを定義するサブクエリです。CTE は、テーブルやビューのように後続のクエリで参照できます。
 
-CTEs are particularly useful when working with complex queries that involve multiple levels of subqueries, as they allow you to break down the query into smaller, more manageable pieces that are easier to understand and debug. Additionally, CTEs can help improve query performance by allowing the database to optimize and cache the results of subqueries, reducing the number of times they need to be executed.
+CTE は、複数レベルのサブクエリを含む複雑なクエリを扱う際に特に便利です。クエリを小さく、管理しやすく分割できるため、理解しやすく、デバッグしやすくなります。さらに、CTE を使うことで、サブクエリの結果をデータベースが最適化およびキャッシュできるため、クエリのパフォーマンス改善にも役立ちます。
 
-Polars supports Common Table Expressions (CTEs) using the WITH clause in SQL syntax. Below is an example
+Polars は SQL 構文の WITH 句を使って共通テーブルエクスプレッション (CTE) をサポートしています。以下に例を示します。
 
 {{code_block('user-guide/sql/cte','cte',['SQLregister','SQLexecute'])}}
 
@@ -24,4 +24,4 @@ Polars supports Common Table Expressions (CTEs) using the WITH clause in SQL syn
 --8<-- "python/user-guide/sql/cte.py:cte"
 ```
 
-In this example, we use the `execute()` method of the `SQLContext` to execute a SQL query that includes a CTE. The CTE selects all rows from the `my_table` LazyFrame where the `age` column is greater than 30 and gives it the alias `older_people`. We then execute a second SQL query that selects all rows from the `older_people` CTE where the `name` column starts with the letter 'C'.
+この例では、`SQLContext` の `execute()` メソッドを使って、CTE を含む SQL クエリを実行しています。CTE は `my_table` LazyFrame から `age` が 30 より大きい行を選択し、`older_people` のエイリアスを付けています。その後、`older_people` CTE から `name` が 'C' で始まる行を選択するクエリを実行しています。
