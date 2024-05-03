@@ -16,4 +16,5 @@ hoge
 | Context | 式 |
 | Expression | エクスプレッション |
 | DataFrame | DataFrame |
+| column |  |
 | () | （）（全角） |
