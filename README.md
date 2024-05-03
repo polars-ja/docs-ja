@@ -15,4 +15,5 @@ hoge
 | eager API | eager API |
 | Context | 式 |
 | Expression | エクスプレッション |
+| DataFrame | DataFrame |
 | () | （）（全角） |
