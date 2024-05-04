@@ -1,6 +1,6 @@
-# Pivots
+# ピボット
 
-Pivot a column in a `DataFrame` and perform one of the following aggregations:
+`DataFrame` の列をピボットし、以下のいずれかの集計を実行します:
 
 - first
 - sum
@@ -9,11 +9,9 @@ Pivot a column in a `DataFrame` and perform one of the following aggregations:
 - mean
 - median
 
-The pivot operation consists of a group by one, or multiple columns (these will be the
-new y-axis), the column that will be pivoted (this will be the new x-axis) and an
-aggregation.
+ピボット操作は、1つまたは複数の列によるグループ化（これらが新しい y 軸になります）、ピボットされる列（これが新しい x 軸になります）、および集計から成ります。
 
-## Dataset
+## データセット
 
 {{code_block('user-guide/transformations/pivot','df',['DataFrame'])}}
 
@@ -22,7 +20,7 @@ aggregation.
 --8<-- "python/user-guide/transformations/pivot.py:df"
 ```
 
-## Eager
+## 積極的
 
 {{code_block('user-guide/transformations/pivot','eager',['pivot'])}}
 
@@ -30,14 +28,12 @@ aggregation.
 --8<-- "python/user-guide/transformations/pivot.py:eager"
 ```
 
-## Lazy
+## 遅延
 
-A Polars `LazyFrame` always need to know the schema of a computation statically (before collecting the query).
-As a pivot's output schema depends on the data, and it is therefore impossible to determine the schema without
-running the query.
+Polars の `LazyFrame` は、常に計算のスキーマを静的に（クエリを収集する前に）知る必要があります。
+ピボットの出力スキーマはデータに依存するため、クエリを実行せずにスキーマを決定することはできません。
 
-Polars could have abstracted this fact for you just like Spark does, but we don't want you to shoot yourself in the foot
-with a shotgun. The cost should be clear upfront.
+Polars は Spark のようにこの事実を抽象化することができましたが、ユーザーが自分の足を撃つことのないようにしたいと思っています。コストは明確に示されるべきです。
 
 {{code_block('user-guide/transformations/pivot','lazy',['pivot'])}}
 

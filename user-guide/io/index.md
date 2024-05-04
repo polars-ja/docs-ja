@@ -1,6 +1,6 @@
 # IO
 
-Reading and writing your data is crucial for a DataFrame library. In this chapter you will learn more on how to read and write to different file formats that are supported by Polars.
+データフレームライブラリにとって、データの読み書きは重要です。この章では、Polarsでサポートされている様々なファイル形式への読み書きについて詳しく学びます。
 
 - [CSV](csv.md)
 - [Excel](excel.md)

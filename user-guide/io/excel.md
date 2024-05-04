@@ -1,20 +1,20 @@
 # Excel
 
-Polars can read and write to Excel files from Python.
-From a performance perspective, we recommend using other formats if possible, such as Parquet or CSV files.
+Polars は Python から Excel ファイルの読み書きができます。
+パフォーマンスの観点から、可能であれば Parquet や CSV ファイルなどの他のフォーマットを使うことをお勧めします。
 
-## Read
+## 読み込み
 
-Polars does not have a native Excel reader. Instead, it uses external libraries to parse Excel files into objects that Polars can parse. The available engines are:
+Polars には Excel リーダーがネイティブに用意されていません。代わりに、Excel ファイルをPolars が解析できるオブジェクトに変換するための外部ライブラリを使用しています。利用可能なエンジンは以下の通りです:
 
-- xlsx2csv: This is the current default.
-- openpyxl: Typically slower than xls2csv, but can provide more flexibility for files that are difficult to parse.
-- pyxlsb: For reading binary Excel files (xlsb).
-- fastexcel: This reader is based on [calamine](https://github.com/tafia/calamine) and is typically the fastest reader but has fewer features than xls2csv.
+- xlsx2csv: これが現在のデフォルトです。
+- openpyxl: xls2csv と比べて通常は遅いですが、解析が難しいファイルに対してより柔軟な対応ができます。
+- pyxlsb: バイナリの Excel ファイル (xlsb) の読み込みに使用します。
+- fastexcel: このリーダーは [calamine](https://github.com/tafia/calamine) に基づいており、通常最も高速ですが、xls2csv ほどの機能はありません。
 
-Although fastexcel is not the default at this point, we recommend trying fastexcel first and using xlsx2csv or openpyxl if you encounter issues.
+fastexcel がデフォルトではありませんが、まずは fastexcel を試してみて、問題がある場合は xlsx2csv や openpyxl を使うことをお勧めします。
 
-To use one of these engines, the appropriate Python package must be installed as an additional dependency.
+これらのエンジンを使うには、対応する Python パッケージをインストールする必要があります。
 
 === ":fontawesome-brands-python: Python"
 
@@ -22,19 +22,19 @@ To use one of these engines, the appropriate Python package must be installed as
     $ pip install xlsx2csv openpyxl pyxlsb fastexcel
     ```
 
-The default Excel reader is xlsx2csv.
-It is a Python library which parses the Excel file into a CSV file which Polars then reads with the native CSV reader.
-We read an Excel file with `read_excel`:
+デフォルトの Excel リーダーは xlsx2csv です。
+これは Excel ファイルを CSV ファイルに変換し、Polars のネイティブ CSV リーダーでそれを読み込みます。
+`read_excel` を使って Excel ファイルを読み込みます:
 
 {{code_block('user-guide/io/excel','read',['read_excel'])}}
 
-We can specify the sheet name to read with the `sheet_name` argument. If we do not specify a sheet name, the first sheet will be read.
+`sheet_name` 引数を使って、読み込むシート名を指定できます。シート名を指定しない場合は、最初のシートが読み込まれます。
 
 {{code_block('user-guide/io/excel','read_sheet_name',['read_excel'])}}
 
-## Write
+## 書き込み
 
-We need the xlswriter library installed as an additional dependency to write to Excel files.
+Excel ファイルに書き込むには、追加の依存関係として xlswriter ライブラリをインストールする必要があります。
 
 === ":fontawesome-brands-python: Python"
 
@@ -42,14 +42,14 @@ We need the xlswriter library installed as an additional dependency to write to 
     $ pip install xlsxwriter
     ```
 
-Writing to Excel files is not currently available in Rust Polars, though it is possible to [use this crate](https://docs.rs/crate/xlsxwriter/latest) to write to Excel files from Rust.
+Rust Polars では現在 Excel ファイルへの書き込みは利用できませんが、 [このクレート](https://docs.rs/crate/xlsxwriter/latest) を使って Rust から Excel ファイルに書き込むことは可能です。
 
-Writing a `DataFrame` to an Excel file is done with the `write_excel` method:
+`DataFrame` を Excel ファイルに書き込むには `write_excel` メソッドを使います:
 
 {{code_block('user-guide/io/excel','write',['write_excel'])}}
 
-The name of the worksheet can be specified with the `worksheet` argument.
+ワークシートの名前は `worksheet` 引数で指定できます。
 
 {{code_block('user-guide/io/excel','write_sheet_name',['write_excel'])}}
 
-Polars can create rich Excel files with multiple sheets and formatting. For more details, see the API docs for `write_excel`.
+Polars では、複数のシートや書式設定を持つ豊かな Excel ファイルを作成できます。詳細は `write_excel` の API ドキュメントをご覧ください。

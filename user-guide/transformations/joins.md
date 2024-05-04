@@ -1,22 +1,22 @@
-# Joins
+# 結合
 
-## Join strategies
+## 結合戦略
 
-Polars supports the following join strategies by specifying the `how` argument:
+Polarsは以下の結合戦略をサポートしており、 `how` 引数で指定できます:
 
-| Strategy         | Description                                                                                                                                                                                                |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `inner`          | Returns row with matching keys in _both_ frames. Non-matching rows in either the left or right frame are discarded.                                                                                        |
-| `left`           | Returns all rows in the left dataframe, whether or not a match in the right-frame is found. Non-matching rows have their right columns null-filled.                                                        |
-| `outer`          | Returns all rows from both the left and right dataframe. If no match is found in one frame, columns from the other frame are null-filled.                                                                  |
-| `outer_coalesce` | Returns all rows from both the left and right dataframe. This is similar to `outer`, but with the key columns being merged.                                                                                |
-| `cross`          | Returns the Cartesian product of all rows from the left frame with all rows from the right frame. Duplicates rows are retained; the table length of `A` cross-joined with `B` is always `len(A) × len(B)`. |
-| `semi`           | Returns all rows from the left frame in which the join key is also present in the right frame.                                                                                                             |
-| `anti`           | Returns all rows from the left frame in which the join key is _not_ present in the right frame.                                                                                                            |
+| 戦略             | 説明                                                                                                                                                                                                     |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `inner`          | 両方のデータフレームで一致するキーを持つ行を返します。左右どちらかのデータフレームで一致しない行は破棄されます。                                                                                       |
+| `left`           | 左側のデータフレームのすべての行を返します。右側のデータフレームで一致するものがない場合は、右側の列が null で埋められます。                                                                           |
+| `outer`          | 左右両方のデータフレームのすべての行を返します。一方のデータフレームで一致するものがない場合は、他方の列が null で埋められます。                                                                       |
+| `outer_coalesce` | 左右両方のデータフレームのすべての行を返します。これは `outer` に似ていますが、キー列が結合されます。                                                                                                   |
+| `cross`          | 左側のデータフレームのすべての行と右側のデータフレームのすべての行のカルテシアン積を返します。重複する行は保持されます。`A` と `B` を cross join した場合の行数は常に `len(A) × len(B)` になります。 |
+| `semi`           | 左側のデータフレームのキーが右側のデータフレームにも存在する行を返します。                                                                                                                             |
+| `anti`           | 左側のデータフレームのキーが右側のデータフレームに存在しない行を返します。                                                                                                                             |
 
-### Inner join
+### 内部結合
 
-An `inner` join produces a `DataFrame` that contains only the rows where the join key exists in both `DataFrames`. Let's take for example the following two `DataFrames`:
+`inner` 結合は、結合キーが両方の `DataFrame` に存在する行のみを含む `DataFrame` を生成します。例えば、次の 2 つの `DataFrame` を考えてみましょう:
 
 {{code_block('user-guide/transformations/joins','innerdf',['DataFrame'])}}
 
@@ -33,7 +33,7 @@ An `inner` join produces a `DataFrame` that contains only the rows where the joi
 --8<-- "python/user-guide/transformations/joins.py:innerdf2"
 ```
 
-To get a `DataFrame` with the orders and their associated customer we can do an `inner` join on the `customer_id` column:
+注文と関連する顧客を持つ `DataFrame` を取得するには、`customer_id` 列で `inner` 結合を行います:
 
 {{code_block('user-guide/transformations/joins','inner',['join'])}}
 
@@ -41,9 +41,9 @@ To get a `DataFrame` with the orders and their associated customer we can do an 
 --8<-- "python/user-guide/transformations/joins.py:inner"
 ```
 
-### Left join
+### 左結合
 
-The `left` join produces a `DataFrame` that contains all the rows from the left `DataFrame` and only the rows from the right `DataFrame` where the join key exists in the left `DataFrame`. If we now take the example from above and want to have a `DataFrame` with all the customers and their associated orders (regardless of whether they have placed an order or not) we can do a `left` join:
+`left` 結合は、左側の `DataFrame` のすべての行と、右側の `DataFrame` の結合キーが左側の `DataFrame` に存在する行のみを含む `DataFrame` を生成します。上記の例を使って、すべての顧客とそれらの注文（注文の有無に関わらず）を含む `DataFrame` を作成する場合は、`left` 結合を使うことができます:
 
 {{code_block('user-guide/transformations/joins','left',['join'])}}
 
@@ -51,11 +51,11 @@ The `left` join produces a `DataFrame` that contains all the rows from the left 
 --8<-- "python/user-guide/transformations/joins.py:left"
 ```
 
-Notice, that the fields for the customer with the `customer_id` of `3` are null, as there are no orders for this customer.
+`customer_id` が `3` の顧客のフィールドが null になっていることに注目してください。この顧客には注文がないためです。
 
-### Outer join
+### 外部結合
 
-The `outer` join produces a `DataFrame` that contains all the rows from both `DataFrames`. Columns are null, if the join key does not exist in the source `DataFrame`. Doing an `outer` join on the two `DataFrames` from above produces a similar `DataFrame` to the `left` join:
+`outer` 結合は、両方の `DataFrame` のすべての行を含む `DataFrame` を生成します。結合キーが存在しない場合、列は null になります。上記の 2 つの `DataFrame` に対して `outer` 結合を行うと、`left` 結合と似た `DataFrame` が生成されます:
 
 {{code_block('user-guide/transformations/joins','outer',['join'])}}
 
@@ -63,9 +63,9 @@ The `outer` join produces a `DataFrame` that contains all the rows from both `Da
 --8<-- "python/user-guide/transformations/joins.py:outer"
 ```
 
-### Outer coalesce join
+### 外部結合とコアレス
 
-The `outer_coalesce` join combines all rows from both `DataFrames` like an `outer` join, but it merges the join keys into a single column by coalescing the values. This ensures a unified view of the join key, avoiding nulls in key columns whenever possible. Let's compare it with the outer join using the two `DataFrames` we used above:
+`outer_coalesce` 結合は、`outer` 結合のように両方の `DataFrames` からすべての行を結合しますが、結合キーの値をコアレスして単一の列にマージします。これにより、キー列のNULLを可能な限り避けて、結合キーの統一された表示を確保します。前述の2つの `DataFrames` を使って、outer 結合と比較してみましょう:
 
 {{code_block('user-guide/transformations/joins','outer_coalesce',['join'])}}
 
@@ -73,11 +73,11 @@ The `outer_coalesce` join combines all rows from both `DataFrames` like an `oute
 --8<-- "python/user-guide/transformations/joins.py:outer_coalesce"
 ```
 
-In contrast to an `outer` join, where `customer_id` and `customer_id_right` columns would remain separate, the `outer_coalesce` join merges these columns into a single `customer_id` column.
+`outer` 結合では `customer_id` と `customer_id_right` の列が別々のままですが、`outer_coalesce` 結合では これらの列が単一の `customer_id` 列にマージされます。
 
-### Cross join
+### クロス結合
 
-A `cross` join is a Cartesian product of the two `DataFrames`. This means that every row in the left `DataFrame` is joined with every row in the right `DataFrame`. The `cross` join is useful for creating a `DataFrame` with all possible combinations of the columns in two `DataFrames`. Let's take for example the following two `DataFrames`.
+`クロス`結合は、2つの`DataFrame`のカルテシアン積です。これは、左側の`DataFrame`の各行が右側の`DataFrame`の各行と結合されることを意味します。`クロス`結合は、2つの`DataFrame`の列のすべての組み合わせを持つ`DataFrame`を作成するのに便利です。以下の2つの`DataFrame`を例に取ってみましょう。
 
 {{code_block('user-guide/transformations/joins','df3',['DataFrame'])}}
 
@@ -93,7 +93,7 @@ A `cross` join is a Cartesian product of the two `DataFrames`. This means that e
 --8<-- "python/user-guide/transformations/joins.py:df4"
 ```
 
-We can now create a `DataFrame` containing all possible combinations of the colors and sizes with a `cross` join:
+これで、`クロス`結合を使って、色とサイズのすべての組み合わせを含む`DataFrame`を作成できます:
 
 {{code_block('user-guide/transformations/joins','cross',['join'])}}
 
@@ -103,11 +103,11 @@ We can now create a `DataFrame` containing all possible combinations of the colo
 
 <br>
 
-The `inner`, `left`, `outer` and `cross` join strategies are standard amongst dataframe libraries. We provide more details on the less familiar `semi`, `anti` and `asof` join strategies below.
+`inner`、`left`、`outer`、`cross`結合の戦略は、データフレームライブラリの標準的なものです。以下では、あまり馴染みのない`semi`、`anti`、`asof`結合の戦略についてより詳しく説明します。
 
-### Semi join
+### 半結合
 
-The `semi` join returns all rows from the left frame in which the join key is also present in the right frame. Consider the following scenario: a car rental company has a `DataFrame` showing the cars that it owns with each car having a unique `id`.
+`semi` 結合は、結合キーが右側のフレームにも存在する左側のフレームの行をすべて返します。次のようなシナリオを考えてみましょう。カーレンタル会社には、それぞれに一意の `id` を持つ車が登録された `DataFrame` があります。
 
 {{code_block('user-guide/transformations/joins','df5',['DataFrame'])}}
 
@@ -115,7 +115,7 @@ The `semi` join returns all rows from the left frame in which the join key is al
 --8<-- "python/user-guide/transformations/joins.py:df5"
 ```
 
-The company has another `DataFrame` showing each repair job carried out on a vehicle.
+この会社には、車両に実施された修理ジョブを示す別の `DataFrame` があります。
 
 {{code_block('user-guide/transformations/joins','df6',['DataFrame'])}}
 
@@ -123,9 +123,9 @@ The company has another `DataFrame` showing each repair job carried out on a veh
 --8<-- "python/user-guide/transformations/joins.py:df6"
 ```
 
-You want to answer this question: which of the cars have had repairs carried out?
+この質問に答えたいです: どの車が修理を受けたのでしょうか?
 
-An inner join does not answer this question directly as it produces a `DataFrame` with multiple rows for each car that has had multiple repair jobs:
+内部結合 (inner join) では、この質問に直接答えることはできません。なぜなら、複数回の修理ジョブを受けた車両について、複数の行が生成されるためです:
 
 {{code_block('user-guide/transformations/joins','inner2',['join'])}}
 
@@ -133,7 +133,7 @@ An inner join does not answer this question directly as it produces a `DataFrame
 --8<-- "python/user-guide/transformations/joins.py:inner2"
 ```
 
-However, a semi join produces a single row for each car that has had a repair job carried out.
+しかし、セミ結合 (semi join) を使えば、修理ジョブを受けた車両について、1行ずつ取得できます。
 
 {{code_block('user-guide/transformations/joins','semi',['join'])}}
 
@@ -141,9 +141,9 @@ However, a semi join produces a single row for each car that has had a repair jo
 --8<-- "python/user-guide/transformations/joins.py:semi"
 ```
 
-### Anti join
+### 逆結合
 
-Continuing this example, an alternative question might be: which of the cars have **not** had a repair job carried out? An anti join produces a `DataFrame` showing all the cars from `df_cars` where the `id` is not present in the `df_repairs` `DataFrame`.
+この例を続けると、別の質問として次のようなものが考えられます: どの車にも修理が行われていないのはどれですか? 逆結合を使うと、`df_repairs` DataFrame に存在しない `id` を持つ `df_cars` の車を示す DataFrame が得られます。
 
 {{code_block('user-guide/transformations/joins','anti',['join'])}}
 
@@ -151,12 +151,12 @@ Continuing this example, an alternative question might be: which of the cars hav
 --8<-- "python/user-guide/transformations/joins.py:anti"
 ```
 
-## Asof join
+## 直前の引用
 
-An `asof` join is like a left join except that we match on nearest key rather than equal keys.
-In Polars we can do an asof join with the `join_asof` method.
+`asof` 結合は左結合のようなものですが、等しいキーではなく最も近いキーでマッチさせます。
+Polars では `join_asof` メソッドを使って asof 結合を行うことができます。
 
-Consider the following scenario: a stock market broker has a `DataFrame` called `df_trades` showing transactions it has made for different stocks.
+次のようなシナリオを考えましょう: 株式仲介業者には `df_trades` という取引記録の DataFrame があります。
 
 {{code_block('user-guide/transformations/joins','df7',['DataFrame'])}}
 
@@ -164,7 +164,7 @@ Consider the following scenario: a stock market broker has a `DataFrame` called 
 --8<-- "python/user-guide/transformations/joins.py:df7"
 ```
 
-The broker has another `DataFrame` called `df_quotes` showing prices it has quoted for these stocks.
+この仲介業者には、これらの株式の価格情報を示す `df_quotes` という別の DataFrame もあります。
 
 {{code_block('user-guide/transformations/joins','df8',['DataFrame'])}}
 
@@ -172,8 +172,8 @@ The broker has another `DataFrame` called `df_quotes` showing prices it has quot
 --8<-- "python/user-guide/transformations/joins.py:df8"
 ```
 
-You want to produce a `DataFrame` showing for each trade the most recent quote provided _before_ the trade. You do this with `join_asof` (using the default `strategy = "backward"`).
-To avoid joining between trades on one stock with a quote on another you must specify an exact preliminary join on the stock column with `by="stock"`.
+各取引について、取引の直前に提示された最新の価格情報を表示する DataFrame を作成したいと思います。これを実現するには `join_asof` を使います（デフォルトの `strategy = "backward"` を使用）。
+株式ごとに取引と価格情報が正しくマッチするよう、`by="stock"` を指定して事前の正確な結合を行う必要があります。
 
 {{code_block('user-guide/transformations/joins','asof',['join_asof'])}}
 
@@ -182,7 +182,7 @@ To avoid joining between trades on one stock with a quote on another you must sp
 --8<-- "python/user-guide/transformations/joins.py:asof"
 ```
 
-If you want to make sure that only quotes within a certain time range are joined to the trades you can specify the `tolerance` argument. In this case we want to make sure that the last preceding quote is within 1 minute of the trade so we set `tolerance = "1m"`.
+取引と価格情報の間に一定の時間範囲を設けたい場合は、`tolerance` 引数を指定できます。ここでは取引の 1 分前までの価格情報を結合したいので、`tolerance = "1m"` と設定しています。
 
 === ":fontawesome-brands-python: Python"
 

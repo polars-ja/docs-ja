@@ -1,19 +1,19 @@
-# Parsing
+# 解析
 
-Polars has native support for parsing time series data and doing more sophisticated operations such as temporal grouping and resampling.
+Polars には、時系列データの解析や、時間単位のグループ化やリサンプリングなどの高度な操作をサポートする機能が組み込まれています。
 
-## Datatypes
+## データ型
 
-Polars has the following datetime datatypes:
+Polars には以下のような日時データ型が用意されています:
 
-- `Date`: Date representation e.g. 2014-07-08. It is internally represented as days since UNIX epoch encoded by a 32-bit signed integer.
-- `Datetime`: Datetime representation e.g. 2014-07-08 07:00:00. It is internally represented as a 64 bit integer since the Unix epoch and can have different units such as ns, us, ms.
-- `Duration`: A time delta type that is created when subtracting `Date/Datetime`. Similar to `timedelta` in Python.
-- `Time`: Time representation, internally represented as nanoseconds since midnight.
+- `Date`: 日付表現、例: 2014-07-08。内部的には UNIX エポックからの経過日数を 32 ビット符号付き整数で表現しています。
+- `Datetime`: 日時表現、例: 2014-07-08 07:00:00。内部的には UNIX エポックからの経過時間を 64 ビット整数で表現しており、ns、us、ms などの単位を持つことができます。
+- `Duration`: `Date/Datetime` の差分として生成される時間差型。Python の `timedelta` に似ています。
+- `Time`: 時間表現、内部的には午前 0 時からの経過ナノ秒数で表現されます。
 
-## Parsing dates from a file
+## ファイルからの日付解析
 
-When loading from a CSV file Polars attempts to parse dates and times if the `try_parse_dates` flag is set to `True`:
+CSV ファイルからデータを読み込む際、`try_parse_dates` フラグを `True` に設定すると、Polars は日付と時刻の解析を試みます。
 
 {{code_block('user-guide/transformations/time-series/parsing','df',['read_csv'])}}
 
@@ -22,11 +22,11 @@ When loading from a CSV file Polars attempts to parse dates and times if the `tr
 --8<-- "python/user-guide/transformations/time-series/parsing.py:df"
 ```
 
-On the other hand binary formats such as parquet have a schema that is respected by Polars.
+一方、Parquet のようなバイナリ形式は、Polars によって尊重されるスキーマを持っています。
 
-## Casting strings to dates
+## 文字列を日付に変換する
 
-You can also cast a column of datetimes encoded as strings to a datetime type. You do this by calling the string `str.to_date` method and passing the format of the date string:
+文字列でエンコードされた日時のカラムを、日時型に変換することもできます。これを行うには、文字列の `str.to_date` メソッドを呼び出し、日付文字列のフォーマットを渡します:
 
 {{code_block('user-guide/transformations/time-series/parsing','cast',['read_csv','str.to_date'])}}
 
@@ -34,11 +34,11 @@ You can also cast a column of datetimes encoded as strings to a datetime type. Y
 --8<-- "python/user-guide/transformations/time-series/parsing.py:cast"
 ```
 
-[The format string specification can be found here.](https://docs.rs/chrono/latest/chrono/format/strftime/index.html).
+[フォーマット文字列の仕様は こちら](https://docs.rs/chrono/latest/chrono/format/strftime/index.html) で確認できます。
 
-## Extracting date features from a date column
+## 日付カラムから日付の特徴を抽出する
 
-You can extract data features such as the year or day from a date column using the `.dt` namespace on a date column:
+日付カラムから、年や日などの日付の特徴を抽出することができます。これには、日付カラムの `.dt` 名前空間を使います:
 
 {{code_block('user-guide/transformations/time-series/parsing','extract',['dt.year'])}}
 
@@ -46,10 +46,9 @@ You can extract data features such as the year or day from a date column using t
 --8<-- "python/user-guide/transformations/time-series/parsing.py:extract"
 ```
 
-## Mixed offsets
+## 混在するオフセット
 
-If you have mixed offsets (say, due to crossing daylight saving time),
-then you can use `utc=True` and then convert to your time zone:
+オフセットが混在している場合 (例えば、夏時間の変更によって)、`utc=True` を使い、その後自分のタイムゾーンに変換することができます:
 
 {{code_block('user-guide/transformations/time-series/parsing','mixed',['str.to_datetime','dt.convert_time_zone'])}}
 

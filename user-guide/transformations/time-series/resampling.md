@@ -1,18 +1,18 @@
-# Resampling
+# リサンプリング
 
-We can resample by either:
+データは以下のいずれかの方法でリサンプリングできます:
 
-- upsampling (moving data to a higher frequency)
-- downsampling (moving data to a lower frequency)
-- combinations of these e.g. first upsample and then downsample
+- アップサンプリング（データを高い周波数に移動させる）
+- ダウンサンプリング（データを低い周波数に移動させる）
+- これらの組み合わせ、例えばまずアップサンプリングしてからダウンサンプリングする
 
-## Downsampling to a lower frequency
+## 低い周波数へのダウンサンプリング
 
-Polars views downsampling as a special case of the **group_by** operation and you can do this with `group_by_dynamic` and `group_by_rolling` - [see the temporal group by page for examples](rolling.md).
+Polars では、ダウンサンプリングを `group_by` 操作の特殊なケースとして扱っており、`group_by_dynamic` や `group_by_rolling` を使って行うことができます - [時系列 group by のページを参照してください](rolling.md)。
 
-## Upsampling to a higher frequency
+## 高い周波数へのアップサンプリング
 
-Let's go through an example where we generate data at 30 minute intervals:
+30 分間隔のデータを生成する例を見てみましょう:
 
 {{code_block('user-guide/transformations/time-series/resampling','df',['DataFrame','date_range'])}}
 
@@ -21,11 +21,11 @@ Let's go through an example where we generate data at 30 minute intervals:
 --8<-- "python/user-guide/transformations/time-series/resampling.py:df"
 ```
 
-Upsampling can be done by defining the new sampling interval. By upsampling we are adding in extra rows where we do not have data. As such upsampling by itself gives a DataFrame with nulls. These nulls can then be filled with a fill strategy or interpolation.
+アップサンプリングは、新しいサンプリング間隔を定義することで行うことができます。アップサンプリングにより、データがない行が追加されます。そのため、アップサンプリングだけでは null 値が含まれる DataFrame が得られます。これらの null 値は、埋め込み戦略や補間を使って埋めることができます。
 
-### Upsampling strategies
+### アップサンプリング戦略
 
-In this example we upsample from the original 30 minutes to 15 minutes and then use a `forward` strategy to replace the nulls with the previous non-null value:
+この例では、元の 30 分から 15 分にアップサンプリングし、その後 `forward` 戦略を使って null 値を前の非 null 値で置き換えています:
 
 {{code_block('user-guide/transformations/time-series/resampling','upsample',['upsample'])}}
 
@@ -33,7 +33,7 @@ In this example we upsample from the original 30 minutes to 15 minutes and then 
 --8<-- "python/user-guide/transformations/time-series/resampling.py:upsample"
 ```
 
-In this example we instead fill the nulls by linear interpolation:
+この例では、代わりに null 値を線形補間で埋めています:
 
 {{code_block('user-guide/transformations/time-series/resampling','upsample2',['upsample','interpolate','fill_null'])}}
 

@@ -1,6 +1,6 @@
 # Google BigQuery
 
-To read or write from GBQ, additional dependencies are needed:
+GBQから読み書りするには、追加の依存関係が必要です:
 
 === ":fontawesome-brands-python: Python"
 
@@ -8,12 +8,11 @@ To read or write from GBQ, additional dependencies are needed:
 $ pip install google-cloud-bigquery
 ```
 
-## Read
+## 読み込み
 
-We can load a query into a `DataFrame` like this:
+クエリを `DataFrame` に読み込むことができます:
 
 {{code_block('user-guide/io/bigquery','read',['from_arrow'])}}
 
-## Write
-
+## 書き込み
 {{code_block('user-guide/io/bigquery','write',[])}}
