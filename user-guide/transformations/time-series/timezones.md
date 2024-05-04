@@ -3,34 +3,30 @@ hide:
   - toc
 ---
 
-# Time zones
+# タイムゾーン
 
 !!! quote "Tom Scott"
 
-    You really should never, ever deal with time zones if you can help it.
+    タイムゾーンを扱うべきではありません。できる限り避けましょう。
 
-The `Datetime` datatype can have a time zone associated with it.
-Examples of valid time zones are:
+`Datetime` データ型には、タイムゾーンを関連付けることができます。
+有効なタイムゾーンの例は以下のとおりです:
 
-- `None`: no time zone, also known as "time zone naive".
-- `UTC`: Coordinated Universal Time.
-- `Asia/Kathmandu`: time zone in "area/location" format.
-  See the [list of tz database time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-  to see what's available.
+- `None`: タイムゾーンなし、「タイムゾーン無意識」とも呼ばれます。
+- `UTC`: 協定世界時 (Coordinated Universal Time)。
+- `Asia/Kathmandu`: 「エリア/場所」形式のタイムゾーン。
+  利用可能なタイムゾーンについては、[tz database time zones のリスト](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)を参照してください。
 
-Caution: Fixed offsets such as +02:00, should not be used for handling time zones. It's advised to use the "Area/Location" format mentioned above, as it can manage timezones more effectively.
+注意: +02:00 のような固定オフセットは、タイムゾーンの処理には適していません。上記の「エリア/場所」形式を使うことをお勧めします。これにより、タイムゾーンをより効果的に管理できます。
 
-Note that, because a `Datetime` can only have a single time zone, it is
-impossible to have a column with multiple time zones. If you are parsing data
-with multiple offsets, you may want to pass `utc=True` to convert
-them all to a common time zone (`UTC`), see [parsing dates and times](parsing.md).
+`Datetime` には単一のタイムゾーンしか設定できないため、複数のタイムゾーンを持つ列を作ることはできません。複数のオフセットのデータを解析する場合は、`utc=True` を渡して、すべてを共通のタイムゾーン (UTC) に変換することをお勧めします。詳しくは [日付と時刻の解析](parsing.md) をご覧ください。
 
-The main methods for setting and converting between time zones are:
+タイムゾーンの設定と変換の主な方法は以下のとおりです:
 
-- `dt.convert_time_zone`: convert from one time zone to another.
-- `dt.replace_time_zone`: set/unset/change time zone.
+- `dt.convert_time_zone`: 1 つのタイムゾーンから別のタイムゾーンに変換します。
+- `dt.replace_time_zone`: タイムゾーンを設定/解除/変更します。
 
-Let's look at some examples of common operations:
+一般的な操作の例を見てみましょう:
 
 {{code_block('user-guide/transformations/time-series/timezones','example',['str.to_datetime','dt.replace_time_zone'])}}
 

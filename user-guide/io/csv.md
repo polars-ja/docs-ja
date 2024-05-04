@@ -1,21 +1,17 @@
-# CSV
+## 読み書き
 
-## Read & write
-
-Reading a CSV file should look familiar:
+CSV ファイルの読み込みは以下のように行います:
 
 {{code_block('user-guide/io/csv','read',['read_csv'])}}
 
-Writing a CSV file is similar with the `write_csv` function:
+CSV ファイルの書き出しは `write_csv` 関数を使って以下のように行います:
 
 {{code_block('user-guide/io/csv','write',['write_csv'])}}
 
-## Scan
+## スキャン
 
-Polars allows you to _scan_ a CSV input. Scanning delays the actual parsing of the
-file and instead returns a lazy computation holder called a `LazyFrame`.
+Polars では CSV 入力を _スキャン_ することができます。スキャンすることで、ファイルの実際の解析を遅延させ、代わりに遅延計算ホルダーである `LazyFrame` を返します。
 
 {{code_block('user-guide/io/csv','scan',['scan_csv'])}}
 
-If you want to know why this is desirable, you can read more about these Polars
-optimizations [here](../concepts/lazy-vs-eager.md).
+なぜこれが望ましいのかについては、Polars の最適化について [こちら](../concepts/lazy-vs-eager.md) で詳しく説明しています。

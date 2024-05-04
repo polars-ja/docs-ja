@@ -1,10 +1,10 @@
-# Filtering
+# フィルタリング
 
-Filtering date columns works in the same way as with other types of columns using the `.filter` method.
+日付列のフィルタリングは、`.filter` メソッドを使って他の列タイプと同じように動作します。
 
-Polars uses Python's native `datetime`, `date` and `timedelta` for equality comparisons between the datatypes `pl.Datetime`, `pl.Date` and `pl.Duration`.
+Polars は Python の標準の `datetime`、`date`、`timedelta` を使って、`pl.Datetime`、`pl.Date`、`pl.Duration` データ型間の等価比較を行います。
 
-In the following example we use a time series of Apple stock prices.
+次の例では、Apple の株価時系列データを使います。
 
 {{code_block('user-guide/transformations/time-series/filter','df',['read_csv'])}}
 
@@ -12,10 +12,9 @@ In the following example we use a time series of Apple stock prices.
 --8<-- "python/user-guide/transformations/time-series/filter.py:df"
 ```
 
-## Filtering by single dates
+## 単一の日付でのフィルタリング
 
-We can filter by a single date by casting the desired date string to a `Date` object
-in a filter expression:
+希望の日付文字列を `Date` オブジェクトにキャストすることで、単一の日付でフィルタリングできます:
 
 {{code_block('user-guide/transformations/time-series/filter','filter',['filter'])}}
 
@@ -23,11 +22,11 @@ in a filter expression:
 --8<-- "python/user-guide/transformations/time-series/filter.py:filter"
 ```
 
-Note we are using the lowercase `datetime` method rather than the uppercase `Datetime` data type.
+ここでは、大文字の `Datetime` データ型ではなく、小文字の `datetime` メソッドを使用していることに注意してください。
 
-## Filtering by a date range
+## 日付範囲でのフィルタリング
 
-We can filter by a range of dates using the `is_between` method in a filter expression with the start and end dates:
+開始日と終了日を使って `is_between` メソッドを使うことで、日付範囲でフィルタリングできます:
 
 {{code_block('user-guide/transformations/time-series/filter','range',['filter','is_between'])}}
 
@@ -35,11 +34,11 @@ We can filter by a range of dates using the `is_between` method in a filter expr
 --8<-- "python/user-guide/transformations/time-series/filter.py:range"
 ```
 
-## Filtering with negative dates
+## 負の日付でのフィルタリング
 
-Say you are working with an archeologist and are dealing in negative dates.
-Polars can parse and store them just fine, but the Python `datetime` library
-does not. So for filtering, you should use attributes in the `.dt` namespace:
+考古学者と一緒に仕事をしていて、負の日付を扱っているとします。
+Polars はそれらを問題なく解析して保存できますが、Python の `datetime` ライブラリでは対応できません。
+そのため、フィルタリングには `.dt` 名前空間の属性を使用する必要があります:
 
 {{code_block('user-guide/transformations/time-series/filter','negative',['str.to_date'])}}
 

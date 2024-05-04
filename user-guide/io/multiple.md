@@ -1,14 +1,14 @@
-## Dealing with multiple files.
+## 複数のファイルの扱い
 
-Polars can deal with multiple files differently depending on your needs and memory strain.
+Polars は、ニーズとメモリ負荷に応じて、複数のファイルを異なる方法で扱うことができます。
 
-Let's create some files to give us some context:
+いくつかのファイルを作成して、コンテキストを与えましょう:
 
 {{code_block('user-guide/io/multiple','create',['write_csv'])}}
 
-## Reading into a single `DataFrame`
+## 単一の `DataFrame` への読み込み
 
-To read multiple files into a single `DataFrame`, we can use globbing patterns:
+複数のファイルを単一の `DataFrame` に読み込むには、グロブパターンを使うことができます:
 
 {{code_block('user-guide/io/multiple','read',['read_csv'])}}
 
@@ -17,8 +17,7 @@ To read multiple files into a single `DataFrame`, we can use globbing patterns:
 --8<-- "python/user-guide/io/multiple.py:read"
 ```
 
-To see how this works we can take a look at the query plan. Below we see that all files are read separately and
-concatenated into a single `DataFrame`. Polars will try to parallelize the reading.
+これがどのように機能するかを確認するために、クエリプランを見てみましょう。 下記のように、すべてのファイルが個別に読み込まれ、単一の `DataFrame` にコンキャテネートされます。 Polars はこの読み込みを並列化しようとします。
 
 {{code_block('user-guide/io/multiple','graph',['show_graph'])}}
 
@@ -26,12 +25,11 @@ concatenated into a single `DataFrame`. Polars will try to parallelize the readi
 --8<-- "python/user-guide/io/multiple.py:creategraph"
 ```
 
-## Reading and processing in parallel
+## 並列での読み取りと処理
 
-If your files don't have to be in a single table you can also build a query plan for each file and execute them in parallel
-on the Polars thread pool.
+ファイルを単一のテーブルに入れる必要がない場合は、各ファイルのクエリプランを構築し、Polars スレッドプールで並列に実行することもできます。
 
-All query plan execution is embarrassingly parallel and doesn't require any communication.
+すべてのクエリプラン実行は完全に並列化されており、通信は必要ありません。
 
 {{code_block('user-guide/io/multiple','glob',['scan_csv'])}}
 

@@ -1,14 +1,14 @@
-# Concatenation
+# 連結
 
-There are a number of ways to concatenate data from separate DataFrames:
+別の DataFrame からデータを連結する方法は以下のようなものがあります:
 
-- two dataframes with **the same columns** can be **vertically** concatenated to make a **longer** dataframe
-- two dataframes with **non-overlapping columns** can be **horizontally** concatenated to make a **wider** dataframe
-- two dataframes with **different numbers of rows and columns** can be **diagonally** concatenated to make a dataframe which might be longer and/ or wider. Where column names overlap values will be vertically concatenated. Where column names do not overlap new rows and columns will be added. Missing values will be set as `null`
+- **同じ列**を持つ 2 つの DataFrame を **垂直方向** に連結して、**より長い** DataFrame を作成できます
+- **重複しない列**を持つ 2 つの DataFrame を **水平方向** に連結して、**より広い** DataFrame を作成できます
+- **行数と列数が異なる** 2 つの DataFrame を **斜め方向** に連結して、より長くて/または広い DataFrame を作成できます。列名が重複する場合は値が垂直に連結されます。列名が重複しない場合は新しい行と列が追加されます。欠損値は `null` に設定されます。
 
-## Vertical concatenation - getting longer
+## 垂直方向の連結 - より長くなる
 
-In a vertical concatenation you combine all of the rows from a list of `DataFrames` into a single longer `DataFrame`.
+垂直方向の連結では、`DataFrames` のリストからすべての行を組み合わせて、単一の長い `DataFrame` を作成します。
 
 {{code_block('user-guide/transformations/concatenation','vertical',['concat'])}}
 
@@ -17,11 +17,11 @@ In a vertical concatenation you combine all of the rows from a list of `DataFram
 --8<-- "python/user-guide/transformations/concatenation.py:vertical"
 ```
 
-Vertical concatenation fails when the dataframes do not have the same column names.
+DataFrame のカラム名が異なる場合、垂直方向の連結は失敗します。
 
-## Horizontal concatenation - getting wider
+## 水平方向の結合 - 幅を広げる
 
-In a horizontal concatenation you combine all of the columns from a list of `DataFrames` into a single wider `DataFrame`.
+水平方向の結合では、`DataFrames` のリストから全ての列を1つの幅広い `DataFrame` に結合します。
 
 {{code_block('user-guide/transformations/concatenation','horizontal',['concat'])}}
 
@@ -29,10 +29,9 @@ In a horizontal concatenation you combine all of the columns from a list of `Dat
 --8<-- "python/user-guide/transformations/concatenation.py:horizontal"
 ```
 
-Horizontal concatenation fails when dataframes have overlapping columns.
+列が重複している場合は、水平方向の結合は失敗します。
 
-When dataframes have different numbers of rows,
-columns will be padded with `null` values at the end up to the maximum length.
+行数が異なる場合は、最大の行数まで `null` 値で埋められます。
 
 {{code_block('user-guide/transformations/concatenation','horizontal_different_lengths',['concat'])}}
 
@@ -40,9 +39,9 @@ columns will be padded with `null` values at the end up to the maximum length.
 --8<-- "python/user-guide/transformations/concatenation.py:horizontal_different_lengths"
 ```
 
-## Diagonal concatenation - getting longer, wider and `null`ier
+## 対角結合 - 長さと幅が増え、 `null` が増える
 
-In a diagonal concatenation you combine all of the row and columns from a list of `DataFrames` into a single longer and/or wider `DataFrame`.
+対角結合では、 `DataFrames` のリストから全ての行と列を1つの長くて/または幅広い `DataFrame` に結合します。
 
 {{code_block('user-guide/transformations/concatenation','cross',['concat'])}}
 
@@ -50,11 +49,11 @@ In a diagonal concatenation you combine all of the row and columns from a list o
 --8<-- "python/user-guide/transformations/concatenation.py:cross"
 ```
 
-Diagonal concatenation generates nulls when the column names do not overlap.
+対角結合では、列名が重複しない場合に null が生成されます。
 
-When the dataframe shapes do not match and we have an overlapping semantic key then [we can join the dataframes](joins.md) instead of concatenating them.
+データフレームの形状が一致せず、重複するセマンティックキーがある場合は、concatenateする代わりに [データフレームを結合](joins.md) することができます。
 
-## Rechunking
+## リチャンキング
 
-Before a concatenation we have two dataframes `df1` and `df2`. Each column in `df1` and `df2` is in one or more chunks in memory. By default, during concatenation the chunks in each column are copied to a single new chunk - this is known as **rechunking**. Rechunking is an expensive operation, but is often worth it because future operations will be faster.
-If you do not want Polars to rechunk the concatenated `DataFrame` you specify `rechunk = False` when doing the concatenation.
+concatenationの前に `df1` と `df2` という2つのデータフレームがあります。 `df1` と `df2` の各列はメモリ上の1つ以上のチャンクに格納されています。デフォルトでは、concatenation中にそれぞれの列のチャンクが単一の新しいチャンクにコピーされます - これを **リチャンキング** と呼びます。リチャンキングは高コストな操作ですが、将来の操作が高速化されるため、しばしば価値があります。
+concatenated `DataFrame` をリチャンキングしたくない場合は、concatenationの際に `rechunk = False` を指定することができます。

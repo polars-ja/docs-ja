@@ -1,37 +1,37 @@
-# Databases
+# データベース
 
-## Read from a database
+## データベースから読み込む
 
-Polars can read from a database using the `pl.read_database_uri` and `pl.read_database` functions.
+Polars は `pl.read_database_uri` および `pl.read_database` 関数を使ってデータベースから読み込むことができます。
 
-### Difference between `read_database_uri` and `read_database`
+### `read_database_uri` と `read_database` の違い
 
-Use `pl.read_database_uri` if you want to specify the database connection with a connection string called a `uri`. For example, the following snippet shows a query to read all columns from the `foo` table in a Postgres database where we use the `uri` to connect:
+接続文字列（URI）を使ってデータベース接続を指定したい場合は `pl.read_database_uri` を使います。以下のスニペットは、Postgres データベースの `foo` テーブルのすべての列を読み込む例で、URI を使って接続しています:
 
 {{code_block('user-guide/io/database','read_uri',['read_database_uri'])}}
 
-On the other hand, use `pl.read_database` if you want to connect via a connection engine created with a library like SQLAlchemy.
+一方、SQLAlchemy のようなライブラリで作成した接続エンジンを使って接続したい場合は `pl.read_database` を使います。
 
 {{code_block('user-guide/io/database','read_cursor',['read_database'])}}
 
-Note that `pl.read_database_uri` is likely to be faster than `pl.read_database` if you are using a SQLAlchemy or DBAPI2 connection as these connections may load the data row-wise into Python before copying the data again to the column-wise Apache Arrow format.
+`pl.read_database_uri` は、SQLAlchemy や DBAPI2 接続を使っている場合、 `pl.read_database` よりも高速です。これは、これらの接続ではデータがまずPythonの行単位で読み込まれ、その後列単位のApache Arrowフォーマットにコピーされるためです。
 
-### Engines
+### エンジン
 
-Polars doesn't manage connections and data transfer from databases by itself. Instead, external libraries (known as _engines_) handle this.
+Polars は自身でデータベースからの接続やデータ転送を管理しません。代わりに、外部ライブラリ（「 _エンジン_ 」と呼ばれる）がこれを処理します。
 
-When using `pl.read_database`, you specify the engine when you create the connection object. When using `pl.read_database_uri`, you can specify one of two engines to read from the database:
+`pl.read_database` を使用する際は、接続オブジェクトを作成するときにエンジンを指定します。`pl.read_database_uri` を使用する際は、2つのエンジンのいずれかを指定してデータベースから読み取ることができます:
 
-- [ConnectorX](https://github.com/sfu-db/connector-x) and
+- [ConnectorX](https://github.com/sfu-db/connector-x)
 - [ADBC](https://arrow.apache.org/docs/format/ADBC.html)
 
-Both engines have native support for Apache Arrow and so can read data directly into a Polars `DataFrame` without copying the data.
+両方のエンジンは Apache Arrow のネイティブサポートを持っているため、データをコピーすることなく Polars の `DataFrame` に直接読み込むことができます。
 
 #### ConnectorX
 
-ConnectorX is the default engine and [supports numerous databases](https://github.com/sfu-db/connector-x#sources) including Postgres, Mysql, SQL Server and Redshift. ConnectorX is written in Rust and stores data in Arrow format to allow for zero-copy to Polars.
+ConnectorX はデフォルトのエンジンで、Postgres、Mysql、SQL Server、Redshift など[多数のデータベースをサポート](https://github.com/sfu-db/connector-x#sources)しています。ConnectorX は Rust で書かれており、Polars への zero-copy を可能にするために Arrow 形式でデータを保存します。
 
-To read from one of the supported databases with `ConnectorX` you need to activate the additional dependency `ConnectorX` when installing Polars or install it manually with
+`ConnectorX` を使ってサポートされているデータベースから読み取るには、Polars をインストールする際に追加の依存関係 `ConnectorX` を有効にするか、手動で以下のようにインストールする必要があります:
 
 ```shell
 $ pip install connectorx
@@ -39,45 +39,45 @@ $ pip install connectorx
 
 #### ADBC
 
-ADBC (Arrow Database Connectivity) is an engine supported by the Apache Arrow project. ADBC aims to be both an API standard for connecting to databases and libraries implementing this standard in a range of languages.
+ADBC（Arrow Database Connectivity）は、Apache Arrow プロジェクトでサポートされているエンジンです。ADBC は、データベースに接続するための API 標準と、この標準を実装したさまざまな言語のライブラリを目指しています。
 
-It is still early days for ADBC so support for different databases is limited. At present, drivers for ADBC are only available for [Postgres](https://pypi.org/project/adbc-driver-postgresql/), [SQLite](https://pypi.org/project/adbc-driver-sqlite/) and [Snowflake](https://pypi.org/project/adbc-driver-snowflake/). To install ADBC, you need to install the driver for your database. For example, to install the driver for SQLite, you run:
+ADBC はまだ初期段階なので、さまざまなデータベースへの対応は限られています。現時点では、ADBC のドライバーは [Postgres](https://pypi.org/project/adbc-driver-postgresql/)、[SQLite](https://pypi.org/project/adbc-driver-sqlite/)、[Snowflake](https://pypi.org/project/adbc-driver-snowflake/) でのみ利用可能です。ADBC をインストールするには、お使いのデータベース用のドライバーをインストールする必要があります。例えば、SQLite 用のドライバーをインストールするには、以下のように実行します:
 
 ```shell
 $ pip install adbc-driver-sqlite
 ```
 
-As ADBC is not the default engine, you must specify the engine as an argument to `pl.read_database_uri`.
+ADBC がデフォルトのエンジンではないため、`pl.read_database_uri` の引数でエンジンを指定する必要があります。
 
 {{code_block('user-guide/io/database','adbc',['read_database_uri'])}}
 
-## Write to a database
+## データベースへの書き込み
 
-We can write to a database with Polars using the `pl.write_database` function.
+Polars を使ってデータベースに書き込むには、`pl.write_database` 関数を使います。
 
-### Engines
+### エンジン
 
-As with reading from a database above, Polars uses an _engine_ to write to a database. The currently supported engines are:
+上記のデータベースからの読み込みと同様に、Polars はデータベースへの書き込みにも _エンジン_ を使います。現在サポートされているエンジンは以下の通りです:
 
-- [SQLAlchemy](https://www.sqlalchemy.org/) and
+- [SQLAlchemy](https://www.sqlalchemy.org/)
 - Arrow Database Connectivity (ADBC)
 
 #### SQLAlchemy
 
-With the default engine SQLAlchemy you can write to any database supported by SQLAlchemy. To use this engine you need to install SQLAlchemy and Pandas
+デフォルトの SQLAlchemy エンジンを使えば、SQLAlchemy がサポートするあらゆるデータベースに書き込むことができます。このエンジンを使うには、SQLAlchemy と Pandas をインストールする必要があります。
 
 ```shell
 $ pip install SQLAlchemy pandas
 ```
 
-In this example, we write the `DataFrame` to a table called `records` in the database
+この例では、`DataFrame` を `records` というテーブルにデータベースに書き込みます。
 
 {{code_block('user-guide/io/database','write',['write_database'])}}
 
-In the SQLAlchemy approach, Polars converts the `DataFrame` to a Pandas `DataFrame` backed by PyArrow and then uses SQLAlchemy methods on a Pandas `DataFrame` to write to the database.
+SQLAlchemy アプローチでは、Polars が `DataFrame` を PyArrow 支援の Pandas `DataFrame` に変換し、その後 Pandas `DataFrame` の SQLAlchemy メソッドを使ってデータベースに書き込みます。
 
 #### ADBC
 
-ADBC can also be used to write to a database. Writing is supported for the same databases that support reading with ADBC. As shown above, you need to install the appropriate ADBC driver for your database.
+ADBC を使ってデータベースに書き込むこともできます。書き込みは、ADBC で読み取りがサポートされているデータベースと同じものでサポートされています。上述のように、お使いのデータベース用の適切な ADBC ドライバをインストールする必要があります。
 
 {{code_block('user-guide/io/database','write_adbc',['write_database'])}}

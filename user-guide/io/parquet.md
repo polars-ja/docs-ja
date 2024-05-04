@@ -1,25 +1,25 @@
 # Parquet
 
-Loading or writing [`Parquet` files](https://parquet.apache.org/) is lightning fast as the layout of data in a Polars `DataFrame` in memory mirrors the layout of a Parquet file on disk in many respects.
+Polars の `DataFrame` メモリ上のデータレイアウトが Parquet ファイルのディスク上のレイアウトに多くの点で似ているため、 [`Parquet` ファイル](https://parquet.apache.org/) の読み込みや書き込みは高速です。
 
-Unlike CSV, Parquet is a columnar format. This means that the data is stored in columns rather than rows. This is a more efficient way of storing data as it allows for better compression and faster access to data.
+CSV とは異なり、Parquet はカラム型のフォーマットです。これは、データがロー単位ではなくカラム単位で格納されることを意味します。これはデータの圧縮と高速なデータアクセスを可能にする、より効率的な方法です。
 
-## Read
+## 読み込み
 
-We can read a `Parquet` file into a `DataFrame` using the `read_parquet` function:
+`read_parquet` 関数を使って、 `Parquet` ファイルを `DataFrame` に読み込むことができます:
 
 {{code_block('user-guide/io/parquet','read',['read_parquet'])}}
 
-## Write
+## 書き込み
 
 {{code_block('user-guide/io/parquet','write',['write_parquet'])}}
 
-## Scan
+## スキャン
 
-Polars allows you to _scan_ a `Parquet` input. Scanning delays the actual parsing of the file and instead returns a lazy computation holder called a `LazyFrame`.
+Polars では、 `Parquet` 入力をスキャンすることができます。スキャンすると、ファイルの実際の解析が遅延され、代わりに `LazyFrame` と呼ばれる遅延計算ホルダーが返されます。
 
 {{code_block('user-guide/io/parquet','scan',['scan_parquet'])}}
 
-If you want to know why this is desirable, you can read more about those Polars optimizations [here](../concepts/lazy-vs-eager.md).
+なぜこれが望ましいのかについては、Polars の最適化について [こちら](../concepts/lazy-vs-eager.md) で詳しく説明しています。
 
-When we scan a `Parquet` file stored in the cloud, we can also apply predicate and projection pushdowns. This can significantly reduce the amount of data that needs to be downloaded. For scanning a Parquet file in the cloud, see [Cloud storage](cloud-storage.md/#scanning-from-cloud-storage-with-query-optimisation).
+クラウドに保存された `Parquet` ファイルをスキャンする場合、述語と射影のプッシュダウンを適用することもできます。これにより、ダウンロードする必要のあるデータ量を大幅に削減できます。クラウドストレージからの Parquet ファイルのスキャンについては、[クラウドストレージ](cloud-storage.md/#scanning-from-cloud-storage-with-query-optimisation) をご覧ください。

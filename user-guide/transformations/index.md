@@ -1,6 +1,6 @@
-# Transformations
+# 変換
 
-The focus of this section is to describe different types of data transformations and provide some examples on how to use them.
+このセクションの焦点は、さまざまな種類のデータ変換を説明し、それらの使用例を提供することです。
 
 - [Joins](joins.md)
 - [Concatenation](concatenation.md)

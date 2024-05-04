@@ -1,12 +1,12 @@
-# Grouping
+# グループ化
 
-## Grouping by fixed windows
+## 固定ウィンドウによるグループ化
 
-We can calculate temporal statistics using `group_by_dynamic` to group rows into days/months/years etc.
+`group_by_dynamic` を使って、日/月/年などのテンポラル統計を計算することができます。
 
-### Annual average example
+### 年間平均の例
 
-In following simple example we calculate the annual average closing price of Apple stock prices. We first load the data from CSV:
+以下の簡単な例では、Apple の株価の年間平均終値を計算します。まずはCSVからデータを読み込みます:
 
 {{code_block('user-guide/transformations/time-series/rolling','df',['upsample'])}}
 
@@ -17,48 +17,44 @@ In following simple example we calculate the annual average closing price of App
 
 !!! info
 
-    The dates are sorted in ascending order - if they are not sorted in this way the `group_by_dynamic` output will not be correct!
+    日付は昇順にソートされている必要があります - そうでない場合、`group_by_dynamic` の出力は正しくありません!
 
-To get the annual average closing price we tell `group_by_dynamic` that we want to:
+年間平均終値を得るには、`group_by_dynamic` に以下のように指定します:
 
-- group by the `Date` column on an annual (`1y`) basis
-- take the mean values of the `Close` column for each year:
+- `Date` 列で年単位(`1y`)でグループ化する
+- `Close` 列の平均値を各年について取る
 
 {{code_block('user-guide/transformations/time-series/rolling','group_by',['group_by_dynamic'])}}
 
-The annual average closing price is then:
+年間平均終値は以下のようになります:
 
 ```python exec="on" result="text" session="user-guide/transformations/ts/rolling"
 --8<-- "python/user-guide/transformations/time-series/rolling.py:group_by"
 ```
 
-### Parameters for `group_by_dynamic`
+### `group_by_dynamic`のパラメーター
 
-A dynamic window is defined by a:
+動的ウィンドウは以下のように定義されます:
 
-- **every**: indicates the interval of the window
-- **period**: indicates the duration of the window
-- **offset**: can be used to offset the start of the windows
+- **every**: ウィンドウの間隔を示します
+- **period**: ウィンドウの期間を示します
+- **offset**: ウィンドウの開始をオフセットするのに使用できます
 
-The value for `every` sets how often the groups start. The time period values are flexible - for example we could take:
+`every`の値は、グループの開始頻度を設定します。時間期間の値は柔軟です - 例えば、`1y`を`2y`に置き換えることで、2年間隔の平均を取ることができます。また、`1y`を`1y6mo`に置き換えることで、18ヶ月間隔の平均を取ることができます。
 
-- the average over 2 year intervals by replacing `1y` with `2y`
-- the average over 18 month periods by replacing `1y` with `1y6mo`
+`period`パラメーターを使って、各グループの時間期間の長さを設定することもできます。例えば、`every`パラメーターを`1y`に、`period`パラメーターを`2y`に設定すると、1年間隔でそれぞれ2年間のグループが作成されます。
 
-We can also use the `period` parameter to set how long the time period for each group is. For example, if we set the `every` parameter to be `1y` and the `period` parameter to be `2y` then we would get groups at one year intervals where each groups spanned two years.
+`period`パラメーターが指定されない場合は、`every`パラメーターと同じ値に設定されます。つまり、`every`パラメーターが`1y`に設定されている場合、各グループも`1y`のスパンになります。
 
-If the `period` parameter is not specified then it is set equal to the `every` parameter so that if the `every` parameter is set to be `1y` then each group spans `1y` as well.
+_**every**_と_**period**_が等しくなる必要がないため、非常に柔軟な方法でたくさんのグループを作成できます。グループが重複したり、境界線が空いたりする可能性があります。
 
-Because _**every**_ does not have to be equal to _**period**_, we can create many groups in a very flexible way. They may overlap
-or leave boundaries between them.
-
-Let's see how the windows for some parameter combinations would look. Let's start out boring. 🥱
+いくつかのパラメーター組み合わせでのウィンドウの様子を見てみましょう。退屈な例から始めましょう。🥱
 
 - every: 1 day -> `"1d"`
 - period: 1 day -> `"1d"`
 
 ```text
-this creates adjacent windows of the same size
+この操作は同じサイズの隣接するウィンドウを作成します
 |--|
    |--|
       |--|
@@ -68,7 +64,7 @@ this creates adjacent windows of the same size
 - period: 2 days -> `"2d"`
 
 ```text
-these windows have an overlap of 1 day
+これらのウィンドウには 1 日の重複があります
 |----|
    |----|
       |----|
@@ -78,8 +74,8 @@ these windows have an overlap of 1 day
 - period: 1 day -> `"1d"`
 
 ```text
-this would leave gaps between the windows
-data points that in these gaps will not be a member of any group
+これではウィンドウの間に隙間ができます
+これらの隙間のデータポイントは、どのグループにも属しません
 |--|
        |--|
               |--|
@@ -87,21 +83,20 @@ data points that in these gaps will not be a member of any group
 
 #### `truncate`
 
-The `truncate` parameter is a Boolean variable that determines what datetime value is associated with each group in the output. In the example above the first data point is on 23rd February 1981. If `truncate = True` (the default) then the date for the first year in the annual average is 1st January 1981. However, if `truncate = False` then the date for the first year in the annual average is the date of the first data point on 23rd February 1981. Note that `truncate` only affects what's shown in the
-`Date` column and does not affect the window boundaries.
+`truncate` パラメーターは、出力の各グループに関連付けられる datetime 値を決定する Boolean 変数です。上記の例では、最初のデータポイントが 1981 年 2 月 23 日です。`truncate = True`（デフォルト）の場合、年間平均の最初の年の日付は 1981 年 1 月 1 日になります。一方、`truncate = False` の場合、年間平均の最初の年の日付は 1981 年 2 月 23 日の最初のデータポイントの日付になります。`truncate` は `Date` 列に表示される内容にのみ影響し、ウィンドウの境界には影響しません。
 
-### Using expressions in `group_by_dynamic`
+### `group_by_dynamic` での式の使用
 
-We aren't restricted to using simple aggregations like `mean` in a group by operation - we can use the full range of expressions available in Polars.
+グループ化操作では、`mean` のような単純な集計だけでなく、Polars で利用可能な全ての式を使用することができます。
 
-In the snippet below we create a `date range` with every **day** (`"1d"`) in 2021 and turn this into a `DataFrame`.
+以下のスニペットでは、2021 年の **毎日** (`"1d"`) の `date range` を作成し、これを `DataFrame` に変換しています。
 
-Then in the `group_by_dynamic` we create dynamic windows that start every **month** (`"1mo"`) and have a window length of `1` month. The values that match these dynamic windows are then assigned to that group and can be aggregated with the powerful expression API.
+その後、`group_by_dynamic` で **毎月** (`"1mo"`) 始まる動的ウィンドウを作成し、ウィンドウ長を `1` か月に設定しています。これらの動的ウィンドウに一致する値は、そのグループに割り当てられ、強力な式 API を使って集計することができます。
 
-Below we show an example where we use **group_by_dynamic** to compute:
+以下の例では、`group_by_dynamic` を使って以下を計算しています:
 
-- the number of days until the end of the month
-- the number of days in a month
+- 月末までの残り日数
+- 月の日数
 
 {{code_block('user-guide/transformations/time-series/rolling','group_by_dyn',['group_by_dynamic','DataFrame.explode','date_range'])}}
 
@@ -109,13 +104,11 @@ Below we show an example where we use **group_by_dynamic** to compute:
 --8<-- "python/user-guide/transformations/time-series/rolling.py:group_by_dyn"
 ```
 
-## Grouping by rolling windows
+## ローリングウィンドウによるグループ化
 
-The rolling operation, `rolling`, is another entrance to the `group_by`/`agg` context. But different from the `group_by_dynamic` where the windows are fixed by a parameter `every` and `period`. In a `rolling`, the windows are not fixed at all! They are determined
-by the values in the `index_column`.
+ローリング操作 `rolling` は、`group_by`/`agg` コンテキストへの別のアクセス方法です。しかし、`group_by_dynamic` とは異なり、ウィンドウは `every` と `period` というパラメーターで固定されるのではありません。`rolling` では、ウィンドウは全く固定されていません! `index_column` の値によって決まります。
 
-So imagine having a time column with the values `{2021-01-06, 2021-01-10}` and a `period="5d"` this would create the following
-windows:
+例えば、時間列に `{2021-01-06, 2021-01-10}` の値があり、`period="5d"` の場合、以下のようなウィンドウが作成されます:
 
 ```text
 2021-01-01   2021-01-06
@@ -125,14 +118,13 @@ windows:
              |----------|
 ```
 
-Because the windows of a rolling group by are always determined by the values in the `DataFrame` column, the number of
-groups is always equal to the original `DataFrame`.
+ローリンググループ化のウィンドウは常に `DataFrame` 列の値によって決まるため、グループの数は常に元の `DataFrame` と同じになります。
 
-## Combining group by operations
+## グループ化操作の組み合わせ
 
-Rolling and dynamic group by operations can be combined with normal group by operations.
+ローリングおよびダイナミックなグループ化操作は、通常のグループ化操作と組み合わせることができます。
 
-Below is an example with a dynamic group by.
+以下は、ダイナミックなグループ化を使った例です。
 
 {{code_block('user-guide/transformations/time-series/rolling','group_by_roll',['DataFrame'])}}
 

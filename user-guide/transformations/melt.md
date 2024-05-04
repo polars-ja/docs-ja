@@ -1,8 +1,8 @@
 # Melts
 
-Melt operations unpivot a DataFrame from wide format to long format
+データフレームを横形式から縦形式に変換する Melt 操作
 
-## Dataset
+## データセット
 
 {{code_block('user-guide/transformations/melt','df',['DataFrame'])}}
 
@@ -12,7 +12,7 @@ Melt operations unpivot a DataFrame from wide format to long format
 
 ## Eager + lazy
 
-`Eager` and `lazy` have the same API.
+`Eager` と `lazy` は同じ API を持っています。
 
 {{code_block('user-guide/transformations/melt','melt',['melt'])}}
 

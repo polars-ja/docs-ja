@@ -1,30 +1,29 @@
-# JSON files
+# JSON ファイル
 
-Polars can read and write both standard JSON and newline-delimited JSON (NDJSON).
+Polars は、標準の JSON と改行区切り JSON (NDJSON) の両方を読み書きできます。
 
-## Read
+## 読み込み
 
 ### JSON
 
-Reading a JSON file should look familiar:
+JSON ファイルの読み込みは、お馴染みの操作です:
 
 {{code_block('user-guide/io/json','read',['read_json'])}}
 
-### Newline Delimited JSON
+### 改行区切り JSON
 
-JSON objects that are delimited by newlines can be read into Polars in a much more performant way than standard json.
+改行で区切られた JSON オブジェクトは、標準の JSON よりも高パフォーマンスな方法で Polars に読み込むことができます。
 
-Polars can read an NDJSON file into a `DataFrame` using the `read_ndjson` function:
+Polars は `read_ndjson` 関数を使って、NDJSON ファイルを `DataFrame` に読み込むことができます:
 
 {{code_block('user-guide/io/json','readnd',['read_ndjson'])}}
 
-## Write
+## 書き出し
 
 {{code_block('user-guide/io/json','write',['write_json','write_ndjson'])}}
 
-## Scan
+## スキャン
 
-Polars allows you to _scan_ a JSON input **only for newline delimited json**. Scanning delays the actual parsing of the
-file and instead returns a lazy computation holder called a `LazyFrame`.
+Polars では、 **改行区切り JSON** の入力を _スキャン_ することができます。スキャンすることで、ファイルの実際の解析を遅延させ、代わりに `LazyFrame` と呼ばれる遅延計算のホルダーを返します。
 
 {{code_block('user-guide/io/json','scan',['scan_ndjson'])}}

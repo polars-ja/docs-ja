@@ -1,8 +1,8 @@
-# Cloud storage
+# クラウドストレージ
 
-Polars can read and write to AWS S3, Azure Blob Storage and Google Cloud Storage. The API is the same for all three storage providers.
+Polars は AWS S3、Azure Blob Storage、Google Cloud Storage の読み書きが可能です。 これらの3つのストレージプロバイダに対するAPIは同じです。
 
-To read from cloud storage, additional dependencies may be needed depending on the use case and cloud storage provider:
+クラウドストレージから読み取る場合、ユースケースやクラウドストレージプロバイダによっては、追加の依存関係が必要になる可能性があります。
 
 === ":fontawesome-brands-python: Python"
 
@@ -16,36 +16,36 @@ To read from cloud storage, additional dependencies may be needed depending on t
     $ cargo add aws_sdk_s3 aws_config tokio --features tokio/full
     ```
 
-## Reading from cloud storage
+## クラウドストレージからの読み込み
 
-Polars can read a CSV, IPC or Parquet file in eager mode from cloud storage.
+Polars は、eager モードで CSV、IPC、または Parquet ファイルをクラウドストレージから読み込むことができます。
 
 {{code_block('user-guide/io/cloud-storage','read_parquet',['read_parquet','read_csv','read_ipc'])}}
 
-This eager query downloads the file to a buffer in memory and creates a `DataFrame` from there. Polars uses `fsspec` to manage this download internally for all cloud storage providers.
+この eager クエリは、ファイルをメモリ内のバッファーにダウンロードし、そこから `DataFrame` を作成します。Polars は内部で `fsspec` を使ってこのダウンロードを管理しており、すべてのクラウドストレージプロバイダーに対応しています。
 
-## Scanning from cloud storage with query optimisation
+## クラウドストレージからのクエリ最適化付きスキャン
 
-Polars can scan a Parquet file in lazy mode from cloud storage. We may need to provide further details beyond the source url such as authentication details or storage region. Polars looks for these as environment variables but we can also do this manually by passing a `dict` as the `storage_options` argument.
+Polars は、クラウドストレージから Parquet ファイルをレイジーモードでスキャンできます。ソースURLの他に、認証情報やストレージリージョンなどの詳細を提供する必要があるかもしれません。 Polarsは環境変数でこれらを検索しますが、 `storage_options` 引数として `dict` を渡すこともできます。
 
 {{code_block('user-guide/io/cloud-storage','scan_parquet',['scan_parquet'])}}
 
-This query creates a `LazyFrame` without downloading the file. In the `LazyFrame` we have access to file metadata such as the schema. Polars uses the `object_store.rs` library internally to manage the interface with the cloud storage providers and so no extra dependencies are required in Python to scan a cloud Parquet file.
+このクエリは、ファイルをダウンロードせずに `LazyFrame` を作成します。 `LazyFrame` では、スキーマなどのファイルメタデータにアクセスできます。 Polars は内部で `object_store.rs` ライブラリを使ってクラウドストレージプロバイダとのインターフェースを管理しているため、クラウド Parquet ファイルをスキャンするためにPythonで追加の依存関係は必要ありません。
 
-If we create a lazy query with [predicate and projection pushdowns](../lazy/optimizations.md), the query optimizer will apply them before the file is downloaded. This can significantly reduce the amount of data that needs to be downloaded. The query evaluation is triggered by calling `collect`.
+[述語と射影のプッシュダウン](../lazy/optimizations.md)を使ってレイジークエリを作成すると、ファイルがダウンロードされる前にクエリオプティマイザーが適用します。これにより、ダウンロードする必要のあるデータ量を大幅に削減できます。クエリの評価は `collect` を呼び出すことで開始されます。
 
 {{code_block('user-guide/io/cloud-storage','scan_parquet_query',[])}}
 
-## Scanning with PyArrow
+## Pythonアロー(PyArrow)によるスキャン
 
-We can also scan from cloud storage using PyArrow. This is particularly useful for partitioned datasets such as Hive partitioning.
+PyArrowを使ってクラウドストレージからスキャンすることもできます。これは、Hiveパーティショニングなどのパーティション化されたデータセットに特に便利です。
 
-We first create a PyArrow dataset and then create a `LazyFrame` from the dataset.
+まず、PyArrowデータセットを作成し、その後にデータセットから`LazyFrame`を作成します。
 
 {{code_block('user-guide/io/cloud-storage','scan_pyarrow_dataset',['scan_pyarrow_dataset'])}}
 
-## Writing to cloud storage
+## クラウドストレージへの書き込み
 
-We can write a `DataFrame` to cloud storage in Python using s3fs for S3, adlfs for Azure Blob Storage and gcsfs for Google Cloud Storage. In this example, we write a Parquet file to S3.
+Python で s3fs (S3 用)、adlfs (Azure Blob Storage 用)、gcsfs (Google Cloud Storage 用) を使って、`DataFrame` をクラウドストレージに書き込むことができます。この例では、Parquet ファイルを S3 に書き込みます。
 
 {{code_block('user-guide/io/cloud-storage','write_parquet',['write_parquet'])}}
