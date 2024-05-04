@@ -1,13 +1,13 @@
 # SELECT
 
-In Polars SQL, the `SELECT` statement is used to retrieve data from a table into a `DataFrame`. The basic syntax of a `SELECT` statement in Polars SQL is as follows:
+Polars SQL では、`SELECT` 句を使用して、テーブルからデータを `DataFrame` に取り出します。Polars SQL の `SELECT` 句の基本的な構文は次のとおりです：
 
 ```sql
 SELECT column1, column2, ...
 FROM table_name;
 ```
 
-Here, `column1`, `column2`, etc. are the columns that you want to select from the table. You can also use the wildcard `*` to select all columns. `table_name` is the name of the table or that you want to retrieve data from. In the sections below we will cover some of the more common SELECT variants
+ここで `column1`、`column2` などは、テーブルから選択したい列を指します。ワイルドカード `*` を使って、すべての列を選択することもできます。`table_name` は、データを取り出したいテーブルの名前です。以下のセクションでは、より一般的な SELECT のバリエーションについて説明します。
 
 {{code_block('user-guide/sql/select','df',['SQLregister','SQLexecute'])}}
 
@@ -16,9 +16,9 @@ Here, `column1`, `column2`, etc. are the columns that you want to select from th
 --8<-- "python/user-guide/sql/select.py:df"
 ```
 
-### GROUP BY
+### GROUP BY（グループ化）
 
-The `GROUP BY` statement is used to group rows in a table by one or more columns and compute aggregate functions on each group.
+`GROUP BY` 句は、テーブル内の行を 1 つ以上の列でグループ化し、各グループに対して集計関数を計算するために使用されます。
 
 {{code_block('user-guide/sql/select','group_by',['SQLexecute'])}}
 
@@ -26,9 +26,9 @@ The `GROUP BY` statement is used to group rows in a table by one or more columns
 --8<-- "python/user-guide/sql/select.py:group_by"
 ```
 
-### ORDER BY
+### ORDER BY（並べ替え）
 
-The `ORDER BY` statement is used to sort the result set of a query by one or more columns in ascending or descending order.
+`ORDER BY` 句は、クエリの結果セットを 1 つ以上の列で昇順または降順に並べ替えるために使用されます。
 
 {{code_block('user-guide/sql/select','orderby',['SQLexecute'])}}
 
@@ -36,7 +36,7 @@ The `ORDER BY` statement is used to sort the result set of a query by one or mor
 --8<-- "python/user-guide/sql/select.py:orderby"
 ```
 
-### JOIN
+### JOIN（結合）
 
 {{code_block('user-guide/sql/select','join',['SQLregister_many','SQLexecute'])}}
 
@@ -44,16 +44,16 @@ The `ORDER BY` statement is used to sort the result set of a query by one or mor
 --8<-- "python/user-guide/sql/select.py:join"
 ```
 
-### Functions
+### 関数
 
-Polars provides a wide range of SQL functions, including:
+Polars には、次のような幅広い SQL 関数が用意されています：
 
-- Mathematical functions: `ABS`, `EXP`, `LOG`, `ASIN`, `ACOS`, `ATAN`, etc.
-- String functions: `LOWER`, `UPPER`, `LTRIM`, `RTRIM`, `STARTS_WITH`,`ENDS_WITH`.
-- Aggregation functions: `SUM`, `AVG`, `MIN`, `MAX`, `COUNT`, `STDDEV`, `FIRST` etc.
-- Array functions: `EXPLODE`, `UNNEST`,`ARRAY_SUM`,`ARRAY_REVERSE`, etc.
+- 数学関数： `ABS`、`EXP`、`LOG`、`ASIN`、`ACOS`、`ATAN` など
+- 文字列関数： `LOWER`、`UPPER`、`LTRIM`、`RTRIM`、`STARTS_WITH`、`ENDS_WITH`
+- 集計関数： `SUM`、`AVG`、`MIN`、`MAX`、`COUNT`、`STDDEV`、`FIRST` など
+- 配列関数： `EXPLODE`、`UNNEST`、`ARRAY_SUM`、`ARRAY_REVERSE` など
 
-For a full list of supported functions go the [API documentation](https://docs.rs/polars-sql/latest/src/polars_sql/keywords.rs.html). The example below demonstrates how to use a function in a query
+サポートされている関数の完全なリストは、[API ドキュメンテーション](https://docs.rs/polars-sql/latest/src/polars_sql/keywords.rs.html) を参照してください。以下の例では、クエリ内で関数を使用する方法を示しています。
 
 {{code_block('user-guide/sql/select','functions',['SQLquery'])}}
 
@@ -61,9 +61,9 @@ For a full list of supported functions go the [API documentation](https://docs.r
 --8<-- "python/user-guide/sql/select.py:functions"
 ```
 
-### Table Functions
+### テーブル関数
 
-In the examples earlier we first generated a DataFrame which we registered in the `SQLContext`. Polars also support directly reading from CSV, Parquet, JSON and IPC in your SQL query using table functions `read_xxx`.
+先ほどの例では、最初に DataFrame を生成し、`SQLContext` に登録しました。Polars では、SQL クエリ内で `read_xxx` テーブル関数を使って、CSV、Parquet、JSON、IPC から直接読み取ることもできます。
 
 {{code_block('user-guide/sql/select','tablefunctions',['SQLexecute'])}}
 
