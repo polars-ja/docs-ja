@@ -1,8 +1,8 @@
 # Getting started
 
-This chapter is here to help you get started with Polars. It covers all the fundamental features and functionalities of the library, making it easy for new users to familiarise themselves with the basics from initial installation and setup to core functionalities. If you're already an advanced user or familiar with Dataframes, feel free to skip ahead to the [next chapter about installation options](installation.md).
+この章では Polars のはじめ方を解説します。ライブラリの基本的な特徴や機能を紹介し、新しいユーザーが最初のインストールからコアな機能を使えるようになるまでの基礎を習得しやすくします。もしあなたが熟練したユーザーであったり、DataFrame に馴染みがあるならば、[次のインストールオプションの章](installation.md)にスキップしても問題ありません。
 
-## Installing Polars
+## Polars のインストール
 
 === ":fontawesome-brands-python: Python"
 
@@ -20,9 +20,9 @@ This chapter is here to help you get started with Polars. It covers all the fund
     polars = { version = "x", features = ["lazy", ...]}
     ```
 
-## Reading & writing
+## 読み込みと書き込み
 
-Polars supports reading and writing for common file formats (e.g. csv, json, parquet), cloud storage (S3, Azure Blob, BigQuery) and databases (e.g. postgres, mysql). Below we show the concept of reading and writing to disk.
+Polars は一般的なファイル形式（例：csv, json, parquet）、クラウドストレージ（例：S3、Azure Blob、BigQuery）およびデータベース（例：postgres, mysql）の読み書きをサポートしています。以下はディスクへの読み書きの考え方を示します。
 
 {{code_block('user-guide/getting-started/reading-writing','dataframe',['DataFrame'])}}
 
@@ -30,7 +30,7 @@ Polars supports reading and writing for common file formats (e.g. csv, json, par
 --8<-- "python/user-guide/getting-started/reading-writing.py:dataframe"
 ```
 
-In the example below we write the DataFrame to a csv file called `output.csv`. After that, we read it back using `read_csv` and then `print` the result for inspection.
+次の例では DataFrame を `output.csv` という名前の csv ファイルに出力しています。その後に `read_csv` を用いて再度それを読み込み、確認のために `print` で表示しています、
 
 {{code_block('user-guide/getting-started/reading-writing','csv',['read_csv','write_csv'])}}
 
@@ -38,27 +38,27 @@ In the example below we write the DataFrame to a csv file called `output.csv`. A
 --8<-- "python/user-guide/getting-started/reading-writing.py:csv"
 ```
 
-For more examples on the CSV file format and other data formats, start with the [IO section](io/index.md) of the user guide.
+CSV ファイル形式や他のデータ形式の例をもっと確認したい場合は、ユーザーガイドの [IO の章](io/index.md)を参照ください。
 
-## Expressions
+## エクスプレッション
 
-`Expressions` are the core strength of Polars. The `expressions` offer a modular structure that allows you to combine simple concepts into complex queries. Below we cover the basic components that serve as building block (or in Polars terminology contexts) for all your queries:
-
+エクスプレッションは Polars のコアな強みです。エクスプレッション
+は単純なコンセプトを組合せて複雑なクエリを構築することを可能にするモジュール構造を提供します。以下は全てのクエリの構成要素を提供する基本的なコンポーネント（Polars の用語で式と呼ぶ）です：
 - `select`
 - `filter`
 - `with_columns`
 - `group_by`
 
-To learn more about expressions and the context in which they operate, see the user guide sections: [Contexts](concepts/contexts.md) and [Expressions](concepts/expressions.md).
+エクスプレッションや式がどのように機能するかをより詳しく学ぶには、ユーザーガイドの [式](concepts/contexts.md) および [Expressions](concepts/expressions.md) セクションを参照してください。
 
-### Select
+### 選択
 
-To select a column we need to do two things:
+カラムを選択するためには２つのことをする必要があります：
 
-1. Define the `DataFrame` we want the data from.
-2. Select the data that we need.
+1. データを取得する対象の `DataFrame` を定義する
+2. 必要なデータを選択する
 
-In the example below you see that we select `col('*')`. The asterisk stands for all columns.
+以下の例では select 時に `col('*')` と指定しています。アスタリスクは全てのカラムを意味します。
 
 {{code_block('user-guide/getting-started/expressions','select',['select'])}}
 
@@ -69,7 +69,7 @@ print(
 )
 ```
 
-You can also specify the specific columns that you want to return. There are two ways to do this. The first option is to pass the column names, as seen below.
+特定のカラムを指定して取得することもできます。これをするには２つの方法があります。１つは以下のようにカラムの名前を渡す方法です。
 
 {{code_block('user-guide/getting-started/expressions','select2',['select'])}}
 
@@ -79,11 +79,11 @@ print(
 )
 ```
 
-Follow these links to other parts of the user guide to learn more about [basic operations](expressions/operators.md) or [column selections](expressions/column-selections.md).
+より詳しく学ぶには、ユーザーガイドの[基本的な操作](expressions/operators.md)や[カラムの選択](expressions/column-selections.md)を参照してください。
 
-### Filter
+### 抽出
 
-The `filter` option allows us to create a subset of the `DataFrame`. We use the same `DataFrame` as earlier and we filter between two specified dates.
+`filter` により `DataFrame` のサブセットを作成することができます。先ほどと同じ `DataFrame` を使って二つの特定の日付の期間で抽出します。
 
 {{code_block('user-guide/getting-started/expressions','filter',['filter'])}}
 
@@ -93,7 +93,7 @@ print(
 )
 ```
 
-With `filter` you can also create more complex filters that include multiple columns.
+`filter` を使うことで、複数のカラムを含むより複雑な抽出をすることもできます。
 
 {{code_block('user-guide/getting-started/expressions','filter2',['filter'])}}
 
@@ -103,9 +103,9 @@ print(
 )
 ```
 
-### Add columns
+### カラムの追加
 
-`with_columns` allows you to create new columns for your analyses. We create two new columns `e` and `b+42`. First we sum all values from column `b` and store the results in column `e`. After that we add `42` to the values of `b`. Creating a new column `b+42` to store these results.
+`with_columns` で分析のための新しいカラムを作成することができます。二つの新しいカラム `e` と `b+42` を作ります。まずはカラム `b` の全ての値の合計を計算し、それをカラム `e` に保存します。次に `b` に `42` を足します。それらの結果を保存する新しいカラム `b+42` を作成します。 
 
 {{code_block('user-guide/getting-started/expressions','with_columns',['with_columns'])}}
 
@@ -115,9 +115,9 @@ print(
 )
 ```
 
-### Group by
+### グループ化
 
-We will create a new `DataFrame` for the Group by functionality. This new `DataFrame` will include several 'groups' that we want to group by.
+グループ化の機能で新しい `DataFrame` を作成します。この新しい `DataFrame` はグループ分けしたい複数の「グループ」を持ちます。
 
 {{code_block('user-guide/getting-started/expressions','dataframe2',['DataFrame'])}}
 
@@ -142,9 +142,9 @@ print(
 )
 ```
 
-### Combination
+### 組み合わせ
 
-Below are some examples on how to combine operations to create the `DataFrame` you require.
+以下は必要な `DataFrame` を作成するために操作を組み合わせる例です。
 
 {{code_block('user-guide/getting-started/expressions','combine',['select','with_columns'])}}
 
@@ -158,13 +158,13 @@ Below are some examples on how to combine operations to create the `DataFrame` y
 --8<-- "python/user-guide/getting-started/expressions.py:combine2"
 ```
 
-## Combining DataFrames
+## DataFrame を組み合わせる
 
-There are two ways `DataFrame`s can be combined depending on the use case: join and concat.
+ユースケースに基づいて `DataFrame` を組み合わせる方法が2つあります：join と concat です。
 
 ### Join
 
-Polars supports all types of join (e.g. left, right, inner, outer). Let's have a closer look on how to `join` two `DataFrames` into a single `DataFrame`. Our two `DataFrames` both have an 'id'-like column: `a` and `x`. We can use those columns to `join` the `DataFrames` in this example.
+Polars はすべての種類の join（例： left, right, inner, outer）をサポートします。2つの `DataFrame` を `join` で1つの `DataFrame` にする方法を詳しく見てみましょう。2つの `DataFrame` はどちらも「id」のようなカラムを持ちます：`a` と `x` です。この例ではこれらのカラムを使って `DataFrame` を `join` します。
 
 {{code_block('user-guide/getting-started/joins','join',['join'])}}
 
@@ -173,11 +173,11 @@ Polars supports all types of join (e.g. left, right, inner, outer). Let's have a
 --8<-- "python/user-guide/getting-started/joins.py:join"
 ```
 
-To see more examples with other types of joins, see the [Transformations section](transformations/joins.md) in the user guide.
+他の種類の結合の例を見たい場合は、ユーザーガイドの [Transformations section](transformations/joins.md) を参照してください。
 
 ### Concat
 
-We can also `concatenate` two `DataFrames`. Vertical concatenation will make the `DataFrame` longer. Horizontal concatenation will make the `DataFrame` wider. Below you can see the result of an horizontal concatenation of our two `DataFrames`.
+2つの `DataFrame` を「連結」することもできます。垂直方向の連結は `DataFrame` を長くします。水平方向の連結は `DataFrame` の幅を広げます。以下は2つの `DataFrame` を水平方向に連結した結果です。
 
 {{code_block('user-guide/getting-started/joins','hstack',['hstack'])}}
 

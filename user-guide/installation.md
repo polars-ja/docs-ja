@@ -1,6 +1,6 @@
-# Installation
+# インストール
 
-Polars is a library and installation is as simple as invoking the package manager of the corresponding programming language.
+Polars はライブラリであり、インストールは対応するプログラミング言語のパッケージマネージャーを呼び出すだけで簡単です。
 
 === ":fontawesome-brands-python: Python"
 
@@ -23,7 +23,7 @@ Polars is a library and installation is as simple as invoking the package manage
 
 ### Big Index
 
-By default, polars is limited to 2^32 (~4.2 billion rows). To increase this limit 2^64 (~18 quintillion) by enabling big index:
+デフォルトでは、Polars は 2^32 行（~42億行）に制限されています。この制限を 2^64 行（~18千兆行）まで増やすには、big index を有効にする必要があります:
 
 === ":fontawesome-brands-python: Python"
 
@@ -41,9 +41,9 @@ By default, polars is limited to 2^32 (~4.2 billion rows). To increase this limi
     polars = { version = "x", features = ["bigidx", ...] }
     ```
 
-### Legacy CPU
+### レガシーな CPU
 
-To install polars on an old CPU without [AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions) support:
+[AVX](https://ja.wikipedia.org/wiki/Advanced_Vector_Extensions) をサポートしていない古い CPU でPolarsをインストールするには:
 
 === ":fontawesome-brands-python: Python"
 
@@ -51,9 +51,9 @@ To install polars on an old CPU without [AVX](https://en.wikipedia.org/wiki/Adva
     pip install polars-lts-cpu
     ```
 
-## Importing
+## インポート
 
-To use the library import it into your project
+ライブラリを使用するには、プロジェクトにインポートする必要があります。
 
 === ":fontawesome-brands-python: Python"
 
@@ -69,7 +69,7 @@ To use the library import it into your project
 
 ## Feature Flags
 
-By using the above command you install the core of Polars onto your system. However depending on your use case you might want to install the optional dependencies as well. These are made optional to minimize the footprint. The flags are different depending on the programming language. Throughout the user guide we will mention when a functionality is used that requires an additional dependency.
+上記のコマンドを使用すると、Polars のコアな機能がシステムにインストールされます。ただしユースケースによっては、オプションの依存関係もインストールしたい場合があります。これらは最小限のフットプリントを維持するために省略可能になっています。フラグはプログラミング言語によって異なります。ユーザーガイドを通して、追加の依存関係を必要とする機能が使われる場合は言及します。
 
 ### Python
 
@@ -80,16 +80,16 @@ pip install 'polars[numpy,fsspec]'
 
 | Tag        | Description                                                                                                                           |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| all        | Install all optional dependencies (all of the following)                                                                              |
-| pandas     | Install with Pandas for converting data to and from Pandas Dataframes/Series                                                          |
-| numpy      | Install with numpy for converting data to and from numpy arrays                                                                       |
-| pyarrow    | Reading data formats using PyArrow                                                                                                    |
-| fsspec     | Support for reading from remote file systems                                                                                          |
-| connectorx | Support for reading from SQL databases                                                                                                |
-| xlsx2csv   | Support for reading from Excel files                                                                                                  |
-| deltalake  | Support for reading from Delta Lake Tables                                                                                            |
-| plot       | Support for plotting Dataframes                                                                                                       |
-| timezone   | Timezone support, only needed if 1. you are on Python < 3.9 and/or 2. you are on Windows, otherwise no dependencies will be installed |
+| all        | すべてのオプション（以下のすべて）の依存関係をインストールします                                                                              |
+| pandas     | Pandas の DataFrame や Series との相互変換のために Pandas と一緒にインストールします                                                          |
+| numpy      | numpy 配列との相互変換のために numpy と一緒にインストールします                                                                       |
+| pyarrow    | PyArrow を使ってデータ形式を読み込みます                                                        |
+| fsspec     | リモートファイルシステムからの読み込みをサポートします                       |
+| connectorx | SQL データベースからの読み込みをサポートします                                               |
+| xlsx2csv   | Excel ファイルからの読み込みをサポートします                                                                                                  |
+| deltalake  | Delta Lake テーブルからの読み込みをサポートします                                    |
+| plot       | DataFrame のプロットをサポートします                                                                |
+| timezone   | タイムゾーンをサポートします。Python 3.9 未満、またはWindowsの場合にのみ必要です。それ以外の場合は依存関係はインストールされません。 |
 
 ### Rust
 
@@ -99,11 +99,11 @@ pip install 'polars[numpy,fsspec]'
 polars = { version = "0.26.1", features = ["lazy", "temporal", "describe", "json", "parquet", "dtype-datetime"] }
 ```
 
-The opt-in features are:
+オプションの機能は以下の通りです:
 
 <!-- dprint-ignore-start -->
 
-- Additional data types:
+- 追加のデータ型:
     - `dtype-date`
     - `dtype-datetime`
     - `dtype-time`
@@ -115,93 +115,93 @@ The opt-in features are:
     - `dtype-categorical`
     - `dtype-struct`
 - `lazy` - Lazy API
-    - `regex` - Use regexes in [column selection](crate::lazy::dsl::col)
-    - `dot_diagram` - Create dot diagrams from lazy logical plans.
-- `sql` - Pass SQL queries to polars.
-- `streaming` - Be able to process datasets that are larger than RAM.
-- `random` - Generate arrays with randomly sampled values
-- `ndarray`- Convert from `DataFrame` to `ndarray`
-- `temporal` - Conversions between [Chrono](https://docs.rs/chrono/) and Polars for temporal data types
-- `timezones` - Activate timezone support.
-- `strings` - Extra string utilities for `StringChunked`
+    - `regex` - [カラム選択](crate::lazy::dsl::col)で正規表現を使う。
+    - `dot_diagram` - 遅延論理計画からドット図を作成。
+- `sql` - SQL クエリを Polars に渡す。
+- `streaming` - RAM よりも大きいデータセットを処理できるようになる。
+- `random` - 値がランダムにサンプリングされた配列を生成。
+- `ndarray`- `DataFrame` を `ndarray` に変換。
+- `temporal` - 時間データ型の[Chrono](https://docs.rs/chrono/)と Polars の間の変換。
+- `timezones` - タイムゾーンのサポートを有効化。
+- `strings` - `StringChunked` のための追加の文字列ユーティリティ。
     - `string_pad` - `pad_start`, `pad_end`, `zfill`
     - `string_to_integer` - `parse_int`
-- `object` - Support for generic ChunkedArrays called `ObjectChunked<T>` (generic over `T`).
-  These are downcastable from Series through the [Any](https://doc.rust-lang.org/std/any/index.html) trait.
-- Performance related:
-    - `nightly` - Several nightly only features such as SIMD and specialization.
-    - `performant` - more fast paths, slower compile times.
-    - `bigidx` - Activate this feature if you expect >> 2^32 rows. This has not been needed by anyone.
-    This allows polars to scale up way beyond that by using `u64` as an index.
-    Polars will be a bit slower with this feature activated as many data structures
-    are less cache efficient.
-    - `cse` - Activate common subplan elimination optimization
-- IO related:
-    - `serde` - Support for [serde](https://crates.io/crates/serde) serialization and deserialization.
-    Can be used for JSON and more serde supported serialization formats.
-    - `serde-lazy` - Support for [serde](https://crates.io/crates/serde) serialization and deserialization.
-    Can be used for JSON and more serde supported serialization formats.
-    - `parquet` - Read Apache Parquet format
-    - `json` - JSON serialization
-    - `ipc` - Arrow's IPC format serialization
-    - `decompress` - Automatically infer compression of csvs and decompress them.
-    Supported compressions:
-      - zip
-      - gzip
+- `object` - `ObjectChunked<T>` (`T` に対しジェネリック)と呼ばれるジェネリックな ChunkedArrays に対するサポート
+  これらは [Any](https://doc.rust-lang.org/std/any/index.html) トレイトを通じてSeries からダウンキャストが可能。
+- パフォーマンスに関連するもの:
+    - `nightly` - SIMD や Specialization のような最新ビルドのみの機能を有効化。
+    - `performant` - より高速なパスを行うが、コンパイル時間が遅くなる。
+    - `bigidx` -  2^32行を大幅に超えることが予想される場合はこの機能を有効化。
+    インデックスに`u64`を使うことで、はるかに大規模なデータセットにスケールアップが可能。
+    この機能を有効にすると、多くのデータ構造がキャッシュ効率が低下するため、
+    Polarsのパフォーマンスが少し低下する。
+    - `cse` - 共通部分式除去の最適化を有効化。
+- IO に関するもの:
+    - `serde` - [serde](https://crates.io/crates/serde) によるシリアライズとデシリアライズをサポート。
+    - `serde-lazy` - [serde](https://crates.io/crates/serde) によるシリアライズとデシリアライズをサポート。
+    JSON などの serde 対応のシリアライズフォーマットで使用可能。
+    - `parquet` - Apache Parquet フォーマットの読み込み
+    - `json` - JSON のシリアライズ
+    - `ipc` - Arrow's IPC フォーマットのシリアライズ
+    - `decompress` - csvの圧縮形式を自動的に推測し、解凍。
 
-- `DataFrame` operations:
-    - `dynamic_group_by` - Group by based on a time window instead of predefined keys.
-    Also activates rolling window group by operations.
-    - `sort_multiple` - Allow sorting a `DataFrame` on multiple columns
-    - `rows` - Create `DataFrame` from rows and extract rows from `DataFrames`.
-    And activates `pivot` and `transpose` operations
-    - `join_asof` - Join ASOF, to join on nearest keys instead of exact equality match.
-    - `cross_join` - Create the Cartesian product of two DataFrames.
-    - `semi_anti_join` - SEMI and ANTI joins.
-    - `row_hash` - Utility to hash DataFrame rows to UInt64Chunked
-    - `diagonal_concat` - Concat diagonally thereby combining different schemas.
-    - `dataframe_arithmetic` - Arithmetic on (Dataframe and DataFrames) and (DataFrame on Series)
-    - `partition_by` - Split into multiple DataFrames partitioned by groups.
-- `Series`/`Expression` operations:
-    - `is_in` - [Check for membership in `Series`](crate::chunked_array::ops::IsIn)
-    - `zip_with` - [Zip two Series/ ChunkedArrays](crate::chunked_array::ops::ChunkZip)
-    - `round_series` - round underlying float types of `Series`.
-    - `repeat_by` - [Repeat element in an Array N times, where N is given by another array.
-    - `is_first_distinct` - Check if element is first unique value.
-    - `is_last_distinct` - Check if element is last unique value.
-    - `checked_arithmetic` - checked arithmetic/ returning `None` on invalid operations.
-    - `dot_product` - Dot/inner product on Series and Expressions.
-    - `concat_str` - Concat string data in linear time.
-    - `reinterpret` - Utility to reinterpret bits to signed/unsigned
-    - `take_opt_iter` - Take from a Series with `Iterator<Item=Option<usize>>`
-    - `mode` - [Return the most occurring value(s)](crate::chunked_array::ops::ChunkUnique::mode)
-    - `cum_agg` - cum_sum, cum_min, cum_max aggregation.
-    - `rolling_window` - rolling window functions, like rolling_mean
-    - `interpolate` [interpolate None values](crate::chunked_array::ops::Interpolate)
-    - `extract_jsonpath` - [Run jsonpath queries on StringChunked](https://goessner.net/articles/JsonPath/)
-    - `list` - List utils.
-      - `list_gather` take sublist by multiple indices
-    - `rank` - Ranking algorithms.
-    - `moment` - kurtosis and skew statistics
-    - `ewma` - Exponential moving average windows
-    - `abs` - Get absolute values of Series
-    - `arange` - Range operation on Series
-    - `product` - Compute the product of a Series.
-    - `diff` - `diff` operation.
-    - `pct_change` - Compute change percentages.
-    - `unique_counts` - Count unique values in expressions.
-    - `log` - Logarithms for `Series`.
-    - `list_to_struct` - Convert `List` to `Struct` dtypes.
-    - `list_count` - Count elements in lists.
-    - `list_eval` - Apply expressions over list elements.
-    - `cumulative_eval` - Apply expressions over cumulatively increasing windows.
-    - `arg_where` - Get indices where condition holds.
-    - `search_sorted` - Find indices where elements should be inserted to maintain order.
-    - `date_offset` Add an offset to dates that take months and leap years into account.
-    - `trigonometry` Trigonometric functions.
-    - `sign` Compute the element-wise sign of a Series.
-    - `propagate_nans` NaN propagating min/max aggregations.
-- `DataFrame` pretty printing
-    - `fmt` - Activate DataFrame formatting
+- サポートする圧縮形式:
+    - zip
+    - gzip
+
+- `DataFrame` の操作:
+    - `dynamic_group_by` - 事前に定義されたキーではなく、時間窓に基づいてグループ化。
+    ローリング窓のグループ化操作も有効化。
+    - `sort_multiple` - 複数カラムの `DataFrame` のソートを許可。
+    - `rows` - 行からDataFrameを作成し、DataFrameから行を抽出。
+    また `pivot` と `transpose` の操作も有効化。
+    - `join_asof` - 完全一致ではなく、最近傍のキーで結合する Join ASOF を提供。
+    - `cross_join` - 2つの DataFrame のデカルト積を作成
+    - `semi_anti_join` - SEMI JOIN と ANTI JOIN を提供。
+    - `row_hash` - DataFrame の行を UInt64Chunked にハッシュする機能
+    - `diagonal_concat` - 異なるスキーマの DataFrame を対角方向に結合。
+    - `dataframe_arithmetic` - (DataFrame と DataFrame)や(DataFrame　と　Series)の演算
+    - `partition_by` - グループごとに DataFrame を複数に分割
+- `Series`/エクスプレッション の操作:
+    - `is_in` - [`Series` のメンバーシップをチェックします](crate::chunked_array::ops::IsIn)
+    - `zip_with` - [2つの Series/ ChunkedArrays を zip 化します](crate::chunked_array::ops::ChunkZip)
+    - `round_series` - `Series` の浮動小数点型を丸める。
+    - `repeat_by` - 別の配列で指定された回数だけ要素を繰り返する。
+    - `is_first_distinct` - 要素が最初の一意の値かどうかをチェック。
+    - `is_last_distinct` - 要素が最後の一意の値かどうかをチェック。
+    - `checked_arithmetic` - 無効な演算に `None` を返す検査付き演算。
+    - `dot_product` - `Series`とエクスプレッションの内積。
+    - `concat_str` - 線形時間での文字列データの連結。
+    - `reinterpret` - 符号付き/符号なしへのビット再解釈ユーティリティ
+    - `take_opt_iter` - `Series` から `Iterator<Item=Option<usize>>` を取得する
+    - `mode` - [最も頻出する値（または複数の値）を返します](crate::chunked_array::ops::ChunkUnique::mode)
+    - `cum_agg` - cum_sum、cum_min、cum_max といった集約。
+    - `rolling_window` - ローリング平均などのローリング窓関数
+    - `interpolate` [`None`値を補間します](crate::chunked_array::ops::Interpolate)
+    - `extract_jsonpath` - [StringChunked で JSONPath クエリを実行する](https://goessner.net/articles/JsonPath/)
+    - `list` - リストのユーティリティ。
+      - `list_gather` 複数のインデックスでサブリストを取得。
+    - `rank` - ランキングアルゴリズム。
+    - `moment` - 尖度や歪度の統計量
+    - `ewma` - 指数平滑移動平均の窓関数
+    - `abs` - `Series`の絶対値の取得
+    - `arange` - `Series`での範囲操作
+    - `product` - `Series`の積を計算。
+    - `diff` - `diff` 操作。
+    - `pct_change` - 変化率を計算。
+    - `unique_counts` - 式の一意の値をカウントする。
+    - `log` - `Series`の対数。
+    - `list_to_struct` - `List` を `Struct` データ型に変換する。
+    - `list_count` - リスト内の要素をカウントする。
+    - `list_eval` - リスト要素に式を適用する。
+    - `cumulative_eval` - 累積的に増加する窓に式を適用する。
+    - `arg_where` - 条件を満たすインデックスを取得する。
+    - `search_sorted` - 順序を維持するように要素を挿入すべき位置を見つける。
+    - `date_offset` 月や閏年を考慮して日付にオフセットを追加する。
+    - `trigonometry` 三角関数。
+    - `sign` `Series`の要素ごとの符号を計算する。
+    - `propagate_nans` NaN伝播型のmin/max集計。
+- `DataFrame`の整形出力
+    - `fmt` - `DataFrame` の書式設定を有効化する
 
 <!-- dprint-ignore-end -->

@@ -1,28 +1,28 @@
-# Ecosystem
+# エコシステム
 
-## Introduction
+## はじめに
 
-On this page you can find a non-exhaustive list of libraries and tools that support Polars. As the data ecosystem is evolving fast, more libraries will likely support Polars in the future. One of the main drivers is that Polars makes use of `Apache Arrow` in it's backend.
+このページでは、Polars をサポートするライブラリやツールの非網羅的なリストを見つけることができます。データエコシステムは急速に進化しているため、今後さらに Polars をサポートするライブラリが登場する可能性があります。主な要因の 1 つは、Polars が自身のバックエンドで `Apache Arrow` を使用していることです。
 
-### Table of contents:
+### 目次：
 
 - [Apache Arrow](#apache-arrow)
-- [Data visualisation](#data-visualisation)
+- [データ可視化](#data-visualisation)
 - [IO](#io)
-- [Machine learning](#machine-learning)
-- [Other](#other)
+- [機械学習](#machine-learning)
+- [その他](#other)
 
 ---
 
 ### Apache Arrow
 
-[Apache Arrow](https://arrow.apache.org/) enables zero-copy reads of data within the same process, meaning that data can be directly accessed in its in-memory format without the need for copying or serialisation. This enhances performance when integrating with different tools using Apache Arrow. Polars is compatible with a wide range of libraries that also make use of Apache Arrow, like Pandas and DuckDB.
+[Apache Arrow](https://arrow.apache.org/) は、同一プロセス内でデータの zero-copy 読み取りを可能にします。つまり、コピーやシリアル化の必要なく、メモリ内のフォーマットでデータに直接アクセスできます。これにより、Apache Arrow を使用するさまざまなツールとの統合時のパフォーマンスが向上します。Polars は、Pandas や DuckDB など、Apache Arrow を活用する幅広いライブラリと互換性があります。
 
-### Data visualisation
+### データ可視化
 
 #### hvPlot
 
-[hvPlot](https://hvplot.holoviz.org/) is available as the default plotting backend for Polars making it simple to create interactive and static visualisations. You can use hvPlot by using the feature flag `plot` during installing.
+[hvPlot](https://hvplot.holoviz.org/) は、Polars のデフォルトのプロットバックエンドとして利用可能で、対話型および静的な可視化を簡単に作成できます。インストール時に `plot` 機能フラグを使用して hvPlot を使用できます。
 
 ```python
 pip install 'polars[plot]'
@@ -30,44 +30,44 @@ pip install 'polars[plot]'
 
 #### Matplotlib
 
-[Matplotlib](https://matplotlib.org/) is a comprehensive library for creating static, animated, and interactive visualizations in Python. Matplotlib makes easy things easy and hard things possible.
+[Matplotlib](https://matplotlib.org/) は、Python で静的、アニメーション、対話型の可視化を作成するための包括的なライブラリです。Matplotlib は簡単なことを簡単に、難しいことを可能にします。
 
 #### Plotly
 
-[Plotly](https://plotly.com/python/) is an interactive, open-source, and browser-based graphing library for Python. Built on top of plotly.js, it ships with over 30 chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts, and more.
+[Plotly](https://plotly.com/python/) は、Python 用の対話型、オープンソース、ブラウザベースのグラフィックライブラリです。plotly.js 上に構築されており、科学的なチャート、3D グラフ、統計チャート、SVG マップ、金融チャートなど、30 種類以上のチャートタイプを提供しています。
 
 #### [Seaborn](https://seaborn.pydata.org/)
 
-Seaborn is a Python data visualization library based on Matplotlib. It provides a high-level interface for drawing attractive and informative statistical graphics.
+Seaborn は、Matplotlib ベースの Python データ可視化ライブラリです。魅力的で情報豊富な統計グラフィックスを描くための高レベルのインターフェイスを提供します。
 
 ### IO
 
 #### Delta Lake
 
-The [Delta Lake](https://github.com/delta-io/delta-rs) project aims to unlock the power of the Deltalake for as many users and projects as possible by providing native low-level APIs aimed at developers and integrators, as well as a high-level operations API that lets you query, inspect, and operate your Delta Lake with ease.
+[Delta Lake](https://github.com/delta-io/delta-rs) プロジェクトは、開発者やインテグレーターを対象とした低レベルの API と、Delta Lake を簡単に参照、検査、操作できる高レベルの操作 API を提供することで、Deltalake の力を多くのユーザーやプロジェクトに解放することを目的としています。
 
-Read how to use Delta Lake with Polars [at Delta Lake](https://delta-io.github.io/delta-rs/integrations/delta-lake-polars/#reading-a-delta-lake-table-with-polars).
+Polars での Delta Lake の使用方法については、[Delta Lake](https://delta-io.github.io/delta-rs/integrations/delta-lake-polars/#reading-a-delta-lake-table-with-polars) を参照してください。
 
-### Machine Learning
+### 機械学習
 
 #### Scikit Learn
 
-Since [Scikit Learn](https://scikit-learn.org/stable/) 1.4, all transformers support Polars output. See the change log for [more details](https://scikit-learn.org/dev/whats_new/v1.4.html#changes-impacting-all-modules).
+Scikit Learn 1.4 以降、すべての変換器が Polars の出力をサポートしています。[詳細](https://scikit-learn.org/dev/whats_new/v1.4.html#changes-impacting-all-modules)は[変更履歴] を参照してください。
 
-### Other
+### その他
 
 #### DuckDB
 
-[DuckDB](https://duckdb.org) is a high-performance analytical database system. It is designed to be fast, reliable, portable, and easy to use. DuckDB provides a rich SQL dialect, with support far beyond basic SQL. DuckDB supports arbitrary and nested correlated subqueries, window functions, collations, complex types (arrays, structs), and more. Read about integration with Polars [on the DuckDB website](https://duckdb.org/docs/guides/python/polars).
+[DuckDB](https://duckdb.org) は、高性能な分析データベースシステムです。高速、信頼性、ポータビリティ、使いやすさを目指して設計されています。DuckDB は、基本的な SQL を遥かに超えた豊富な SQL 言語をサポートしています。任意の入れ子になった相関サブクエリ、ウィンドウ関数、照合順序、複雑な型(配列、構造体)などがあります。Polars との統合については、[DuckDB のウェブサイト](https://duckdb.org/docs/guides/python/polars) を参照してください。
 
 #### Great Tables
 
-With [Great Tables](https://posit-dev.github.io/great-tables/articles/intro.html) anyone can make wonderful-looking tables in Python. Here is a [blog post](https://posit-dev.github.io/great-tables/blog/polars-styling/) on how to use Great Tables with Polars.
+[Great Tables](https://posit-dev.github.io/great-tables/articles/intro.html) を使えば、誰でも素晴らしい見た目のテーブルを Python で作成できます。Polars との使用方法については、[ブログ記事](https://posit-dev.github.io/great-tables/blog/polars-styling/) を参照してください。
 
 #### LanceDB
 
-[LanceDB](https://lancedb.com/) is a developer-friendly, serverless vector database for AI applications. They have added a direct integration with Polars. LanceDB can ingest Polars dataframes, return results as polars dataframes, and export the entire table as a polars lazyframe. You can find a quick tutorial in their blog [LanceDB + Polars](https://blog.lancedb.com/lancedb-polars-2d5eb32a8aa3)
+[LanceDB](https://lancedb.com/) は、AI アプリケーション向けの開発者に優しいサーバーレスベクトルデータベースです。Polars との直接的な統合を追加しました。LanceDB は Polars DataFrame をインジェストし、結果を Polars DataFrame で返し、テーブル全体を Polars lazyframe としてエクスポートできます。端的なチュートリアルは、[LanceDB + Polars](https://blog.lancedb.com/lancedb-polars-2d5eb32a8aa3) のブログで確認できます。
 
 #### Mage
 
-[Mage](https://www.mage.ai) is an open-source data pipeline tool for transforming and integrating data. Learn about integration between Polars and Mage at [docs.mage.ai](https://docs.mage.ai/integrations/polars).
+[Mage](https://www.mage.ai) は、データの変換と統合を行うためのオープンソースのデータパイプラインツールです。Polars との統合については、[docs.mage.ai](https://docs.mage.ai/integrations/polars) を参照してください。
