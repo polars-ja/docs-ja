@@ -1,14 +1,14 @@
-# SHOW TABLES
+# テーブルの表示（SHOW TABLES）
 
-In Polars, the `SHOW TABLES` statement is used to list all the tables that have been registered in the current `SQLContext`. When you register a DataFrame with the `SQLContext`, you give it a name that can be used to refer to the DataFrame in subsequent SQL statements. The `SHOW TABLES` statement allows you to see a list of all the registered tables, along with their names.
+Polars では、 `SHOW TABLES` 句を使用して、現在の `SQLContext` に登録されているすべてのテーブルを一覧表示することができます。 DataFrame を `SQLContext` に登録する時に、その DataFrame を参照するための名前を指定します。 `SHOW TABLES` 句を使うと、登録されているすべてのテーブルの名前を確認することができます。
 
-The syntax for the `SHOW TABLES` statement in Polars is as follows:
+Polars における `SHOW TABLES` 句の構文は以下の通りです：
 
 ```
 SHOW TABLES
 ```
 
-Here's an example of how to use the `SHOW TABLES` statement in Polars:
+Polars での `SHOW TABLES` 句の使用例は以下の通りです：
 
 {{code_block('user-guide/sql/show','show',['SQLregister','SQLexecute'])}}
 
@@ -17,6 +17,6 @@ Here's an example of how to use the `SHOW TABLES` statement in Polars:
 --8<-- "python/user-guide/sql/show.py:show"
 ```
 
-In this example, we create two DataFrames and register them with the `SQLContext` using different names. We then execute a `SHOW TABLES` statement using the `execute()` method of the `SQLContext` object, which returns a DataFrame containing a list of all the registered tables and their names. The resulting DataFrame is then printed using the `print()` function.
+この例では、2 つの DataFrame を作成し、異なる名前で `SQLContext` に登録しています。その後、`SQLContext` オブジェクトの `execute()` メソッドを使って `SHOW TABLES` 句を実行し、登録されているすべてのテーブルの一覧を取得しています。取得した DataFrame は `print()` 関数で出力されます。
 
-Note that the `SHOW TABLES` statement only lists tables that have been registered with the current `SQLContext`. If you register a DataFrame with a different `SQLContext` or in a different Python session, it will not appear in the list of tables returned by `SHOW TABLES`.
+`SHOW TABLES` 句は、現在の `SQLContext` に登録されているテーブルのみを一覧表示します。別の `SQLContext` や別の Python セッションで DataFrame を登録した場合、`SHOW TABLES` の結果には表示されません。
