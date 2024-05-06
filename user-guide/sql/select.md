@@ -1,6 +1,6 @@
 # SELECT
 
-Polars SQL では、`SELECT` 句を使用して、テーブルからデータを `DataFrame` に取り出します。Polars SQL の `SELECT` 句の基本的な構文は次のとおりです：
+Polars SQL では、`SELECT` 文を使用して、テーブルからデータを `DataFrame` に取り出します。Polars SQL の `SELECT` 文の基本的な構文は次のとおりです：
 
 ```sql
 SELECT column1, column2, ...
