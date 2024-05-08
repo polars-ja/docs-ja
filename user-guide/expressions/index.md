@@ -9,7 +9,7 @@
 - [文字列（Strings）](strings.md)
 - [集計（Aggregation）](aggregation.md)
 - [欠損データ（Missing data）](missing-data.md)
-- [窓関数（Window Functions）](window.md)
+- [ウィンドウ関数（Window Functions）](window.md)
 - [フォールド（Folds）](folds.md)
 - [リストと配列（Lists and Arrays）](lists.md)
 - [エクスプレッションプラグイン（Expression plugins）](plugins.md)
