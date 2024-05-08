@@ -1,11 +1,10 @@
 # Numpy
 
-Polars expressions support NumPy [ufuncs](https://numpy.org/doc/stable/reference/ufuncs.html). See [here](https://numpy.org/doc/stable/reference/ufuncs.html#available-ufuncs)
-for a list on all supported numpy functions.
+Polars のエクスプレッションは NumPy [ufuncs（ユニバーサルファンクション）](https://numpy.org/doc/stable/reference/ufuncs.html) をサポートしています。すべてのサポートされている NumPy 関数のリストについては、[こちら](https://numpy.org/doc/stable/reference/ufuncs.html#available-ufuncs)を参照してください。
 
-This means that if a function is not provided by Polars, we can use NumPy and we still have fast columnar operation through the NumPy API.
+これは、Polars が提供していない関数がある場合、NumPy を使用できることを意味し、NumPy API を通じて高速な列操作が可能であることを意味します。
 
-### Example
+### 例
 
 {{code_block('user-guide/expressions/numpy-example',api_functions=['DataFrame','np.log'])}}
 
@@ -13,10 +12,10 @@ This means that if a function is not provided by Polars, we can use NumPy and we
 --8<-- "python/user-guide/expressions/numpy-example.py"
 ```
 
-### Interoperability
+### 相互運用性
 
-Polars `Series` have support for NumPy universal functions (ufuncs). Element-wise functions such as `np.exp()`, `np.cos()`, `np.div()`, etc. all work with almost zero overhead.
+Polars `Series` は NumPy ユニバーサルファンクション（ufuncs）をサポートしています。`np.exp()`、`np.cos()`、`np.div()` などの要素ごとの関数は、ほとんどオーバーヘッドなしで動作します。
 
-However, as a Polars-specific remark: missing values are a separate bitmask and are not visible by NumPy. This can lead to a window function or a `np.convolve()` giving flawed or incomplete results.
+ただし、Polars 固有の注記として：欠損値は別のビットマスクであり、NumPy には見えません。これにより、窓関数や `np.convolve()` が不完全な結果や誤った結果をもたらすことがあります。
 
-Convert a Polars `Series` to a NumPy array with the `.to_numpy()` method. Missing values will be replaced by `np.nan` during the conversion.
+Polars `Series` を NumPy 配列に変換するには、`.to_numpy()` メソッドを使用します。変換中に欠損値は `np.nan` に置き換えられます。

@@ -1,14 +1,14 @@
-# Missing data
+# 欠損データ（Missing data）
 
-This page sets out how missing data is represented in Polars and how missing data can be filled.
+このページでは、Polars における欠損データの表現方法と、欠損データの補完方法について説明します。
 
-## `null` and `NaN` values
+## `null` と `NaN` 値
 
-Each column in a `DataFrame` (or equivalently a `Series`) is an Arrow array or a collection of Arrow arrays [based on the Apache Arrow format](https://arrow.apache.org/docs/format/Columnar.html#null-count). Missing data is represented in Arrow and Polars with a `null` value. This `null` missing value applies for all data types including numerical values.
+`DataFrame`（または同等の `Series`）の各カラムは、Arrow 配列または Arrow 配列の集合です（[Apache Arrow 形式に基づいています](https://arrow.apache.org/docs/format/Columnar.html#null-count)）。欠損データは、Arrow および Polars で `null` 値として表されます。この `null` 値は、数値を含むすべてのデータタイプに適用されます。
 
-Polars also allows `NotaNumber` or `NaN` values for float columns. These `NaN` values are considered to be a type of floating point data rather than missing data. We discuss `NaN` values separately below.
+Polars は、浮動小数点カラムに対して `NotaNumber` または `NaN` 値を許容しています。これらの `NaN` 値は、欠損データではなく浮動小数点データの一種と見なされます。`NaN` 値については後述します。
 
-You can manually define a missing value with the python `None` value:
+Python の `None` 値を使用して、手動で欠損値を定義することができます：
 
 {{code_block('user-guide/expressions/missing-data','dataframe',['DataFrame'])}}
 
@@ -19,13 +19,13 @@ You can manually define a missing value with the python `None` value:
 
 !!! info
 
-    In pandas the value for missing data depends on the dtype of the column. In Polars missing data is always represented as a `null` value.
+    pandas では、カラムの dtype によって欠損データの値が異なります。Polars では、欠損データは常に `null` 値として表されます。
 
-## Missing data metadata
+## 欠損データのメタデータ
 
-Each Arrow array used by Polars stores two kinds of metadata related to missing data. This metadata allows Polars to quickly show how many missing values there are and which values are missing.
+Polars で使用される各 Arrow 配列は、欠損データに関連する二種類のメタデータを格納しています。このメタデータにより、Polars は欠損値の数とどの値が欠損しているかを迅速に示すことができます。
 
-The first piece of metadata is the `null_count` - this is the number of rows with `null` values in the column:
+最初のメタデータは `null_count` で、これはカラム内の `null` 値を持つ行の数です：
 
 {{code_block('user-guide/expressions/missing-data','count',['null_count'])}}
 
@@ -33,12 +33,12 @@ The first piece of metadata is the `null_count` - this is the number of rows wit
 --8<-- "python/user-guide/expressions/missing-data.py:count"
 ```
 
-The `null_count` method can be called on a `DataFrame`, a column from a `DataFrame` or a `Series`. The `null_count` method is a cheap operation as `null_count` is already calculated for the underlying Arrow array.
+`null_count` メソッドは `DataFrame`、`DataFrame` のカラム、または `Series` に対して呼び出すことができます。`null_count` メソッドは、基本的な Arrow 配列で `null_count` がすでに計算されているため、低コストの操作です。
 
-The second piece of metadata is an array called a _validity bitmap_ that indicates whether each data value is valid or missing.
-The validity bitmap is memory efficient as it is bit encoded - each value is either a 0 or a 1. This bit encoding means the memory overhead per array is only (array length / 8) bytes. The validity bitmap is used by the `is_null` method in Polars.
+もう一つのメタデータは、各データ値が有効か欠損かを示す _validity bitmap_ と呼ばれる配列です。
+validity bitmap はメモリ効率が良いです。なぜなら、ビットエンコードされているからです（各値は 0 または 1）。このビットエンコードにより、配列ごとのメモリオーバーヘッドは（配列の長さ / 8）バイトのみです。validity bitmap は Polars の `is_null` メソッドで使用されます。
 
-You can return a `Series` based on the validity bitmap for a column in a `DataFrame` or a `Series` with the `is_null` method:
+`DataFrame` または `Series` のカラムに対する validity bitmap を基に `Series` を返すことが、`is_null` メソッドで可能です：
 
 {{code_block('user-guide/expressions/missing-data','isnull',['is_null'])}}
 
@@ -46,18 +46,18 @@ You can return a `Series` based on the validity bitmap for a column in a `DataFr
 --8<-- "python/user-guide/expressions/missing-data.py:isnull"
 ```
 
-The `is_null` method is a cheap operation that does not require scanning the full column for `null` values. This is because the validity bitmap already exists and can be returned as a Boolean array.
+`is_null` メソッドは、`null` 値を完全にスキャンする必要がないため、低コストの操作です。これは、validity bitmap がすでに存在し、Boolean 配列として返されるためです。
 
-## Filling missing data
+## 欠損データの補完
 
-Missing data in a `Series` can be filled with the `fill_null` method. You have to specify how you want the `fill_null` method to fill the missing data. The main ways to do this are filling with:
+`Series` の欠損データは、`fill_null` メソッドで補完することができます。欠損データをどのように補完するかを指定する必要があります。これを行う主な方法は次のとおりです：
 
-- a literal such as 0 or "0"
-- a strategy such as filling forwards
-- an expression such as replacing with values from another column
-- interpolation
+- リテラル（0 や "0" など）で補完
+- 戦略（前方に補完するなど）で補完
+- 別のカラムからの値で置換するなどのエクスプレッションで補完
+- 補間
 
-We illustrate each way to fill nulls by defining a simple `DataFrame` with a missing value in `col2`:
+欠損値がある `col2` を持つシンプルな `DataFrame` を定義して、null を補完する方法を示します：
 
 {{code_block('user-guide/expressions/missing-data','dataframe2',['DataFrame'])}}
 
@@ -65,9 +65,9 @@ We illustrate each way to fill nulls by defining a simple `DataFrame` with a mis
 --8<-- "python/user-guide/expressions/missing-data.py:dataframe2"
 ```
 
-### Fill with specified literal value
+### 指定されたリテラル値で補完
 
-We can fill the missing data with a specified literal value with `pl.lit`:
+指定されたリテラル値で欠損データを補完することができます。例えば `pl.lit` を使います：
 
 {{code_block('user-guide/expressions/missing-data','fill',['fill_null'])}}
 
@@ -75,9 +75,9 @@ We can fill the missing data with a specified literal value with `pl.lit`:
 --8<-- "python/user-guide/expressions/missing-data.py:fill"
 ```
 
-### Fill with a strategy
+### 戦略で補完
 
-We can fill the missing data with a strategy such as filling forward:
+欠損データを戦略で補完することができます。例えば、前方に補完する戦略です：
 
 {{code_block('user-guide/expressions/missing-data','fillstrategy',['fill_null'])}}
 
@@ -85,12 +85,12 @@ We can fill the missing data with a strategy such as filling forward:
 --8<-- "python/user-guide/expressions/missing-data.py:fillstrategy"
 ```
 
-You can find other fill strategies in the API docs.
+API ドキュメントで他の補完戦略を見つけることができます。
 
-### Fill with an expression
+### エクスプレッションで補完
 
-For more flexibility we can fill the missing data with an expression. For example,
-to fill nulls with the median value from that column:
+より柔軟性を持って欠損データを補完することができます。
+例えば、そのカラムの中央値で null を補完します：
 
 {{code_block('user-guide/expressions/missing-data','fillexpr',['fill_null'])}}
 
@@ -98,11 +98,11 @@ to fill nulls with the median value from that column:
 --8<-- "python/user-guide/expressions/missing-data.py:fillexpr"
 ```
 
-In this case the column is cast from integer to float because the median is a float statistic.
+この場合、中央値が浮動小数点統計であるため、カラムは整数から浮動小数点にキャストされます。
 
-### Fill with interpolation
+### 補間で補完
 
-In addition, we can fill nulls with interpolation (without using the `fill_null` function):
+さらに、補間を使用して（`fill_null` 関数を使用せずに）null を補完することもできます：
 
 {{code_block('user-guide/expressions/missing-data','fillinterpolate',['interpolate'])}}
 
@@ -110,31 +110,31 @@ In addition, we can fill nulls with interpolation (without using the `fill_null`
 --8<-- "python/user-guide/expressions/missing-data.py:fillinterpolate"
 ```
 
-## `NotaNumber` or `NaN` values
+## `NotaNumber` または `NaN` 値
 
-Missing data in a `Series` has a `null` value. However, you can use `NotaNumber` or `NaN` values in columns with float datatypes. These `NaN` values can be created from Numpy's `np.nan` or the native python `float('nan')`:
+`Series` の欠損データには `null` 値があります。しかし、浮動小数点データ型のカラムでは `NotaNumber` または `NaN` 値を使用することができます。これらの `NaN` 値は、Numpy の `np.nan` またはネイティブ Python の `float('nan')` から作成することができます：
 
 {{code_block('user-guide/expressions/missing-data','nan',['DataFrame'])}}
 
-```python exec="on" result="text" session="user-guide/missing-data"
+```python exec="on" result="text" session="user-guide/missing-data
 --8<-- "python/user-guide/expressions/missing-data.py:nan"
 ```
 
 !!! info
 
-    In pandas by default a `NaN` value in an integer column causes the column to be cast to float. This does not happen in Polars - instead an exception is raised.
+    pandas では、整数カラムの `NaN` 値がデフォルトでカラムを浮動小数点にキャストします。これは Polars では起こらず、代わりに例外が発生します。
 
-`NaN` values are considered to be a type of floating point data and are **not considered to be missing data** in Polars. This means:
+`NaN` 値は浮動小数点データの一種と見なされ、Polars では**欠損データとは見なされません**。つまり：
 
-- `NaN` values are **not** counted with the `null_count` method
-- `NaN` values are filled when you use `fill_nan` method but are **not** filled with the `fill_null` method
+- `NaN` 値は `null_count` メソッドでカウントされ**ません**
+- `NaN` 値は `fill_nan` メソッドで補完されますが、`fill_null` メソッドでは補完され**ません**
 
-Polars has `is_nan` and `fill_nan` methods which work in a similar way to the `is_null` and `fill_null` methods. The underlying Arrow arrays do not have a pre-computed validity bitmask for `NaN` values so this has to be computed for the `is_nan` method.
+Polars には `is_nan` と `fill_nan` のメソッドがあり、`is_null` と `fill_null` のメソッドと同様に動作します。`NaN` 値には事前計算された validity bitmap がないため、`is_nan` メソッド用にこれを計算する必要があります。
 
-One further difference between `null` and `NaN` values is that taking the `mean` of a column with `null` values excludes the `null` values from the calculation but with `NaN` values taking the mean results in a `NaN`. This behaviour can be avoided by replacing the `NaN` values with `null` values;
+`null` と `NaN` 値のもう一つの違いは、`null` 値を含むカラムの平均を取る場合、`null` 値は計算から除外されますが、`NaN` 値を含む場合、平均を取ると `NaN` になります。この挙動は、`NaN` 値を `null` 値に置き換えることで回避することができます：
 
 {{code_block('user-guide/expressions/missing-data','nanfill',['fill_nan'])}}
 
-```python exec="on" result="text" session="user-guide/missing-data"
+```python exec="on" result="text" session="user-guide/missing-data
 --8<-- "python/user-guide/expressions/missing-data.py:nanfill"
 ```

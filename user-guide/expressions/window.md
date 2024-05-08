@@ -1,8 +1,8 @@
-# Window functions
+# ウィンドウ関数（Window functions）
 
-Window functions are expressions with superpowers. They allow you to perform aggregations on groups in the
-`select` context. Let's get a feel for what that means. First we create a dataset. The dataset loaded in the
-snippet below contains information about pokemon:
+ウィンドウ関数はスーパーパワーを持つエクスプレッションです。これらを使用して、
+`select` 式のグループに対して集計を実行できます。その意味を感じ取ってみましょう。
+まずはデータセットを作成します。以下のスニペットで読み込まれるデータセットには、ポケモンに関する情報が含まれています。
 
 {{code_block('user-guide/expressions/window','pokemon',['read_csv'])}}
 
@@ -10,17 +10,17 @@ snippet below contains information about pokemon:
 --8<-- "python/user-guide/expressions/window.py:pokemon"
 ```
 
-## Group by aggregations in selection
+## 選択におけるグループ別集計
 
-Below we show how to use window functions to group over different columns and perform an aggregation on them.
-Doing so allows us to use multiple group by operations in parallel, using a single query. The results of the aggregation
-are projected back to the original rows. Therefore, a window function will almost always lead to a `DataFrame` with the same size as the original.
+以下では、異なるカラムをグループ化し、それらに集計を行うウィンドウ関数の使用方法を示します。
+これにより、単一のクエリを使用して複数のグループ別操作を並行して実行できます。
+集計の結果は元の行に投影されます。したがって、ウィンドウ関数は通常、元のデータフレームと同じサイズの DataFrame を生成します。
 
-We will discuss later the cases where a window function can change the numbers of rows in a `DataFrame`.
+ウィンドウ関数が `DataFrame` の行数を変更する場合については後で議論します。
 
-Note how we call `.over("Type 1")` and `.over(["Type 1", "Type 2"])`. Using window functions we can aggregate over different groups in a single `select` call! Note that, in Rust, the type of the argument to `over()` must be a collection, so even when you're only using one column, you must provide it in an array.
+`.over("Type 1")` と `.over(["Type 1", "Type 2"])` を呼び出す方法に注目してください。ウィンドウ関数を使用すると、単一の `select` 呼び出しで異なるグループを集計できます！Rust では、`over()` への引数のタイプはコレクションでなければならないため、1つのカラムのみを使用する場合でも、それを配列で提供する必要があります。
 
-The best part is, this won't cost you anything. The computed groups are cached and shared between different `window` expressions.
+最良の部分は、これによる追加コストは一切ありません。計算されたグループはキャッシュされ、異なる `window` エクスプレッション間で共有されます。
 
 {{code_block('user-guide/expressions/window','group_by',['over'])}}
 
@@ -28,12 +28,12 @@ The best part is, this won't cost you anything. The computed groups are cached a
 --8<-- "python/user-guide/expressions/window.py:group_by"
 ```
 
-## Operations per group
+## グループごとの操作
 
-Window functions can do more than aggregation. They can also be viewed as an operation within a group. If, for instance, you
-want to `sort` the values within a `group`, you can write `col("value").sort().over("group")` and voilà! We sorted by group!
+ウィンドウ関数は集計以上のことができます。例えば、`group` 内で値を `sort` したい場合、
+`col("value").sort().over("group")` と記述し、voilà！グループ別にソートしました！
 
-Let's filter out some rows to make this more clear.
+これをもう少し明確にするために、いくつかの行をフィルターで除外しましょう。
 
 {{code_block('user-guide/expressions/window','operations',['filter'])}}
 
@@ -41,9 +41,9 @@ Let's filter out some rows to make this more clear.
 --8<-- "python/user-guide/expressions/window.py:operations"
 ```
 
-Observe that the group `Water` of column `Type 1` is not contiguous. There are two rows of `Grass` in between. Also note
-that each pokemon within a group are sorted by `Speed` in `ascending` order. Unfortunately, for this example we want them sorted in
-`descending` speed order. Luckily with window functions this is easy to accomplish.
+`Type 1` のカラムにある `Water` グループが連続していないことに注意してください。
+その間に `Grass` の2行があります。また、各ポケモンは `Speed` によって昇順でソートされています。
+残念ながら、この例では降順でソートしたいのです。幸いなことに、ウィンドウ関数を使用すればこれは簡単に実現できます。
 
 {{code_block('user-guide/expressions/window','sort',['over'])}}
 
@@ -51,38 +51,38 @@ that each pokemon within a group are sorted by `Speed` in `ascending` order. Unf
 --8<-- "python/user-guide/expressions/window.py:sort"
 ```
 
-Polars keeps track of each group's location and maps the expressions to the proper row locations. This will also work over different groups in a single `select`.
+Polars は各グループの位置を追跡し、エクスプレッションを適切な行位置にマッピングします。これは単一の `select` 内で異なるグループに対しても機能します。
 
-The power of window expressions is that you often don't need a `group_by -> explode` combination, but you can put the logic in a single expression. It also makes the API cleaner. If properly used a:
+ウィンドウエクスプレッションの力は、`group_by -> explode` の組み合わせが不要で、ロジックを単一のエクスプレッションにまとめることができる点です。また、API をよりクリーンにします。適切に使用すると、以下のようになります：
 
-- `group_by` -> marks that groups are aggregated and we expect a `DataFrame` of size `n_groups`
-- `over` -> marks that we want to compute something within a group, and doesn't modify the original size of the `DataFrame` except in specific cases
+- `group_by` -> グループが集約され、サイズが `n_groups` の DataFrame を期待することを示します
+- `over` -> グループ内で何かを計算したいことを示し、特定のケースを除いて元の DataFrame のサイズを変更しません
 
-## Map the expression result to the DataFrame rows
+## グループごとのエクスプレッション結果を DataFrame の行にマッピングする
 
-In cases where the expression results in multiple values per group, the Window function has 3 strategies for linking the values back to the `DataFrame` rows:
+エクスプレッションの結果がグループごとに複数の値を生成する場合、ウィンドウ関数には値を DataFrame の行にリンクするための3つの戦略があります：
 
-- `mapping_strategy = 'group_to_rows'` -> each value is assigned back to one row. The number of values returned should match the number of rows.
+- `mapping_strategy = 'group_to_rows'` -> 各値は1行に割り当てられます。返される値の数は行数に一致する必要があります。
 
-- `mapping_strategy = 'join'` -> the values are imploded in a list, and the list is repeated on all rows. This can be memory intensive.
+- `mapping_strategy = 'join'` -> 値はリストにまとめられ、そのリストがすべての行に繰り返し表示されます。これはメモリを多く消費する可能性があります。
 
-- `mapping_strategy = 'explode'` -> the values are exploded to new rows. This operation changes the number of rows.
+- `mapping_strategy = 'explode'` -> 値が新しい行に展開されます。この操作は行数を変更します。
 
-## Window expression rules
+## ウィンドウエクスプレッションのルール
 
-The evaluations of window expressions are as follows (assuming we apply it to a `pl.Int32` column):
+ウィンドウエクスプレッションの評価は以下の通りです（`pl.Int32` 列に適用する場合を想定）：
 
 {{code_block('user-guide/expressions/window','rules',['over'])}}
 
-## More examples
+## さらなる例
 
-For more exercise, below are some window functions for us to compute:
+さらに練習するために、以下のウィンドウ関数を計算してみましょう：
 
-- sort all pokemon by type
-- select the first `3` pokemon per type as `"Type 1"`
-- sort the pokemon within a type by speed in descending order and select the first `3` as `"fastest/group"`
-- sort the pokemon within a type by attack in descending order and select the first `3` as `"strongest/group"`
-- sort the pokemon within a type by name and select the first `3` as `"sorted_by_alphabet"`
+- すべてのポケモンをタイプ別にソートする
+- タイプ `"Type 1"` ごとに最初の `3` ポケモンを選択する
+- タイプ内のポケモンをスピードの降順でソートし、最初の `3` を `"fastest/group"` として選択する
+- タイプ内のポケモンを攻撃力の降順でソートし、最初の `3` を `"strongest/group"` として選択する
+- タイプ内のポケモンを名前順にソートし、最初の `3` を `"sorted_by_alphabet"` として選択する
 
 {{code_block('user-guide/expressions/window','examples',['over','implode'])}}
 

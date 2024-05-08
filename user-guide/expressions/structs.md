@@ -1,8 +1,8 @@
-# The Struct datatype
+# `Struct` データ型（The Struct datatype）
 
-Polars `Struct`s are the idiomatic way of working with multiple columns. It is also a free operation i.e. moving columns into `Struct`s does not copy any data!
+Polars の `Struct` は、複数のカラムを扱う際の慣用的な方法です。また、"無料"の操作です。つまり、カラムを `Struct` に移動してもデータのコピーは行われません！
 
-For this section, let's start with a `DataFrame` that captures the average rating of a few movies across some states in the U.S.:
+このセクションでは、米国のいくつかの州での映画の平均評価をキャプチャする `DataFrame` から始めましょう。
 
 {{code_block('user-guide/expressions/structs','ratings_df',['DataFrame'])}}
 
@@ -11,9 +11,9 @@ For this section, let's start with a `DataFrame` that captures the average ratin
 --8<-- "python/user-guide/expressions/structs.py:ratings_df"
 ```
 
-## Encountering the `Struct` type
+## `Struct` 型との遭遇
 
-A common operation that will lead to a `Struct` column is the ever so popular `value_counts` function that is commonly used in exploratory data analysis. Checking the number of times a state appears the data will be done as so:
+`Struct` カラムになる一般的な操作は、探索的データ分析でよく使用される `value_counts` 関数です。州がデータにどれだけ登場するかを調べる方法は次のとおりです。
 
 {{code_block('user-guide/expressions/structs','state_value_counts',['value_counts'])}}
 
@@ -21,7 +21,7 @@ A common operation that will lead to a `Struct` column is the ever so popular `v
 --8<-- "python/user-guide/expressions/structs.py:state_value_counts"
 ```
 
-Quite unexpected an output, especially if coming from tools that do not have such a data type. We're not in peril though, to get back to a more familiar output, all we need to do is `unnest` the `Struct` column into its constituent columns:
+特にこれまでのツールでは見られなかったデータ型から来る予期せぬ出力です。しかし、困っていません。より馴染みのある出力に戻るためには、`Struct` カラムを構成するカラムに `unnest` するだけです。
 
 {{code_block('user-guide/expressions/structs','struct_unnest',['unnest'])}}
 
@@ -29,13 +29,13 @@ Quite unexpected an output, especially if coming from tools that do not have suc
 --8<-- "python/user-guide/expressions/structs.py:struct_unnest"
 ```
 
-!!! note "Why `value_counts` returns a `Struct`"
+!!! note "`value_counts` が `Struct` を返す理由"
 
-    Polars expressions always have a `Fn(Series) -> Series` signature and `Struct` is thus the data type that allows us to provide multiple columns as input/output of an expression. In other words, all expressions have to return a `Series` object, and `Struct` allows us to stay consistent with that requirement.
+    Polars のエクスプレッションは常に `Fn(Series) -> Series` のシグネチャを持ち、エクスプレッションの入出力として複数のカラムを提供するために `Struct` がデータ型として使われます。言い換えると、すべてのエクスプレッションは `Series` オブジェクトを返さなければならず、`Struct` はその要求を満たすのに役立ちます。
 
-## Structs as `dict`s
+## `dict` としての `Structs`
 
-Polars will interpret a `dict` sent to the `Series` constructor as a `Struct`:
+Polars は `Series` コンストラクタに送られた `dict` を `Struct` として解釈します：
 
 {{code_block('user-guide/expressions/structs','series_struct',['Series'])}}
 
@@ -43,14 +43,14 @@ Polars will interpret a `dict` sent to the `Series` constructor as a `Struct`:
 --8<-- "python/user-guide/expressions/structs.py:series_struct"
 ```
 
-!!! note "Constructing `Series` objects"
+!!! note "`Series` オブジェクトの構築"
 
-    Note that `Series` here was constructed with the `name` of the series in the beginning, followed by the `values`. Providing the latter first
-    is considered an anti-pattern in Polars, and must be avoided.
+    ここでは `Series` が最初に `name`、その後に `values` で構築されていることに注意してください。
+    後者を最初に提供することは Polars ではアンチパターンとされ、避けるべきです。
 
-### Extracting individual values of a `Struct`
+### `Struct` の個々の値を抽出する
 
-Let's say that we needed to obtain just the `movie` value in the `Series` that we created above. We can use the `field` method to do so:
+上記で作成した `Series` の `movie` 値だけを取得する必要があるとしましょう。その場合、`field` メソッドを使用できます：
 
 {{code_block('user-guide/expressions/structs','series_struct_extract',['struct.field'])}}
 
@@ -58,9 +58,9 @@ Let's say that we needed to obtain just the `movie` value in the `Series` that w
 --8<-- "python/user-guide/expressions/structs.py:series_struct_extract"
 ```
 
-### Renaming individual keys of a `Struct`
+### `Struct` の個々のキーをリネームする
 
-What if we need to rename individual `field`s of a `Struct` column? We first convert the `rating_series` object to a `DataFrame` so that we can view the changes easily, and then use the `rename_fields` method:
+`Struct` カラムの個々の `field` をリネームする必要がある場合、まず `rating_series` オブジェクトを `DataFrame` に変換して変更を簡単に確認できるようにし、その後 `rename_fields` メソッドを使用します：
 
 {{code_block('user-guide/expressions/structs','series_struct_rename',['struct.rename_fields'])}}
 
@@ -68,11 +68,11 @@ What if we need to rename individual `field`s of a `Struct` column? We first con
 --8<-- "python/user-guide/expressions/structs.py:series_struct_rename"
 ```
 
-## Practical use-cases of `Struct` columns
+## `Struct` カラムの実用的な使用例
 
-### Identifying duplicate rows
+### 重複行の特定
 
-Let's get back to the `ratings` data. We want to identify cases where there are duplicates at a `Movie` and `Theatre` level. This is where the `Struct` datatype shines:
+`ratings` データに戻ります。`Movie` と `Theatre` レベルで重複がある場合を特定したいとします。ここで `Struct` データ型が光ります：
 
 {{code_block('user-guide/expressions/structs','struct_duplicates',['is_duplicated', 'struct'])}}
 
@@ -80,11 +80,11 @@ Let's get back to the `ratings` data. We want to identify cases where there are 
 --8<-- "python/user-guide/expressions/structs.py:struct_duplicates"
 ```
 
-We can identify the unique cases at this level also with `is_unique`!
+このレベルでも `is_unique` を使用してユニークなケースを特定できます！
 
-### Multi-column ranking
+### 複数カラムのランキング
 
-Suppose, given that we know there are duplicates, we want to choose which rank gets a higher priority. We define `Count` of ratings to be more important than the actual `Avg_Rating` themselves, and only use it to break a tie. We can then do:
+重複があることが分かっている場合、どのランクを優先させるかを決めたいとします。評価の `Count` を `Avg_Rating` 自体よりも重要とし、タイブレークにのみ使用します。次のように行えます：
 
 {{code_block('user-guide/expressions/structs','struct_ranking',['is_duplicated', 'struct'])}}
 
@@ -92,8 +92,8 @@ Suppose, given that we know there are duplicates, we want to choose which rank g
 --8<-- "python/user-guide/expressions/structs.py:struct_ranking"
 ```
 
-That's a pretty complex set of requirements done very elegantly in Polars!
+Polars でとてもエレガントに実現できるかなり複雑な要求のセットです！
 
-### Using multi-column apply
+### 複数カラム適用の使用
 
-This was discussed in the previous section on _User Defined Functions_.
+これは前のセクションの _ユーザー定義関数_ で議論されました。

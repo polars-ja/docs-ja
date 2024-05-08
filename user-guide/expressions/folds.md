@@ -1,13 +1,13 @@
-# Folds
+# フォールド（Folds）
 
-Polars provides expressions/methods for horizontal aggregations like `sum`,`min`, `mean`,
-etc. However, when you need a more complex aggregation the default methods Polars supplies may not be sufficient. That's when `folds` come in handy.
+Polars は `sum`、`min`、`mean` などの水平集計のための式やメソッドを提供しています。
+しかし、より複雑な集計が必要な場合、Polars が提供するデフォルトのメソッドでは十分でないことがあります。そんな時に便利なのが `folds` です。
 
-The `fold` expression operates on columns for maximum speed. It utilizes the data layout very efficiently and often has vectorized execution.
+`fold` 式はカラム上で最大の速度で動作します。データレイアウトを非常に効率的に活用し、しばしばベクトル化された実行が行われます。
 
-### Manual sum
+### 手動での合計
 
-Let's start with an example by implementing the `sum` operation ourselves, with a `fold`.
+まずは `fold` を使って `sum` 操作を自分たちで実装する例から始めましょう。
 
 {{code_block('user-guide/expressions/folds','mansum',['fold'])}}
 
@@ -16,11 +16,11 @@ Let's start with an example by implementing the `sum` operation ourselves, with 
 --8<-- "python/user-guide/expressions/folds.py:mansum"
 ```
 
-The snippet above recursively applies the function `f(acc, x) -> acc` to an accumulator `acc` and a new column `x`. The function operates on columns individually and can take advantage of cache efficiency and vectorization.
+上のスニペットでは、関数 `f(acc, x) -> acc` をアキュムレータ `acc` と新しいカラム `x` に再帰的に適用しています。この関数はカラム個々に操作を行い、キャッシュ効率とベクトル化を活用することができます。
 
-### Conditional
+### 条件
 
-In the case where you'd want to apply a condition/predicate on all columns in a `DataFrame` a `fold` operation can be a very concise way to express this.
+`DataFrame` のすべてのカラムに条件/述語を適用したい場合、`fold` 操作はこれを表現する非常に簡潔な方法となります。
 
 {{code_block('user-guide/expressions/folds','conditional',['fold'])}}
 
@@ -28,13 +28,13 @@ In the case where you'd want to apply a condition/predicate on all columns in a 
 --8<-- "python/user-guide/expressions/folds.py:conditional"
 ```
 
-In the snippet we filter all rows where **each** column value is `> 1`.
+スニペットでは、**各**カラム値が `> 1` のすべての行をフィルタリングします。
 
-### Folds and string data
+### 文字列データと Folds
 
-Folds could be used to concatenate string data. However, due to the materialization of intermediate columns, this operation will have squared complexity.
+Folds は文字列データの連結に使用することができます。しかし、中間カラムの具体化のため、この操作は二次の複雑さを持ちます。
 
-Therefore, we recommend using the `concat_str` expression for this.
+そのため、`concat_str` 式の使用を推奨します。
 
 {{code_block('user-guide/expressions/folds','string',['concat_str'])}}
 

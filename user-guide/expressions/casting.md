@@ -1,12 +1,12 @@
-# Casting
+# キャスティング（Casting）
 
-Casting converts the underlying [`DataType`](../concepts/data-types/overview.md) of a column to a new one. Polars uses Arrow to manage the data in memory and relies on the compute kernels in the [Rust implementation](https://github.com/jorgecarleitao/arrow2) to do the conversion. Casting is available with the `cast()` method.
+キャスティングは、カラムの基本となる [`DataType`](../concepts/data-types/overview.md) を新しいものに変換します。Polars は Arrow を使用してメモリ内のデータを管理し、変換を行うために [Rust 実装](https://github.com/jorgecarleitao/arrow2) の計算カーネルに依存しています。キャスティングは `cast()` メソッドで利用可能です。
 
-The `cast` method includes a `strict` parameter that determines how Polars behaves when it encounters a value that can't be converted from the source `DataType` to the target `DataType`. By default, `strict=True`, which means that Polars will throw an error to notify the user of the failed conversion and provide details on the values that couldn't be cast. On the other hand, if `strict=False`, any values that can't be converted to the target `DataType` will be quietly converted to `null`.
+`cast` メソッドには `strict` パラメータが含まれており、これは Polars がソース `DataType` からターゲット `DataType` に変換できない値に遭遇したときの動作を決定します。デフォルトでは `strict=True` で、これは Polars が変換に失敗したことをユーザーに通知し、キャストできなかった値の詳細を提供するエラーを投げることを意味します。一方、`strict=False` の場合、ターゲット `DataType` に変換できない値は暗黙に `null` に変換されます。
 
-## Numerics
+## 数値
 
-Let's take a look at the following `DataFrame` which contains both integers and floating point numbers.
+以下の `DataFrame` は、整数と浮動小数点数の両方を含んでいます。
 
 {{code_block('user-guide/expressions/casting','dfnum',['DataFrame'])}}
 
@@ -15,7 +15,7 @@ Let's take a look at the following `DataFrame` which contains both integers and 
 --8<-- "python/user-guide/expressions/casting.py:dfnum"
 ```
 
-To perform casting operations between floats and integers, or vice versa, we can invoke the `cast()` function.
+浮動小数点数と整数の間、またはその逆のキャスティング操作を行うには、`cast()` 関数を呼び出せます。
 
 {{code_block('user-guide/expressions/casting','castnum',['cast'])}}
 
@@ -23,21 +23,21 @@ To perform casting operations between floats and integers, or vice versa, we can
 --8<-- "python/user-guide/expressions/casting.py:castnum"
 ```
 
-Note that in the case of decimal values these are rounded downwards when casting to an integer.
+小数値を整数にキャストする場合、これらは下向きに丸められることに注意してください。
 
-##### Downcast
+##### ダウンキャスト
 
-Reducing the memory footprint is also achievable by modifying the number of bits allocated to an element. As an illustration, the code below demonstrates how casting from `Int64` to `Int16` and from `Float64` to `Float32` can be used to lower memory usage.
+要素に割り当てられたビット数を変更することで、メモリフットプリントを削減することも可能です。例として、以下のコードは `Int64` から `Int16` へ、そして `Float64` から `Float32` へのキャスティングによってメモリ使用量を低減させる方法を示しています。
 
 {{code_block('user-guide/expressions/casting','downcast',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast"
+```python exec="on" result="text" session="user-guide/cast
 --8<-- "python/user-guide/expressions/casting.py:downcast"
 ```
 
-#### Overflow
+#### オーバーフロー
 
-When performing downcasting, it is crucial to ensure that the chosen number of bits (such as 64, 32, or 16) is sufficient to accommodate the largest and smallest numbers in the column. For example, using a 32-bit signed integer (`Int32`) allows handling integers within the range of -2147483648 to +2147483647, while using `Int8` covers integers between -128 to 127. Attempting to cast to a `DataType` that is too small will result in a `ComputeError` thrown by Polars, as the operation is not supported.
+ダウンキャストを行う際は、選択されたビット数（例えば 64、32、16）がカラムに含まれる最大および最小の数値を収容するのに十分であることを確認することが重要です。例えば、32ビット符号付き整数 (`Int32`) を使用すると、-2147483648 から +2147483647 の範囲の整数を扱うことができますが、`Int8` を使用すると -128 から 127 の整数しか扱うことができません。サイズが小さすぎる `DataType` にキャストしようとすると、Polars によってサポートされていない操作として `ComputeError` が投げられます。
 
 {{code_block('user-guide/expressions/casting','overflow',['cast'])}}
 
@@ -45,56 +45,56 @@ When performing downcasting, it is crucial to ensure that the chosen number of b
 --8<-- "python/user-guide/expressions/casting.py:overflow"
 ```
 
-You can set the `strict` parameter to `False`, this converts values that are overflowing to null values.
+`strict` パラメータを `False` に設定することで、オーバーフローするような値を null 値に変換します。
 
 {{code_block('user-guide/expressions/casting','overflow2',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast"
+```python exec="on" result="text" session="user-guide/cast
 --8<-- "python/user-guide/expressions/casting.py:overflow2"
 ```
 
-## Strings
+## 文字列
 
-Strings can be casted to numerical data types and vice versa:
+文字列は数値データ型にキャストでき、その逆も同様です：
 
 {{code_block('user-guide/expressions/casting','strings',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast"
+```python exec="on" result="text" session="user-guide/cast
 --8<-- "python/user-guide/expressions/casting.py:strings"
 ```
 
-In case the column contains a non-numerical value, Polars will throw a `ComputeError` detailing the conversion error. Setting `strict=False` will convert the non float value to `null`.
+列に数値でない値が含まれている場合、Polars は変換エラーの詳細を示す `ComputeError` を投げます。`strict=False` を設定すると、数値でない値を `null` に変換します。
 
 {{code_block('user-guide/expressions/casting','strings2',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast"
+```python exec="on" result="text" session="user-guide/cast
 --8<-- "python/user-guide/expressions/casting.py:strings2"
 ```
 
-## Booleans
+## ブール値
 
-Booleans can be expressed as either 1 (`True`) or 0 (`False`). It's possible to perform casting operations between a numerical `DataType` and a boolean, and vice versa. However, keep in mind that casting from a string (`String`) to a boolean is not permitted.
+ブール値は 1 (`True`) または 0 (`False`) として表現されます。そのため、数値型の `DataType` とブール値の間、またはその逆のキャスティング操作を行うことが可能です。ただし、文字列 (`String`) からブール値へのキャスティングは許可されていません。
 
 {{code_block('user-guide/expressions/casting','bool',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast"
+```python exec="on" result="text" session="user-guide/cast
 --8<-- "python/user-guide/expressions/casting.py:bool"
 ```
 
-## Dates
+## 日付
 
-Temporal data types such as `Date` or `Datetime` are represented as the number of days (`Date`) and microseconds (`Datetime`) since epoch. Therefore, casting between the numerical types and the temporal data types is allowed.
+`Date` や `Datetime` などの時間データ型は、エポックからの日数（`Date`）およびマイクロ秒（`Datetime`）、すなわち UNIX 時間として表されます。したがって、数値型と時間データ型の間でのキャスティングが許可されています。
 
 {{code_block('user-guide/expressions/casting','dates',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast"
+```python exec="on" result="text" session="user-guide/cast
 --8<-- "python/user-guide/expressions/casting.py:dates"
 ```
 
-To convert between strings and `Dates`/`Datetimes`, `dt.to_string` and `str.to_datetime` are utilized. Polars adopts the [chrono format syntax](https://docs.rs/chrono/latest/chrono/format/strftime/index.html) for formatting. It's worth noting that `str.to_datetime` features additional options that support timezone functionality. Refer to the API documentation for further information.
+文字列と `Dates`/`Datetimes` の間で変換する場合、`dt.to_string` と `str.to_datetime` が使用されます。Polars はフォーマットに [chrono format syntax](https://docs.rs/chrono/latest/chrono/format/strftime/index.html) を採用しています。`str.to_datetime` にはタイムゾーン機能をサポートする追加オプションがあります。さらなる情報については、API ドキュメントを参照してください。
 
 {{code_block('user-guide/expressions/casting','dates2',['dt.to_string','str.to_date'])}}
 
-```python exec="on" result="text" session="user-guide/cast"
+```python exec="on" result="text" session="user-guide/cast
 --8<-- "python/user-guide/expressions/casting.py:dates2"
 ```

@@ -1,6 +1,6 @@
-# Column selections
+# カラム選択（Column selections）
 
-Let's create a dataset to use in this section:
+このセクションで使用するデータセットを作成しましょう：
 
 {{code_block('user-guide/expressions/column-selections','selectors_df',['DataFrame'])}}
 
@@ -9,23 +9,23 @@ Let's create a dataset to use in this section:
 --8<-- "python/user-guide/expressions/column-selections.py:selectors_df"
 ```
 
-## Expression expansion
+## エクスプレッションの拡張
 
-As we've seen in the previous section, we can select specific columns using the `pl.col` method. It can also select multiple columns - both as a means of convenience, and to _expand_ the expression.
+前のセクションで見たように、`pl.col` メソッドを使用して特定のカラムを選択できます。これは複数のカラムを選択する便利な手段としても、エクスプレッションを _拡張_ する方法としても使用できます。
 
-This kind of convenience feature isn't just decorative or syntactic sugar. It allows for a very powerful application of [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) principles in your code: a single expression that specifies multiple columns expands into a list of expressions (depending on the DataFrame schema), resulting in being able to select multiple columns + run computation on them!
+このような便利な機能は単なる装飾やシンタックスシュガーではありません。コード内で [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) 原則を非常に強力に適用することを可能にします：一つのエクスプレッションが複数のカラムを指定し、DataFrame スキーマに応じてエクスプレッションのリストに拡張され、複数のカラムを選択して計算を実行できます！
 
-### Select all, or all but some
+### 全部を選択、あるいは一部を除外
 
-We can select all columns in the `DataFrame` object by providing the argument `*`:
+`DataFrame` オブジェクトのすべてのカラムを `*` 引数を提供することで選択できます：
 
 {{code_block('user-guide/expressions/column-selections', 'all',['all'])}}
 
-```python exec="on" result="text" session="user-guide/column-selections"
+```python exec="on" result="text" session="user-guide/column-selections
 --8<-- "python/user-guide/expressions/column-selections.py:all"
 ```
 
-Often, we don't just want to include all columns, but include all _while_ excluding a few. This can be done easily as well:
+しばしば、すべてのカラムを含めたいだけでなく、いくつかを除外して含めたいと考えます。これも簡単に行えます：
 
 {{code_block('user-guide/expressions/column-selections','exclude',['exclude'])}}
 
@@ -33,9 +33,9 @@ Often, we don't just want to include all columns, but include all _while_ exclud
 --8<-- "python/user-guide/expressions/column-selections.py:exclude"
 ```
 
-### By multiple strings
+### 複数の文字列による
 
-Specifying multiple strings allows expressions to _expand_ to all matching columns:
+複数の文字列を指定することで、エクスプレッションが一致するすべてのカラムに _拡張_ されます：
 
 {{code_block('user-guide/expressions/column-selections','expansion_by_names',['dt.to_string'])}}
 
@@ -43,9 +43,9 @@ Specifying multiple strings allows expressions to _expand_ to all matching colum
 --8<-- "python/user-guide/expressions/column-selections.py:expansion_by_names"
 ```
 
-### By regular expressions
+### 正規表現による
 
-Multiple column selection is possible by regular expressions also, by making sure to wrap the regex by `^` and `$` to let `pl.col` know that a regex selection is expected:
+正規表現も使用して複数のカラム選択が可能です。`pl.col` が正規表現選択を期待していることを知らせるために、正規表現を `^` と `$` で囲むことが重要です：
 
 {{code_block('user-guide/expressions/column-selections','expansion_by_regex',[])}}
 
@@ -53,23 +53,25 @@ Multiple column selection is possible by regular expressions also, by making sur
 --8<-- "python/user-guide/expressions/column-selections.py:expansion_by_regex"
 ```
 
-### By data type
+### データタイプによる
 
-`pl.col` can select multiple columns using Polars data types:
+`pl.col` は Polars のデータタイプを使用して複数のカラムを選択できます：
 
 {{code_block('user-guide/expressions/column-selections','expansion_by_dtype',['n_unique'])}}
 
 ```python exec="on" result="text" session="user-guide/column-selections"
---8<-- "python/user-guide/expressions/column-selections.py:expansion_by_dtype"
+--8<-- "python/user-guide/expressions/column-selections.py:exp
+
+ansion_by_dtype"
 ```
 
-## Using `selectors`
+## `selectors` の使用
 
-Polars also allows for the use of intuitive selections for columns based on their name, `dtype` or other properties; and this is built on top of existing functionality outlined in `col` used above. It is recommended to use them by importing and aliasing `polars.selectors` as `cs`.
+Polars は、カラムの名前、`dtype`、またはその他のプロパティに基づいた直感的なカラム選択も可能で、これは上述の `col` を使用した機能に基づいています。`polars.selectors` を `cs` としてインポートしてエイリアスを設定することを推奨します。
 
-### By `dtype`
+### `dtype` による
 
-To select just the integer and string columns, we can do:
+ただの整数と文字列のカラムを選択するには：
 
 {{code_block('user-guide/expressions/column-selections','selectors_intro',['selectors'])}}
 
@@ -77,9 +79,9 @@ To select just the integer and string columns, we can do:
 --8<-- "python/user-guide/expressions/column-selections.py:selectors_intro"
 ```
 
-### Applying set operations
+### 集合操作を適用する
 
-These _selectors_ also allow for set based selection operations. For instance, to select the **numeric** columns **except** the **first** column that indicates row numbers:
+これらの _selectors_ は集合に基づいた選択操作も許可します。例えば、行番号を示す **最初の** カラムを除く **数値** カラムを選択するには：
 
 {{code_block('user-guide/expressions/column-selections','selectors_diff',['cs.first', 'cs.numeric'])}}
 
@@ -87,7 +89,7 @@ These _selectors_ also allow for set based selection operations. For instance, t
 --8<-- "python/user-guide/expressions/column-selections.py:selectors_diff"
 ```
 
-We can also select the row number by name **and** any **non**-numeric columns:
+行番号を名前で、そして任意の **非**数値カラムも選択できます：
 
 {{code_block('user-guide/expressions/column-selections','selectors_union',['cs.by_name', 'cs.numeric'])}}
 
@@ -95,9 +97,9 @@ We can also select the row number by name **and** any **non**-numeric columns:
 --8<-- "python/user-guide/expressions/column-selections.py:selectors_union"
 ```
 
-### By patterns and substrings
+### パターンと部分文字列による
 
-_Selectors_ can also be matched by substring and regex patterns:
+_Selectors_ は部分文字列と正規表現パターンにもマッチ可能です：
 
 {{code_block('user-guide/expressions/column-selections','selectors_by_name',['cs.contains', 'cs.matches'])}}
 
@@ -105,9 +107,9 @@ _Selectors_ can also be matched by substring and regex patterns:
 --8<-- "python/user-guide/expressions/column-selections.py:selectors_by_name"
 ```
 
-### Converting to expressions
+### エクスプレッションへの変換
 
-What if we want to apply a specific operation on the selected columns (i.e. get back to representing them as **expressions** to operate upon)? We can simply convert them using `as_expr` and then proceed as normal:
+選択されたカラムに特定の操作を適用したい場合（つまり、通常のようにそれらを **エクスプレッション** として表現して操作を進めたい場合）、単に `as_expr` を使用して変換し、通常どおり進めることができます：
 
 {{code_block('user-guide/expressions/column-selections','selectors_to_expr',['cs.temporal'])}}
 
@@ -115,9 +117,9 @@ What if we want to apply a specific operation on the selected columns (i.e. get 
 --8<-- "python/user-guide/expressions/column-selections.py:selectors_to_expr"
 ```
 
-### Debugging `selectors`
+### `selectors` のデバッグ
 
-Polars also provides two helpful utility functions to aid with using selectors: `is_selector` and `expand_selector`:
+Polars は、selectors の使用を支援するために役立つ2つのユーティリティ関数を提供します：`is_selector` と `expand_selector`：
 
 {{code_block('user-guide/expressions/column-selections','selectors_is_selector_utility',['is_selector'])}}
 
@@ -125,7 +127,7 @@ Polars also provides two helpful utility functions to aid with using selectors: 
 --8<-- "python/user-guide/expressions/column-selections.py:selectors_is_selector_utility"
 ```
 
-To predetermine the column names that are selected, which is especially useful for a LazyFrame object:
+特に LazyFrame オブジェクトの場合、どのカラム名が選択されるかを事前に知ることが特に有用です：
 
 {{code_block('user-guide/expressions/column-selections','selectors_colnames_utility',['expand_selector'])}}
 

@@ -1,12 +1,12 @@
-# Lists and Arrays
+# リストと配列（Lists and Arrays）
 
-Polars has first-class support for `List` columns: that is, columns where each row is a list of homogeneous elements, of varying lengths. Polars also has an `Array` datatype, which is analogous to NumPy's `ndarray` objects, where the length is identical across rows.
+Polars は `List` 列にファーストクラスのサポートを提供します。つまり、各行が同一の要素で構成され、長さが異なるリストです。Polars には `Array` データタイプもあります。これは NumPy の `ndarray` オブジェクトに類似しており、行間で長さが同一です。
 
-Note: this is different from Python's `list` object, where the elements can be of any type. Polars can store these within columns, but as a generic `Object` datatype that doesn't have the special list manipulation features that we're about to discuss.
+注意: これは Python の `list` オブジェクトとは異なります。要素は任意のタイプになります。Polars はこれらを列内で格納できますが、これから説明する特別なリスト操作機能がない一般的な `Object` データタイプです。
 
-## Powerful `List` manipulation
+## 強力な `List` 操作
 
-Let's say we had the following data from different weather stations across a state. When the weather station is unable to get a result, an error code is recorded instead of the actual temperature at that time.
+以下のデータが異なる天気ステーションから得られたとしましょう。天気ステーションが結果を得ることができない場合、実際の温度ではなくエラーコードが記録されます。
 
 {{code_block('user-guide/expressions/lists','weather_df',['DataFrame'])}}
 
@@ -15,9 +15,9 @@ Let's say we had the following data from different weather stations across a sta
 --8<-- "python/user-guide/expressions/lists.py:weather_df"
 ```
 
-### Creating a `List` column
+### `List` 列の作成
 
-For the `weather` `DataFrame` created above, it's very likely we need to run some analysis on the temperatures that are captured by each station. To make this happen, we need to first be able to get individual temperature measurements. This is done by:
+上記で作成された `weather` `DataFrame` では、各ステーションによって捕捉された温度の分析がおそらく必要です。これを行うためには、まず個々の温度測定値を取得する必要があります。これは次のように行います：
 
 {{code_block('user-guide/expressions/lists','string_to_list',['str.split'])}}
 
@@ -25,7 +25,7 @@ For the `weather` `DataFrame` created above, it's very likely we need to run som
 --8<-- "python/user-guide/expressions/lists.py:string_to_list"
 ```
 
-One way we could go post this would be to convert each temperature measurement into its own row:
+この後にできることの一つは、各温度測定をその自身の行に変換することです：
 
 {{code_block('user-guide/expressions/lists','explode_to_atomic',['DataFrame.explode'])}}
 
@@ -33,11 +33,11 @@ One way we could go post this would be to convert each temperature measurement i
 --8<-- "python/user-guide/expressions/lists.py:explode_to_atomic"
 ```
 
-However, in Polars, we often do not need to do this to operate on the `List` elements.
+しかし、Polars では `List` 要素を操作するためにこれを行う必要はしばしばありません。
 
-### Operating on `List` columns
+### `List` 列の操作
 
-Polars provides several standard operations on `List` columns. If we want the first three measurements, we can do a `head(3)`. The last three can be obtained via a `tail(3)`, or alternately, via `slice` (negative indexing is supported). We can also identify the number of observations via `lengths`. Let's see them in action:
+Polars は `List` 列に対していくつかの標準操作を提供します。最初の 3 つの測定値が必要な場合、`head(3)` を行います。最後の 3 つは `tail(3)` で取得できます。または、`slice` を使用しても良いです（負のインデックスがサポートされています）。また、観測数を `lengths` を通じて特定することもできます。それらを実行してみましょう：
 
 {{code_block('user-guide/expressions/lists','list_ops',['Expr.list'])}}
 
@@ -45,20 +45,20 @@ Polars provides several standard operations on `List` columns. If we want the fi
 --8<-- "python/user-guide/expressions/lists.py:list_ops"
 ```
 
-!!! warning "`arr` then, `list` now"
+!!! warning "`arr` でしたが、今は `list` です"
 
-    If you find references to the `arr` API on Stackoverflow or other sources, just replace `arr` with `list`, this was the old accessor for the `List` datatype. `arr` now refers to the newly introduced `Array` datatype (see below).
+    Stackoverflow や他の情報源で `arr` API に関する参照がある場合は、単に `arr` を `list` に置き換えてください。これは `List` データタイプの古いアクセサーでした。`arr` は最近導入された `Array` データタイプを指します（以下を参照）。
 
-### Element-wise computation within `List`s
+### `List` 内の要素ごとの計算
 
-If we need to identify the stations that are giving the most number of errors from the starting `DataFrame`, we need to:
+初期 `DataFrame` からエラーの数が最も多いステーションを特定する必要がある場合、次の手順を行います：
 
-1. Parse the string input as a `List` of string values (already done).
-2. Identify those strings that can be converted to numbers.
-3. Identify the number of non-numeric values (i.e. `null` values) in the list, by row.
-4. Rename this output as `errors` so that we can easily identify the stations.
+1. 文字列入力を `List` の文字列値として解析します（既に実行済み）。
+2. 数字に変換可能な文字列を特定します。
+3. リスト内の非数値（つまり `null` 値）の数を行ごとに特定します。
+4. この出力を `errors` と名付け、ステーションを簡単に特定できるようにします。
 
-The third step requires a casting (or alternately, a regex pattern search) operation to be perform on each element of the list. We can do this using by applying the operation on each element by first referencing them in the `pl.element()` context, and then calling a suitable Polars expression on them. Let's see how:
+第三ステップには、リストの各要素にキャスティング（または代替として正規表現検索）操作を適用する必要があります。これは `pl.element()` コンテキストでそれらを最初に参照してから、適切な Polars 式を呼び出すことによって行うことができます。それを見てみましょう：
 
 {{code_block('user-guide/expressions/lists','count_errors',['Expr.list', 'element'])}}
 
@@ -66,7 +66,7 @@ The third step requires a casting (or alternately, a regex pattern search) opera
 --8<-- "python/user-guide/expressions/lists.py:count_errors"
 ```
 
-What if we chose the regex route (i.e. recognizing the presence of _any_ alphabetical character?)
+正規表現ルートを選択した場合はどうでしょうか（つまり、_any_ 英字の存在を認識すること）？
 
 {{code_block('user-guide/expressions/lists','count_errors_regex',['str.contains'])}}
 
@@ -74,13 +74,13 @@ What if we chose the regex route (i.e. recognizing the presence of _any_ alphabe
 --8<-- "python/user-guide/expressions/lists.py:count_errors_regex"
 ```
 
-If you're unfamiliar with the `(?i)`, it's a good time to look at the documentation for the `str.contains` function in Polars! The Rust regex crate provides a lot of additional regex flags that might come in handy.
+`(?i)` に慣れていない場合は、Polars の `str.contains` 関数のドキュメントを見る良いタイミングです！Rust regex クレートは多くの追加の正規表現フラグを提供しており、役立つかもしれません。
 
-## Row-wise computations
+## 行ごとの計算
 
-This context is ideal for computing in row orientation.
+このコンテキストは行方向での計算に理想的です。
 
-We can apply **any** Polars operations on the elements of the list with the `list.eval` (`list().eval` in Rust) expression! These expressions run entirely on Polars' query engine and can run in parallel, so will be well optimized. Let's say we have another set of weather data across three days, for different stations:
+`list.eval` 式（Rust では `list().eval`）を使用して、リストの要素に対して **任意の** Polars 操作を適用することができます！これらの式は完全に Polars のクエリエンジンで実行され、並列に実行されるので、最適化されます。異なるステーションの 3 日間にわたる別の天気データがあるとしましょう：
 
 {{code_block('user-guide/expressions/lists','weather_by_day',['DataFrame'])}}
 
@@ -88,7 +88,7 @@ We can apply **any** Polars operations on the elements of the list with the `lis
 --8<-- "python/user-guide/expressions/lists.py:weather_by_day"
 ```
 
-Let's do something interesting, where we calculate the percentage rank of the temperatures by day, measured across stations. Pandas allows you to compute the percentages of the `rank` values. Polars doesn't provide a special function to do this directly, but because expressions are so versatile we can create our own percentage rank expression for highest temperature. Let's try that!
+面白いことをしてみましょう。各ステーションで測定された温度の日ごとのパーセンテージランクを計算します。Pandas では `rank` 値のパーセンテージを計算することができます。Polars はこれを直接行う特別な関数を提供していませんが、式がとても多用途であるため、自分のパーセンテージランク式を作成することができます。試してみましょう！
 
 {{code_block('user-guide/expressions/lists','weather_by_day_rank',['list.eval'])}}
 
@@ -96,11 +96,11 @@ Let's do something interesting, where we calculate the percentage rank of the te
 --8<-- "python/user-guide/expressions/lists.py:weather_by_day_rank"
 ```
 
-## Polars `Array`s
+## Polars `Array`
 
-`Array`s are a new data type that was recently introduced, and are still pretty nascent in features that it offers. The major difference between a `List` and an `Array` is that the latter is limited to having the same number of elements per row, while a `List` can have a variable number of elements. Both still require that each element's data type is the same.
+`Array` は最近導入された新しいデータタイプで、現在も機能が進化しています。`List` と `Array` の主な違いは、後者は行ごとに同じ数の要素を持つことが制限されている点ですが、`List` は可変の要素数を持つことができます。それでも、各要素のデータタイプは同じである必要があります。
 
-We can define `Array` columns in this manner:
+このように `Array` 列を定義することができます：
 
 {{code_block('user-guide/expressions/lists','array_df',['Array'])}}
 
@@ -108,7 +108,7 @@ We can define `Array` columns in this manner:
 --8<-- "python/user-guide/expressions/lists.py:array_df"
 ```
 
-Basic operations are available on it:
+基本操作が利用可能です：
 
 {{code_block('user-guide/expressions/lists','array_ops',['Series.arr'])}}
 
@@ -116,4 +116,4 @@ Basic operations are available on it:
 --8<-- "python/user-guide/expressions/lists.py:array_ops"
 ```
 
-Polars `Array`s are still being actively developed, so this section will likely change in the future.
+Polars `Array` は現在も積極的に開発されており、このセクションは将来変更される可能性が高いです。

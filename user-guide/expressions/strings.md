@@ -1,12 +1,12 @@
-# Strings
+# 文字列（Strings）
 
-The following section discusses operations performed on `String` data, which is a frequently used `DataType` when working with `DataFrames`. However, processing strings can often be inefficient due to their unpredictable memory size, causing the CPU to access many random memory locations. To address this issue, Polars utilizes Arrow as its backend, which stores all strings in a contiguous block of memory. As a result, string traversal is cache-optimal and predictable for the CPU.
+このセクションでは、`DataFrame` を扱う際によく使用される `DataType` である `String` データに対して行われる操作について説明します。しかし、文字列を処理することは、その予測不可能なメモリーサイズのためにしばしば非効率的であり、CPU が多くのランダムなメモリー位置にアクセスすることを要求します。この問題に対処するため、Polars はそのバックエンドとして Arrow を使用し、すべての文字列を連続したメモリーブロックに保存します。その結果、文字列のトラバーサルはキャッシュ最適であり、CPU にとって予測可能です。
 
-String processing functions are available in the `str` namespace.
+文字列処理関数は `str` 名前空間で利用可能です。
 
-##### Accessing the string namespace
+##### 文字列名前空間へのアクセス
 
-The `str` namespace can be accessed through the `.str` attribute of a column with `String` data type. In the following example, we create a column named `animal` and compute the length of each element in the column in terms of the number of bytes and the number of characters. If you are working with ASCII text, then the results of these two computations will be the same, and using `lengths` is recommended since it is faster.
+`str` 名前空間は、`String` データタイプのカラムの `.str` 属性を通じてアクセスできます。次の例では、`animal` という名前のカラムを作成し、カラム内の各要素のバイト数および文字数での長さを計算します。ASCII テキストを扱っている場合、これら二つの計算の結果は同じになり、より速い `lengths` の使用が推奨されます。
 
 {{code_block('user-guide/expressions/strings','df',['str.len_bytes','str.len_chars'])}}
 
@@ -15,13 +15,13 @@ The `str` namespace can be accessed through the `.str` attribute of a column wit
 --8<-- "python/user-guide/expressions/strings.py:df"
 ```
 
-#### String parsing
+#### 文字列の解析
 
-Polars offers multiple methods for checking and parsing elements of a string. Firstly, we can use the `contains` method to check whether a given pattern exists within a substring. Subsequently, we can extract these patterns and replace them using other methods, which will be demonstrated in upcoming examples.
+Polars は、文字列の要素をチェックし、解析するための複数の方法を提供します。まず、`contains` メソッドを使用して、部分文字列内に特定のパターンが存在するかどうかをチェックできます。その後、これらのパターンを抽出して他の方法で置換することが、今後の例で示されます。
 
-##### Check for existence of a pattern
+##### パターンの存在チェック
 
-To check for the presence of a pattern within a string, we can use the contains method. The `contains` method accepts either a regular substring or a regex pattern, depending on the value of the `literal` parameter. If the pattern we're searching for is a simple substring located either at the beginning or end of the string, we can alternatively use the `starts_with` and `ends_with` functions.
+文字列内にパターンが存在するかをチェックするには、`contains` メソッドを使用できます。`contains` メソッドは、`literal` パラメーターの値に応じて、通常の部分文字列または正規表現パターンのいずれかを受け入れます。私たちが探しているパターンが文字列の始まりまたは終わりに位置する単純な部分文字列である場合、代わりに `starts_with` および `ends_with` 関数を使用することができます。
 
 {{code_block('user-guide/expressions/strings','existence',['str.contains', 'str.starts_with','str.ends_with'])}}
 
@@ -29,9 +29,9 @@ To check for the presence of a pattern within a string, we can use the contains 
 --8<-- "python/user-guide/expressions/strings.py:existence"
 ```
 
-##### Extract a pattern
+##### パターンの抽出
 
-The `extract` method allows us to extract a pattern from a specified string. This method takes a regex pattern containing one or more capture groups, which are defined by parentheses `()` in the pattern. The group index indicates which capture group to output.
+`extract` メソッドを使用して、指定された文字列からパターンを抽出できます。この方法では、パターンに含まれる一つ以上のキャプチャグループ（パターン内の括弧 `()` によって定義されます）を含む正規表現パターンを取ります。グループインデックスは、どのキャプチャグループを出力するかを示します。
 
 {{code_block('user-guide/expressions/strings','extract',['str.extract'])}}
 
@@ -39,7 +39,7 @@ The `extract` method allows us to extract a pattern from a specified string. Thi
 --8<-- "python/user-guide/expressions/strings.py:extract"
 ```
 
-To extract all occurrences of a pattern within a string, we can use the `extract_all` method. In the example below, we extract all numbers from a string using the regex pattern `(\d+)`, which matches one or more digits. The resulting output of the `extract_all` method is a list containing all instances of the matched pattern within the string.
+文字列内のパターンのすべての出現を抽出するには、`extract_all` メソッドを使用できます。以下の例では、正規表現パターン `(\d+)` を使用して文字列からすべての数字を抽出し、一つ以上の数字に一致します。`extract_all` メソッドの結果として出力されるのは、文字列内の一致したパターンのすべてのインスタンスを含むリストです。
 
 {{code_block('user-guide/expressions/strings','extract_all',['str.extract_all'])}}
 
@@ -47,9 +47,9 @@ To extract all occurrences of a pattern within a string, we can use the `extract
 --8<-- "python/user-guide/expressions/strings.py:extract_all"
 ```
 
-##### Replace a pattern
+##### パターンの置換
 
-We have discussed two methods for pattern matching and extraction thus far, and now we will explore how to replace a pattern within a string. Similar to `extract` and `extract_all`, Polars provides the `replace` and `replace_all` methods for this purpose. In the example below we replace one match of `abc` at the end of a word (`\b`) by `ABC` and we replace all occurrence of `a` with `-`.
+これまでにパターンの一致と抽出の二つの方法を議論しましたが、今度は文字列内でパターンを置換する方法を探ります。`extract` と `extract_all` と同様に、Polars はこの目的のために `replace` と `replace_all` メソッドを提供します。以下の例では、単語の終わり（`\b`）にある `abc` の一つの一致を `ABC` に置き換え、`a` のすべての出現を `-` に置き換えます。
 
 {{code_block('user-guide/expressions/strings','replace',['str.replace','str.replace_all'])}}
 
@@ -57,6 +57,6 @@ We have discussed two methods for pattern matching and extraction thus far, and 
 --8<-- "python/user-guide/expressions/strings.py:replace"
 ```
 
-#### API documentation
+#### API ドキュメント
 
-In addition to the examples covered above, Polars offers various other string manipulation methods for tasks such as formatting, stripping, splitting, and more. To explore these additional methods, you can go to the API documentation of your chosen programming language for Polars.
+上記でカバーされた例に加えて、Polars は書式設定、ストリッピング、分割などのタスクのためのさまざまな他の文字列操作方法を提供します。これらの追加的な方法を探るためには、あなたが選んだプログラミング言語の Polars の API ドキュメントにアクセスできます。
