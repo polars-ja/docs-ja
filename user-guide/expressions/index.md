@@ -2,7 +2,7 @@
 
 `Contexts` セクションで、エクスプレッション（Expressions）が何であるか、そしてそれらがいかに貴重であるかを説明しました。このセクションでは、エクスプレッション自体に焦点を当てます。各セクションでは、それらが何をするのかの概要と追加の例を提供します。
 
-- [演算子（Operators）](operators.md)
+- [基本演算子（Basic operators）](operators.md)
 - [カラム選択（Column selections）](column-selections.md)
 - [関数（Functions）](functions.md)
 - [キャスティング（Casting）](casting.md)
