@@ -11,7 +11,7 @@
 - [欠損値（Missing data）](missing-data.md)
 - [窓関数（Window Functions）](window.md)
 - [フォールド（Folds）](folds.md)
-- [リスト（Lists）](lists.md)
+- [リストと配列（Lists and Arrays）](lists.md)
 - [プラグイン（Plugins）](plugins.md)
 - [ユーザー定義関数（User-defined functions）](user-defined-functions.md)
 - [構造体（Structs）](structs.md)
