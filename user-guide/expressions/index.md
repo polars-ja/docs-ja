@@ -14,5 +14,5 @@
 - [リストと配列（Lists and Arrays）](lists.md)
 - [エクスプレッションプラグイン（Expression plugins）](plugins.md)
 - [ユーザー定義関数（User-defined functions）](user-defined-functions.md)
-- [構造体（Structs）](structs.md)
+- [`Struct` データ型（The Struct datatype）](structs.md)
 - [Numpy](numpy.md)
