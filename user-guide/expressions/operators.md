@@ -1,10 +1,10 @@
-# Basic operators
+# 基本演算子（Basic operators）
 
-This section describes how to use basic operators (e.g. addition, subtraction) in conjunction with Expressions. We will provide various examples using different themes in the context of the following dataframe.
+このセクションでは、基本演算子（例えば、加算、減算など）をエクスプレッションと組み合わせて使用する方法について説明します。以下のデータフレームのコンテキストで、異なるテーマを使用した様々な例を提供します。
 
-!!! note Operator Overloading
+!!! note 演算子のオーバーロード
 
-    In Rust and Python it is possible to use the operators directly (as in `+ - * / < > `) as the language allows operator overloading. For instance, the operator `+` translates to the `.add()` method. You can choose the one you prefer.
+    Rust や Python では、言語が演算子のオーバーロードを許可しているため、直接演算子（`+ - * / < >` など）を使用することが可能です。例えば、演算子 `+` は `.add()` メソッドに変換されます。好みの方法を選択できます。
 
 {{code_block('user-guide/expressions/operators','dataframe',['DataFrame'])}}
 
@@ -13,7 +13,7 @@ This section describes how to use basic operators (e.g. addition, subtraction) i
 --8<-- "python/user-guide/expressions/operators.py:dataframe"
 ```
 
-### Numerical
+### 数値演算
 
 {{code_block('user-guide/expressions/operators','numerical',['operators'])}}
 
@@ -21,7 +21,7 @@ This section describes how to use basic operators (e.g. addition, subtraction) i
 --8<-- "python/user-guide/expressions/operators.py:numerical"
 ```
 
-### Logical
+### 論理演算
 
 {{code_block('user-guide/expressions/operators','logical',['operators'])}}
 
