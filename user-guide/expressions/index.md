@@ -12,7 +12,7 @@
 - [窓関数（Window Functions）](window.md)
 - [フォールド（Folds）](folds.md)
 - [リストと配列（Lists and Arrays）](lists.md)
-- [プラグイン（Plugins）](plugins.md)
+- [エクスプレッションプラグイン（Expression plugins）](plugins.md)
 - [ユーザー定義関数（User-defined functions）](user-defined-functions.md)
 - [構造体（Structs）](structs.md)
 - [Numpy](numpy.md)
