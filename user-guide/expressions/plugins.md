@@ -1,29 +1,29 @@
-# Expression plugins
+# エクスプレッションプラグイン（Expression plugins）
 
-Expression plugins are the preferred way to create user defined functions. They allow you to compile a Rust function
-and register that as an expression into the Polars library. The Polars engine will dynamically link your function at runtime
-and your expression will run almost as fast as native expressions. Note that this works without any interference of Python
-and thus no GIL contention.
+エクスプレッション プラグインは、ユーザー定義関数を作成するための優先される方法です。
+Rust 関数をコンパイルし、それを Polars ライブラリにエクスプレッションとして登録できます。
+Polars エンジンはランタイムで関数を動的にリンクし、あなたのエクスプレッションはネイティブのエクスプレッションとほぼ同じ速度で実行されます。
+Python の介入なしでこれが機能するため、GIL 競合はありません。
 
-They will benefit from the same benefits default expressions have:
+これらはデフォルトのエクスプレッションと同じ利点を享受します：
 
-- Optimization
-- Parallelism
-- Rust native performance
+- 最適化
+- 並列処理
+- Rust ネイティブのパフォーマンス
 
-To get started we will see what is needed to create a custom expression.
+カスタムエクスプレッションを作成するために必要なものを見ていきましょう。
 
-## Our first custom expression: Pig Latin
+## 最初のカスタムエクスプレッション：Pig Latin
 
-For our first expression we are going to create a pig latin converter. Pig latin is a silly language where in every word
-the first letter is removed, added to the back and finally "ay" is added. So the word "pig" would convert to "igpay".
+最初のエクスプレッションとして、ピグ ラテン変換器を作成します。
+ピグ ラテンは、各単語の最初の文字を取り除き、後ろに追加し、最後に "ay" を追加する、愚かな言語です。例えば、「pig」は「igpay」に変換されます。
 
-We could of course already do that with expressions, e.g. `col("name").str.slice(1) + col("name").str.slice(0, 1) + "ay"`,
-but a specialized function for this would perform better and allows us to learn about the plugins.
+もちろん、既存のエクスプレッションでもこれを行うことは可能ですが、
+専用の関数を使用する方がパフォーマンスが向上し、プラグインについて学ぶ機会にもなります。
 
-### Setting up
+### 設定
 
-We start with a new library as the following `Cargo.toml` file
+次のような新しいライブラリを `Cargo.toml` ファイルで始めます。
 
 ```toml
 [package]
@@ -42,11 +42,11 @@ pyo3-polars = { version = "*", features = ["derive"] }
 serde = { version = "*", features = ["derive"] }
 ```
 
-### Writing the expression
+### エクスプレッションの作成
 
-In this library we create a helper function that converts a `&str` to pig-latin, and we create the function that we will
-expose as an expression. To expose a function we must add the `#[polars_expr(output_type=DataType)]` attribute and the function
-must always accept `inputs: &[Series]` as its first argument.
+このライブラリでは、`&str` をピグ ラテンに変換するヘルパー関数を作成し、エクスプレッションとして公開する関数を作成します。
+関数を公開するためには、`#[polars_expr(output_type=DataType)]` 属性を追加する必要があり、
+関数は常に `inputs: &[Series]` を最初の引数として受け入れる必要があります。
 
 ```rust
 // src/expressions.rs
@@ -68,9 +68,9 @@ fn pig_latinnify(inputs: &[Series]) -> PolarsResult<Series> {
 }
 ```
 
-This is all that is needed on the Rust side. On the Python side we must setup a folder with the same name as defined in
-the `Cargo.toml`, in this case "expression_lib". We will create a folder in the same directory as our Rust `src` folder
-named `expression_lib` and we create an `expression_lib/__init__.py`. The resulting file structure should look something like this:
+Rust 側で必要なのはこれだけです。Python 側では、`Cargo.toml` で定義されている名前と同じ名前のフォルダを設定します。
+この場合「expression_lib」という名前です。Rust の `src` フォルダと同じディレクトリに `expression_lib` フォルダを作成し、`expression_lib/__init__.py` を作成します。
+結果のファイル構造は次のようになります：
 
 ```
 ├── 📁 expression_lib/  # name must match "lib.name" in Cargo.toml
@@ -84,11 +84,11 @@ named `expression_lib` and we create an `expression_lib/__init__.py`. The result
 └── pyproject.toml
 ```
 
-Then we create a new class `Language` that will hold the expressions for our new `expr.language` namespace. The function
-name of our expression can be registered. Note that it is important that this name is correct, otherwise the main Polars
-package cannot resolve the function name. Furthermore we can set additional keyword arguments that explain to Polars how
-this expression behaves. In this case we tell Polars that this function is elementwise. This allows Polars to run this
-expression in batches. Whereas for other operations this would not be allowed, think for instance of a sort, or a slice.
+次に、新しいクラス `Language` を作成し、新しい `expr.language` 名前空間のエクスプレッションを保持します。
+エクスプレッションの関数名は登録する必要があります。この名前が正確であることが重要です。
+そうでないと、主要な Polars パッケージは関数名を解決できません。
+さらに、このエクスプレッションがどのように動作するかを説明する追加のキーワード引数を設定できます。
+この場合、この関数は要素ごとに動作するため、Polars はこのエクスプレッションをバッチで実行することができます。他の操作ではこれが許されない場合があります。例えば、ソートやスライスの場合です。
 
 ```python
 # expression_lib/__init__.py
@@ -97,7 +97,7 @@ from typing import TYPE_CHECKING
 
 import polars as pl
 from polars.plugins import register_plugin_function
-from polars.type_aliases import IntoExpr
+from polars.type_aliases: IntoExpr
 
 
 def pig_latinnify(expr: IntoExpr) -> pl.Expr:
@@ -110,9 +110,9 @@ def pig_latinnify(expr: IntoExpr) -> pl.Expr:
     )
 ```
 
-We can then compile this library in our environment by installing `maturin` and running `maturin develop --release`.
+環境に `maturin` をインストールして `maturin develop --release` を実行することで、このライブラリをコンパイルできます。
 
-And that's it. Our expression is ready to use!
+それだけです。使用する準備が整いました！
 
 ```python
 import polars as pl
@@ -126,7 +126,7 @@ df = pl.DataFrame(
 out = df.with_columns(pig_latin=pig_latinnify("convert"))
 ```
 
-Alternatively, you can [register a custom namespace](https://docs.pola.rs/py-polars/html/reference/api/polars.api.register_expr_namespace.html#polars.api.register_expr_namespace), which enables you to write:
+また、[カスタム名前空間を登録する](https://docs.pola.rs/py-polars/html/reference/api/polars.api.register_expr_namespace.html#polars.api.register_expr_namespace)ことで、次のように記述することができます：
 
 ```python
 out = df.with_columns(
@@ -134,10 +134,10 @@ out = df.with_columns(
 )
 ```
 
-## Accepting kwargs
+## キーワード引数の受け入れ
 
-If you want to accept `kwargs` (keyword arguments) in a polars expression, all you have to do is define a Rust `struct`
-and make sure that it derives `serde::Deserialize`.
+Polars のエクスプレッションで `kwargs`（キーワード引数）を受け入れたい場合、
+Rust の `struct` を定義し、それが `serde::Deserialize` を導出するようにするだけです。
 
 ```rust
 /// Provide your own kwargs struct with the proper schema and accept that type
@@ -172,7 +172,7 @@ fn append_kwargs(input: &[Series], kwargs: MyKwargs) -> PolarsResult<Series> {
 }
 ```
 
-On the Python side the kwargs can be passed when we register the plugin.
+Python 側で kwargs を登録するときに渡すことができます。
 
 ```python
 def append_args(
@@ -199,13 +199,13 @@ def append_args(
     )
 ```
 
-## Output data types
+## 出力データ型
 
-Output data types of course don't have to be fixed. They often depend on the input types of an expression. To accommodate
-this you can provide the `#[polars_expr()]` macro with an `output_type_func` argument that points to a function. This
-function can map input fields `&[Field]` to an output `Field` (name and data type).
+もちろん、出力データ型は固定される必要はありません。
+それらは通常、エクスプレッションの入力タイプに依存します。
+これに対応するために、`#[polars_expr()]` マクロに `output_type_func` 引数を提供して、その関数が入力フィールド `&[Field]` を出力 `Field`（名前とデータ型）にマッピングする関数を指します。
 
-In the snippet below is an example where we use the utility `FieldsMapper` to help with this mapping.
+以下のスニペットは、このマッピングを補助するユーティリティ `FieldsMapper` を使用する例です。
 
 ```rust
 use polars_plan::dsl::FieldsMapper;
@@ -239,24 +239,24 @@ fn haversine(inputs: &[Series]) -> PolarsResult<Series> {
 }
 ```
 
-That's all you need to know to get started. Take a look at [this repo](https://github.com/pola-rs/pyo3-polars/tree/main/example/derive_expression) to see how this all fits together, and at [this tutorial](https://marcogorelli.github.io/polars-plugins-tutorial/)
-to gain a more thorough understanding.
+始めるために知っておくべきことはこれだけです。[このリポジトリ](https://github.com/pola-rs/pyo3-polars/tree/main/example/derive_expression)を見て、どのようにすべてが組み合わさっているかを確認し、
+[このチュートリアル](https://marcogorelli.github.io/polars-plugins-tutorial/)でより徹底的な理解を得てください。
 
-## Community plugins
+## コミュニティ プラグイン
 
-Here is a curated (non-exhaustive) list of community-implemented plugins.
+以下は、コミュニティが実装したプラグインの厳選（無尽蔵ではない）リストです。
 
-- [polars-xdt](https://github.com/pola-rs/polars-xdt) Polars plugin with extra datetime-related functionality
-  which isn't quite in-scope for the main library
-- [polars-distance](https://github.com/ion-elgreco/polars-distance) Polars plugin for pairwise distance functions
-- [polars-ds](https://github.com/abstractqqq/polars_ds_extension) Polars extension aiming to simplify common numerical/string data analysis procedures
-- [polars-hash](https://github.com/ion-elgreco/polars-hash) Stable non-cryptographic and cryptographic hashing functions for Polars
-- [polars-reverse-geocode](https://github.com/MarcoGorelli/polars-reverse-geocode) Offline reverse geocoder for finding the closest city
-  to a given (latitude, longitude) pair
+- [polars-xdt](https://github.com/pola-rs/polars-xdt) メインライブラリの範囲内ではない追加の日付関連機能を備えた
+  Polars プラグイン
+- [polars-distance](https://github.com/ion-elgreco/polars-distance) Polars プラグイン for pairwaise distance functions
+- [polars-ds](https://github.com/abstractqqq/polars_ds_extension) 一般的な数値/文字列データ分析手順を簡素化することを目指した Polars 拡張
+- [polars-hash](https://github.com/ion-elgreco/polars-hash) Polars 用の安定した非暗号的および暗号的ハッシュ関数
+- [polars-reverse-geocode](https://github.com/MarcoGorelli/polars-reverse-geocode) 与えられた（緯度、経度）ペアに最も近い都市を見つけるための
+  オフラインリバースジオコーダー
 
-## Other material
+## その他の資料
 
-- [Ritchie Vink - Keynote on Polars Plugins](https://youtu.be/jKW-CBV7NUM)
-- [Polars plugins tutorial](https://marcogorelli.github.io/polars-plugins-tutorial/) Learn how to write a plugin by
-  going through some very simple and minimal examples
-- [cookiecutter-polars-plugin](https://github.com/MarcoGorelli/cookiecutter-polars-plugins) Project template for Polars Plugins
+- [Ritchie Vink - Polars Pluginsに関する基調講演](https://youtu.be/jKW-CBV7NUM)
+- [Polars plugins チュートリアル](https://marcogorelli.github.io/polars-plugins-tutorial/) 簡単で最小限の例を通して
+  プラグインの作成方法を学びます
+- [cookiecutter-polars-plugin](https://github.com/MarcoGorelli/cookiecutter-polars-plugins) Polars Pluginsのプロジェクトテンプレート
