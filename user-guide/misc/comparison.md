@@ -1,35 +1,35 @@
-# Comparison with other tools
+# 他のツールとの比較
 
-These are several libraries and tools that share similar functionalities with Polars. This often leads to questions from data experts about what the differences are. Below is a short comparison between some of the more popular data processing tools and Polars, to help data experts make a deliberate decision on which tool to use.
+Polars と同様の機能を共有する複数のライブラリやツールがあります。これにより、データ専門家からは、どのような違いがあるのかという質問がよく寄せられます。以下はいくつかの人気なデータ処理ツールと Polars との簡単な比較であり、データ専門家がどのツールを使用するかを慎重に決定するのに役立ちます。
 
-You can find performance benchmarks (h2oai benchmark) of these tools here: [Polars blog post](https://pola.rs/posts/benchmarks/) or a more recent benchmark [done by DuckDB](https://duckdblabs.github.io/db-benchmark/)
+これらのツールのパフォーマンスベンチマーク（h2oai ベンチマーク）は、[Polars のブログ記事](https://pola.rs/posts/benchmarks/)または、より最近のベンチマーク[DuckDB によるもの](https://duckdblabs.github.io/db-benchmark/)で見ることができます。
 
 ### Pandas
 
-Pandas stands as a widely-adopted and comprehensive tool in Python data analysis, renowned for its rich feature set and strong community support. However, due to its single threaded nature, it can struggle with performance and memory usage on medium and large datasets.
+Pandas は、Python のデータ分析において広く採用されており、豊富な機能と強力なコミュニティサポートで知られています。しかし、シングルスレッドの性質のため、中〜大規模のデータセットでのパフォーマンスとメモリ使用に苦労することがあります。
 
-In contrast, Polars is optimised for high-performance multithreaded computing on single nodes, providing significant improvements in speed and memory efficiency, particularly for medium to large data operations. Its more composable and stricter API results in greater expressiveness and fewer schema-related bugs.
+一方、Polars は単一ノードでの高性能なマルチスレッドコンピューティングに最適化されており、特に中〜大規模なデータ操作において速度とメモリ効率の大幅な改善を提供します。複数の要素を組み合わせやすく、かつ厳格な API は、表現力の向上とスキーマ関連のバグの少なさをもたらします。
 
 ### Dask
 
-Dask extends Pandas' capabilities to large, distributed datasets. Dask mimics Pandas' API, offering a familiar environment for Pandas users, but with the added benefit of parallel and distributed computing.
+Dask は、大規模で分散されたデータセットに Pandas の機能を拡張します。Dask は Pandas の API を模倣し、Pandas ユーザーに馴染みのある環境を提供する一方、並行処理と分散コンピューティングの利点を加えます。
 
-While Dask excels at scaling Pandas workflows across clusters, it only supports a subset of the Pandas API and therefore cannot be used for all use cases. Polars offers a more versatile API that delivers strong performance within the constraints of a single node.
+Dask はクラスター全体で Pandas のワークフローをスケールする点で優れていますが、Pandas API の一部のみをサポートしているため、すべてのユースケースには適用できません。Polars は、単一ノードの制約内で強力なパフォーマンスを提供するより多様な API を提供します。
 
-The choice between Dask and Polars often comes down to familiarity with the Pandas API and the need for distributed processing for extremely large datasets versus the need for efficiency and speed in a vertically scaled environment for a wide range of use cases.
+Dask と Polars の選択は、Pandas API への慣れと非常に大規模なデータセットに対する分散処理の必要性を重視するか、広範なユースケースでの垂直スケーリング環境における効率と速度を重視するかによって左右されます。
 
 ### Modin
 
-Similar to Dask. In 2023, Snowflake acquired Ponder, the organisation that maintains Modin.
+Dask と同様です。2023年には、Snowflake が Modin を管理する組織 Ponder を買収しました。
 
 ### Spark
 
-Spark (specifically PySpark) represents a different approach to large-scale data processing. While Polars has an optimised performance for single-node environments, Spark is designed for distributed data processing across clusters, making it suitable for extremely large datasets.
+Spark（具体的には PySpark）は、大規模なデータ処理に対する異なるアプローチの象徴です。Polars が単一ノード環境での最適化されたパフォーマンスを持つ一方で、Spark はクラスターを越えた分散データ処理に設計されており、非常に大規模なデータセットに適しています。
 
-However, Spark's distributed nature can introduce complexity and overhead, especially for small datasets and tasks that can run on a single machine. Another consideration is collaboration between data scientists and engineers. As they typically work with different tools (Pandas and Pyspark), refactoring is often required by engineers to deploy data scientists' data processing pipelines. Polars offers a single syntax that, due to vertical scaling, works in local environments and on a single machine in the cloud.
+しかし、Sparkの分散性は、小規模なデータセットや単一マシンで実行可能なタスクに対して複雑さとオーバーヘッドをもたらすことがあります。データサイエンティストとエンジニアの間の協力も考慮事項です。彼らは通常、異なるツール（Pandas と Pyspark）を使用しており、データサイエンティストのデータ処理パイプラインを展開するためにエンジニアによるリファクタリングがしばしば必要です。Polars は、垂直スケーリングにより、ローカル環境とクラウド内の単一マシンで動作する単一の構文を提供します。
 
-The choice between Polars and Spark often depends on the scale of data and the specific requirements of the processing task. If you need to process TBs of data, Spark is a better choice.
-
+Polars と Spark の選択は、データの規模と処理タスクの具体的な要件に依存します。TB 規模のデータを処理する必要がある場合、Spark がより適した選択です。
 ### DuckDB
 
-Polars and DuckDB have many similarities. However, DuckDB is focused on providing an in-process SQL OLAP database management system, while Polars is focused on providing a scalable `DataFrame` interface to many languages. The different front-ends lead to different optimisation strategies and different algorithm prioritisation. The interoperability between both is zero-copy. DuckDB offers a guide on [how to integrate with Polars](https://duckdb.org/docs/guides/python/polars.html).
+Polars と DuckDB は多くの類似点を持っています。ただし、DuckDB はプロセス内 SQL OLAP データベース管理システムの提供に焦点を当てている一方で、Polars は多言語に対応するスケーラブルな DataFrame インターフェースの提供に焦点を当てています。異なるフロントエンドは、異なる最適化戦略や異なるアルゴリズムの優先順位付けにつながります。両者間の相互運用はゼロコピーで実現します。DuckDB は [Polars との統合方法](https://duckdb.org/docs/guides/python/polars.html)についてのガイドを提供しています。
+
