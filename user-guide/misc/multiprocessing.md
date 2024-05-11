@@ -1,99 +1,99 @@
-# Multiprocessing
+# 並列処理
 
-TLDR: if you find that using Python's built-in `multiprocessing` module together with Polars results in a Polars error about multiprocessing methods, you should make sure you are using `spawn`, not `fork`, as the starting method:
+TLDR: Python の組み込み `multiprocessing` モジュールと Polars を一緒に使用して並列処理に関する Polars エラーが発生する場合、開始方法として `fork` ではなく `spawn` を使用していることを確認してください：
 
 {{code_block('user-guide/misc/multiprocess','recommendation',[])}}
 
-## When not to use multiprocessing
+## 並列処理を使用しない場合
 
-Before we dive into the details, it is important to emphasize that Polars has been built from the start to use all your CPU cores.
-It does this by executing computations which can be done in parallel in separate threads.
-For example, requesting two expressions in a `select` statement can be done in parallel, with the results only being combined at the end.
-Another example is aggregating a value within groups using `group_by().agg(<expr>)`, each group can be evaluated separately.
-It is very unlikely that the `multiprocessing` module can improve your code performance in these cases.
+詳細に入る前に、Polars は最初からすべての CPU コアを使用するように構築されていることを強調することが重要です。
+これは、並行して実行できる計算を別々のスレッドで実行することによって実現されます。
+例えば、`select` 文で 2 つの式を要求することは並行して行うことができ、結果は最後にのみ結合されます。
+別の例としては、`group_by().agg(<expr>)` を使用してグループ内で値を集約する場合、各グループは別々に評価することができます。
+これらの場合に `multiprocessing` モジュールがコードのパフォーマンスを向上させる可能性は非常に低いです。
 
-See [the optimizations section](../lazy/optimizations.md) for more optimizations.
+最適化についてもっと知りたい場合は[最適化の章](../lazy/optimizations.md) を参照してください。
 
-## When to use multiprocessing
+## 並列処理を使用しない場合
 
-Although Polars is multithreaded, other libraries may be single-threaded.
-When the other library is the bottleneck, and the problem at hand is parallelizable, it makes sense to use multiprocessing to gain a speed up.
+Polars はマルチスレッドですが、他のライブラリはシングルスレッドかもしれません。
+他のライブラリがボトルネックで、解決の手がかりが並列化可能な場合、並列処理を使用して速度を上げることは理にかなっています。
 
-## The problem with the default multiprocessing config
+## デフォルトの並列処理の設定の問題
 
-### Summary
+### 概要
 
-The [Python multiprocessing documentation](https://docs.python.org/3/library/multiprocessing.html) lists the three methods to create a process pool:
+[Python の並列処理のドキュメント](https://docs.python.org/3/library/multiprocessing.html) ではプロセスプールを作成する3つの方法が記載されています：
 
 1. spawn
 1. fork
 1. forkserver
 
-The description of fork is (as of 2022-10-15):
+fork の説明は (2022-10-15 時点)：
 
-> The parent process uses os.fork() to fork the Python interpreter. The child process, when it begins, is effectively identical to the parent process. All resources of the parent are inherited by the child process. Note that safely forking a multithreaded process is problematic.
+> 親プロセスは os.fork() を使用して Python インタープリターをフォークします。子プロセスは開始すると、親プロセスと実質的に同一です。親のすべてのリソースは子プロセスに継承されます。マルチスレッドプロセスを安全にフォークすることは問題があることに注意してください。
 
-> Available on Unix only. The default on Unix.
+> Unix でのみ利用可能。Unix のデフォルト。
 
-The short summary is: Polars is multithreaded as to provide strong performance out-of-the-box.
-Thus, it cannot be combined with `fork`.
-If you are on Unix (Linux, BSD, etc), you are using `fork`, unless you explicitly override it.
+端的に言うと：Polars は強力なパフォーマンスを提供する目的でマルチスレッドで処理します。
+したがって、`fork` と組み合わせることはできません。
+Unix (Linux、BSD など) を使用している場合、明示的にオーバーライドしない限り、`fork` を使用します。
 
-The reason you may not have encountered this before is that pure Python code, and most Python libraries, are (mostly) single threaded.
-Alternatively, you are on Windows or MacOS, on which `fork` is not even available as a method (for MacOS it was up to Python 3.7).
+この問題に以前遭遇していなかった理由は、純粋な Python コードやほとんどの Python ライブラリは（ほとんどが）シングルスレッドだからです。
+または、Windows や MacOS を使用しているため、`fork` はそもそも利用可能な方法ではありません（MacOS は Python 3.7 まで）。
 
-Thus one should use `spawn`, or `forkserver`, instead. `spawn` is available on all platforms and the safest choice, and hence the recommended method.
+このため代わりに `spawn` か `forkservert` を使うべきです。`spawn` はすべてのプラットフォームで使用可能で最も安全な選択のため、この方法が推奨されます。
 
-### Example
+### 例
 
-The problem with `fork` is in the copying of the parent's process.
-Consider the example below, which is a slightly modified example posted on the [Polars issue tracker](https://github.com/pola-rs/polars/issues/3144):
+`fork` の問題は、親プロセスの状態をコピーすることにあります。
+[Polars のイシュートラッカー](https://github.com/pola-rs/polars/issues/3144)に投稿されたものを少し変更した以下の例を考えてみてください：
 
 {{code_block('user-guide/misc/multiprocess','example1',[])}}
 
-Using `fork` as the method, instead of `spawn`, will cause a dead lock.
-Please note: Polars will not even start and raise the error on multiprocessing method being set wrong, but if the check had not been there, the deadlock would exist.
+`spawn` の代わりに `fork` を使用すると、デッドロックが発生します。
+注意：Polars は並列処理の方法が間違っているというエラーを出して起動すらしませんが、チェックがなかった場合、デッドロックします。
 
-The fork method is equivalent to calling `os.fork()`, which is a system call as defined in [the POSIX standard](https://pubs.opengroup.org/onlinepubs/9699919799/functions/fork.html):
+fork メソッドは `os.fork()` を呼び出すことに相当し、これは [POSIX 標準](https://pubs.opengroup.org/onlinepubs/9699919799/functions/fork.html) で定義されているシステムコールです：
 
-> A process shall be created with a single thread. If a multi-threaded process calls fork(), the new process shall contain a replica of the calling thread and its entire address space, possibly including the states of mutexes and other resources. Consequently, to avoid errors, the child process may only execute async-signal-safe operations until such time as one of the exec functions is called.
+> プロセスは単一のスレッドで作成されます。マルチスレッドプロセスが fork() を呼び出した場合、新しいプロセスには呼び出しスレッドとその完全なアドレス空間のレプリカが含まれます。これには、ミューテックスの状態などのリソースも含まれる可能性があります。したがって、エラーを避けるために、子プロセスは exec 関数のいずれかが呼び出されるまで、非同期シグナル安全な操作のみを実行することができます。
 
-In contrast, `spawn` will create a completely new fresh Python interpreter, and not inherit the state of mutexes.
+一方で `spawn` は完全に新しいフレッシュな Python インタープリターを作成し、ミューテックスの状態を継承しません。
 
-So what happens in the code example?
-For reading the file with `pl.read_parquet` the file has to be locked.
-Then `os.fork()` is called, copying the state of the parent process, including mutexes.
-Thus all child processes will copy the file lock in an acquired state, leaving them hanging indefinitely waiting for the file lock to be released, which never happens.
+では、コード例で何が起こるのでしょうか？
+ファイルを `pl.read_parquet` で読むためには、ファイルをロックする必要があります。
+その後、`os.fork()` が呼び出され、親プロセスの状態をコピーします。これにはミューテックスも含まれます。
+したがって、すべての子プロセスは、獲得された状態でファイルロックをコピーし、ファイルロックが解放されるのを無期限に待つことになりますが、それは決して起こりません。
 
-What makes debugging these issues tricky is that `fork` can work.
-Change the example to not having the call to `pl.read_parquet`:
+これらの問題をデバッグするのが難しいのは、`fork` が機能する可能性があるためです。
+`pl.read_parquet` の呼び出しがない例に変更してみてください：
 
 {{code_block('user-guide/misc/multiprocess','example2',[])}}
 
-This works fine.
-Therefore debugging these issues in larger code bases, i.e. not the small toy examples here, can be a real pain, as a seemingly unrelated change can break your multiprocessing code.
-In general, one should therefore never use the `fork` start method with multithreaded libraries unless there are very specific requirements that cannot be met otherwise.
+これは問題なく機能します。
+一見関係のない変更が並列処理のコードを壊す可能性があるため、ここでの簡単な例ではなく、より大きなコードベースでこれらの問題をデバッグすることは、大変な苦痛を伴う可能性があります。
+従って、やむを得ない特別な要件があるとき以外は、一般的にはマルチスレッドのライブラリを使用する場合は `fork` の開始方法を使用するべきでありません。
 
-### Pro's and cons of fork
+### fork の長所と短所
 
-Based on the example, you may think, why is `fork` available in Python to start with?
+例を踏まえると、なぜ `fork` が Python で最初から利用可能だったのか疑問に思うかもしれません。
 
-First, probably because of historical reasons: `spawn` was added to Python in version 3.4, whilst `fork` has been part of Python from the 2.x series.
+まず、おそらく歴史的な理由からです：`spawn` は Python バージョン 3.4 で追加されましたが、`fork` は Python 2.x シリーズから一部でした。
 
-Second, there are several limitations for `spawn` and `forkserver` that do not apply to `fork`, in particular all arguments should be pickable.
-See the [Python multiprocessing docs](https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods) for more information.
+2つ目に、`spawn` および `forkserver` には適用されないいくつかの制限が `fork` には存在します。特に、すべての引数がピック可能である必要があります。
+詳細については、[Python の並列処理のドキュメント](https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods) を参照してください。
 
-Third, because it is faster to create new processes compared to `spawn`, as `spawn` is effectively `fork` + creating a brand new Python process without the locks by calling [execv](https://pubs.opengroup.org/onlinepubs/9699919799/functions/exec.html).
-Hence the warning in the Python docs that it is slower: there is more overhead to `spawn`.
-However, in almost all cases, one would like to use multiple processes to speed up computations that take multiple minutes or even hours, meaning the overhead is negligible in the grand scheme of things.
-And more importantly, it actually works in combination with multithreaded libraries.
+3つ目に、`spawn` は実質的に `fork` に加えて新しい Python プロセスをロックなしで作成する [execv](https://pubs.opengroup.org/onlinepubs/9699919799/functions/exec.html) の呼び出しのため、`fork` は `spawn` よりも早く新しいプロセスを作成します。
+そのため、Python ドキュメントにはより遅いとの警告があります：`spawn` よりもオーバーヘッドが多いです。
+しかし、ほとんどの場合、複数のプロセスを使用する目的は、数分または数時間かかる計算を速めることであり、このオーバーヘッドは全体的な状況では無視できるほどです。
+そしてより重要なことに、それはマルチスレッドライブラリと組み合わせて実際に機能します。
 
-Fourth, `spawn` starts a new process, and therefore it requires code to be importable, in contrast to `fork`.
-In particular, this means that when using `spawn` the relevant code should not be in the global scope, such as in Jupyter notebooks or in plain scripts.
-Hence in the examples above, we define functions where we spawn within, and run those functions from a `__main__` clause.
-This is not an issue for typical projects, but during quick experimentation in notebooks it could fail.
+4つ目に、`spawn` は新しいプロセスを開始するため、`fork` と違ってコードがインポート可能である必要があります。
+特に `spawn` を使用する場合、関連するコードは例えば Jupyter ノートブックやプレーンなスクリプトなどのグローバルなスコープにあるべきではありません。
+したがって、上記の例では、__main__ 節から実行する関数内でスポーンするように関数を定義しています。
+これは典型的なプロジェクトでは問題ではありませんが、ノートブックでの迅速な実験においては失敗する可能性があります。
 
-## References
+## 参考文献
 
 1. https://docs.python.org/3/library/multiprocessing.html
 
