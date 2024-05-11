@@ -1,150 +1,150 @@
-# Coming from Pandas
+# Pandas からの移行
 
-Here we set out the key points that anyone who has experience with pandas and wants to
-try Polars should know. We include both differences in the concepts the libraries are
-built on and differences in how you should write Polars code compared to pandas
-code.
+ここでは、Pandas の経験がある人が Polars を試す際に知っておくべき
+重要なポイントを説明します。Polars と Pandas それぞれのライブラリが
+基礎としている概念の違いと、Pandas と比較した Polars のコードの書き方の違いを
+説明します。
 
-## Differences in concepts between Polars and pandas
+## Polars と Pandas の概念の違い
 
-### Polars does not have a multi-index/index
+### Polars にはマルチインデックス/インデックスがない
 
-pandas gives a label to each row with an index. Polars does not use an index and
-each row is indexed by its integer position in the table.
+Pandas は各行にインデックスでラベルが付与されます。Polars にはインデックスがなく、
+各行はテーブルの中での整数位置によってインデックスされます。
 
-Polars aims to have predictable results and readable queries, as such we think an index does not help us reach that
-objective. We believe the semantics of a query should not change by the state of an index or a `reset_index` call.
+Polars は予測可能な結果と読みやすいクエリを目指しており、インデックスはそれらの目的に役立たないと考えています。
+クエリの意味は、インデックスの状態や `reset_index` の呼び出しによって変わるべきではないと信じています。
 
-In Polars a DataFrame will always be a 2D table with heterogeneous data-types. The data-types may have nesting, but the
-table itself will not.
-Operations like resampling will be done by specialized functions or methods that act like 'verbs' on a table explicitly
-stating the columns that that 'verb' operates on. As such, it is our conviction that not having indices make things simpler,
-more explicit, more readable and less error-prone.
+Polarsのデータフレームは常に2次元の異種データ型のテーブルです。データ型にはネストが存在する可能性がありますが、
+テーブル自体にはネストはありません。
+リサンプリングなどの操作は、明示的にどの列に対して行うかを示す専用の関数やメソッド（「動詞」のようなもの）で行います。
+したがって、インデックスがないことで、より単純で明示的で読みやすく、
+エラーが少なくなると確信しています。
 
-Note that an 'index' data structure as known in databases will be used by Polars as an optimization technique.
+ただし、データベースで知られている「インデックス」のデータ構造は、Polars の最適化技術として使用されます。
 
-### Polars uses Apache Arrow arrays to represent data in memory while pandas uses NumPy arrays
+### Polars はメモリ上で Apache Arrow の配列を使用する一方、Pandas は NumPy 配列を使用する
 
-Polars represents data in memory with Arrow arrays while pandas represents data in
-memory with NumPy arrays. Apache Arrow is an emerging standard for in-memory columnar
-analytics that can accelerate data load times, reduce memory usage and accelerate
-calculations.
+Polars はメモリ上で Apache Arrow の配列を使用する一方で、
+Pandas は NumPy 配列を使用します。Apache Arrow は、データ読み込み時間の短縮、
+メモリ使用量の削減、計算の高速化などを実現する
+新興の列指向メモリ分析標準です。
 
-Polars can convert data to NumPy format with the `to_numpy` method.
+Polarsは `to_numpy` メソッドでデータを NumPy 形式に変換できます。
 
-### Polars has more support for parallel operations than pandas
+### Polars は Pandas よりも並列処理をサポートする
 
-Polars exploits the strong support for concurrency in Rust to run many operations in
-parallel. While some operations in pandas are multi-threaded the core of the library
-is single-threaded and an additional library such as `Dask` must be used to parallelize
-operations.
+Polarsは Rust の並行性の強力なサポートを活用して、多くの操作を並列に実行できます。
+Pandas にも一部の操作で並列処理があるものの、
+ライブラリの中核部分は単一スレッドであり、並列処理のためには`Dask` などの
+ライブラリを追加で使う必要があります。
 
-### Polars can lazily evaluate queries and apply query optimization
+### Polars は遅延評価クエリとクエリ最適化が可能
 
-Eager evaluation is when code is evaluated as soon as you run the code. Lazy evaluation
-is when running a line of code means that the underlying logic is added to a query plan
-rather than being evaluated.
+即時評価は、コードを実行するとすぐにコードが評価されます。
+遅延評価は、行のコードを実行することで、基礎となるロジックがクエリ計画に追加され、
+評価されないことを意味します。
 
-Polars supports eager evaluation and lazy evaluation whereas pandas only supports
-eager evaluation. The lazy evaluation mode is powerful because Polars carries out
-automatic query optimization when it examines the query plan and looks for ways to
-accelerate the query or reduce memory usage.
+Polars は即時評価と遅延評価をサポートしていますが、 pandas は即時評価のみを
+サポートしています。遅延評価モードは強力で、Polars はクエリ計画を調べ、
+クエリを高速化したり、メモリ使用量を削減する方法を見つけると、
+自動クエリ最適化を行います。
 
-`Dask` also supports lazy evaluation when it generates a query plan. However, `Dask`
-does not carry out query optimization on the query plan.
+`Dask` も、クエリ計画を生成する際に遅延評価をサポートしています。ただし、`Dask` は
+クエリ計画に対してクエリ最適化を行いません。
 
 ## Key syntax differences
 
-Users coming from pandas generally need to know one thing...
+Pandas から移行してきたユーザーは一般に1つのことを知る必要があります...
 
 ```
 polars != pandas
 ```
 
-If your Polars code looks like it could be pandas code, it might run, but it likely
-runs slower than it should.
+もしもあなたの Polars のコードが Pandas のコードのように見える場合、実行はできるかもしれませんが、
+おそらく適切な速度で実行されることはないでしょう。
 
-Let's go through some typical pandas code and see how we might rewrite it in Polars.
+いくつかの典型的な Pandas コードを見て、それを Polars でどのように書き換えるか見ていきましょう。
 
-### Selecting data
+### データの選択
 
-As there is no index in Polars there is no `.loc` or `iloc` method in Polars - and
-there is also no `SettingWithCopyWarning` in Polars.
+Polars にはインデックスがないため、`.loc` や `iloc` メソッドが存在せず、
+`SettingWithCopyWarning` も Polars には存在しません。
 
-However, the best way to select data in Polars is to use the expression API. For
-example, if you want to select a column in pandas, you can do one of the following:
+しかし、Polars でデータを選択する最良の方法は、expression API を使用することです。
+たとえば、Pandas で列を選択したい場合、次のいずれかを行うことができます：
 
 ```python
 df['a']
 df.loc[:,'a']
 ```
 
-but in Polars you would use the `.select` method:
+しかし、Polars では `.select` メソッドを使用します：
 
 ```python
 df.select('a')
 ```
 
-If you want to select rows based on the values then in Polars you use the `.filter`
-method:
+値に基づいて行を選択したい場合は、
+Polars で `.filter` メソッドを使用します：
 
 ```python
 df.filter(pl.col('a') < 10)
 ```
 
-As noted in the section on expressions below, Polars can run operations in `.select`
-and `filter` in parallel and Polars can carry out query optimization on the full set
-of data selection criteria.
+下記の式に関するセクションで述べられているように、Polars は `.select` および
+`filter` での操作を並列に実行することができ、データを選択する基準の全てのセットに対して
+クエリ最適化を行うことができます。
 
-### Be lazy
+### 遅延評価を利用する
 
-Working in lazy evaluation mode is straightforward and should be your default in
-Polars as the lazy mode allows Polars to do query optimization.
+遅延評価モードでの作業は単純であり、Polars では遅延モードが
+クエリ最適化を可能にするため、デフォルトとすべきです。
 
-We can run in lazy mode by either using an implicitly lazy function (such as `scan_csv`)
-or explicitly using the `lazy` method.
+遅延モードでの実行は、暗黙的に遅延関数（`scan_csv` など）を使用するか、
+明示的に `lazy` メソッドを使用することで行えます。
 
-Take the following simple example where we read a CSV file from disk and do a group by.
-The CSV file has numerous columns but we just want to do a group by on one of the id
-columns (`id1`) and then sum by a value column (`v1`). In pandas this would be:
+次のシンプルな例を考えます。ディスクから CSV ファイルを読み込んでグループ化します。
+CSV ファイルには数多くの列がありますが、私たちは `id1` の列でグループ化して、
+値列（`v1`）で合計を出したいだけです。pandas では次のようになります：
 
 ```python
 df = pd.read_csv(csv_file, usecols=['id1','v1'])
 grouped_df = df.loc[:,['id1','v1']].groupby('id1').sum('v1')
 ```
 
-In Polars you can build this query in lazy mode with query optimization and evaluate
-it by replacing the eager pandas function `read_csv` with the implicitly lazy Polars
-function `scan_csv`:
+Polars ではクエリを遅延モードで構築してクエリ最適化を行い、
+即時的な Pandas 関数の `read_csv` を
+暗黙的に遅延する Polars 関数の `scan_csv` に置き換えて評価できます：
 
 ```python
 df = pl.scan_csv(csv_file)
 grouped_df = df.group_by('id1').agg(pl.col('v1').sum()).collect()
 ```
 
-Polars optimizes this query by identifying that only the `id1` and `v1` columns are
-relevant and so will only read these columns from the CSV. By calling the `.collect`
-method at the end of the second line we instruct Polars to eagerly evaluate the query.
+Polars はこのクエリを `id1` および `v1` 列のみが関連していると特定し、
+これらの列のみを CSV から読み込むよう最適化します。2行目の最後で `.collect`
+メソッドを呼び出すことで、クエリをその時点で評価するよう Polars に指示します。
 
-If you do want to run this query in eager mode you can just replace `scan_csv` with
-`read_csv` in the Polars code.
+このクエリを即時モードで実行したい場合は、
+Polars コードで `scan_csv` を `read_csv` に置き換えるだけです。
 
-Read more about working with lazy evaluation in the
-[lazy API](../lazy/using.md) section.
+遅延評価の使用については、
+[lazy API](../lazy/using.md) の章で詳しく読むことができます。
 
-### Express yourself
+### エクスプレッションを使う
 
-A typical pandas script consists of multiple data transformations that are executed
-sequentially. However, in Polars these transformations can be executed in parallel
-using expressions.
+典型的な pandas スクリプトは、逐次的に実行される複数のデータ変換で構成されています。
+しかし、Polars ではこれらの変換をエクスプレッションを使って
+並列に実行することができます。
 
-#### Column assignment
+#### カラムの割り当て
 
-We have a dataframe `df` with a column called `value`. We want to add two new columns, a
-column called `tenXValue` where the `value` column is multiplied by 10 and a column
-called `hundredXValue` where the `value` column is multiplied by 100.
+`df` という DataFrame に `value` というカラムがあり、
+`value` を10倍した `tenXValue` という新しいカラム、
+および `value` 列を100倍した `hundredXValue` という新しいカラムを追加したいとします。
 
-In pandas this would be:
+pandas では次のようになります：
 
 ```python
 df.assign(
@@ -153,9 +153,9 @@ df.assign(
 )
 ```
 
-These column assignments are executed sequentially.
+これらのカラムの割り当ては逐次的に実行されます。
 
-In Polars we add columns to `df` using the `.with_columns` method:
+Polars では `with_columns` メソッドを使ってカラムを追加します：
 
 ```python
 df.with_columns(
@@ -164,21 +164,21 @@ df.with_columns(
 )
 ```
 
-These column assignments are executed in parallel.
+これらのカラムの割り当ては屁入れで実行されます。
 
-#### Column assignment based on predicate
+#### 条件に基づくカラムの割り当て
 
-In this case we have a dataframe `df` with columns `a`,`b` and `c`. We want to re-assign
-the values in column `a` based on a condition. When the value in column `c` is equal to
-2 then we replace the value in `a` with the value in `b`.
+次のケースでは、カラム `a`、`b`、`c` を持つ dataframe `df` があったとします。
+条件に基づいてカラム `a` の値を割り当てしなおしたいと考えます。カラム `c` の値が 2 に等しい場合、
+カラム `a` の値をカラム `b` の値に置き換えます。
 
-In pandas this would be:
+pandas では次のようになります：
 
 ```python
 df.assign(a=lambda df_: df_.a.where(df_.c != 2, df_.b))
 ```
 
-while in Polars this would be:
+一方で Polars では次のようになります：
 
 ```python
 df.with_columns(
@@ -188,26 +188,26 @@ df.with_columns(
 )
 ```
 
-Polars can compute every branch of an `if -> then -> otherwise` in
-parallel. This is valuable, when the branches get more expensive to compute.
+Polars は `if -> then -> otherwise` の各ブランチを並列に計算することができます。
+これは、ブランチの計算が高コストになる場合に価値があります。
 
-#### Filtering
+#### フィルタリング
 
-We want to filter the dataframe `df` with housing data based on some criteria.
+いくつかの条件に基づいて住宅データを持つ Dataframe `df` をフィルタリングしたいとします。
 
-In pandas you filter the dataframe by passing Boolean expressions to the `query` method:
+pandas では `query` メソッドにブール式を渡して Dataframe をフィルタリングします：
 
 ```python
 df.query("m2_living > 2500 and price < 300000")
 ```
 
-or by directly evaluating a mask:
+またはマスクを直接評価します：
 
 ```python
 df[(df["m2_living"] > 2500) & (df["price"] < 300000)]
 ```
 
-while in Polars you call the `filter` method:
+一方で Polars は `filter` メソッドを呼びます：
 
 ```python
 df.filter(
@@ -215,16 +215,16 @@ df.filter(
 )
 ```
 
-The query optimizer in Polars can also detect if you write multiple filters separately
-and combine them into a single filter in the optimized plan.
+Polars のクエリ最適化エンジンは、複数のフィルターを別々に記述したことを検出し、
+最適化された計画でそれらを1つのフィルターに組み合わせることができます。
 
-## pandas transform
+## pandas の変換
 
-The pandas documentation demonstrates an operation on a group by called `transform`. In
-this case we have a dataframe `df` and we want a new column showing the number of rows
-in each group.
+pandas のドキュメントでは、`transform` と呼ばれるグループ化に対する操作が示されています。
+この場合、DataFrame `df` があり、各グループの行数を示す
+新しい列が必要です。
 
-In pandas we have:
+pandas では次のようになります：
 
 ```python
 df = pd.DataFrame({
@@ -235,8 +235,8 @@ df = pd.DataFrame({
 df["size"] = df.groupby("c")["type"].transform(len)
 ```
 
-Here pandas does a group by on `"c"`, takes column `"type"`, computes the group length
-and then joins the result back to the original `DataFrame` producing:
+ここで pandas は `"c"` でグループ化を行い、`"type"` カラムを取り、グループの長さを計算し、
+その結果を元の `DataFrame` に戻して以下を生成します：
 
 ```
    c type size
@@ -249,7 +249,7 @@ and then joins the result back to the original `DataFrame` producing:
 6  2    n    4
 ```
 
-In Polars the same can be achieved with `window` functions:
+Polars では同じことを `window` 関数で実現できます。
 
 ```python
 df.with_columns(
@@ -274,12 +274,12 @@ shape: (7, 3)
 └─────┴──────┴──────┘
 ```
 
-Because we can store the whole operation in a single expression, we can combine several
-`window` functions and even combine different groups!
+単一の式に全ての操作を格納できるため、複数の `window` 関数を組み合わせたり、
+異なるグループを組み合わせたりすることができます！
 
-Polars will cache window expressions that are applied over the same group, so storing
-them in a single `with_columns` is both convenient **and** optimal. In the following example
-we look at a case where we are calculating group statistics over `"c"` twice:
+同じグループに適用されるwindowエクスプレッションは Polars によってキャッシュされるため、
+単一の `with_columns` にそれらを格納することは便利であり、**かつ** 最適です。次の例では、
+`"c"` に対してグループ統計を2回計算するケースを見ていきます：
 
 ```python
 df.with_columns(
@@ -306,22 +306,22 @@ shape: (7, 5)
 └─────┴──────┴──────┴─────┴──────────────┘
 ```
 
-## Missing data
+## 欠損データ
 
-pandas uses `NaN` and/or `None` values to indicate missing values depending on the dtype of the column. In addition the behaviour in pandas varies depending on whether the default dtypes or optional nullable arrays are used. In Polars missing data corresponds to a `null` value for all data types.
+pandas では、列の dtype に応じて `NaN` や `None` の値を使用して欠損値を示します。さらに、pandas ではデフォルトの dtype またはオプションの nullable 配列を使用するかによって挙動が異なります。Polars では、すべてのデータ型に対して欠損データは `null` 値に対応します。
 
-For float columns Polars permits the use of `NaN` values. These `NaN` values are not considered to be missing data but instead a special floating point value.
+浮動小数点のカラムにおいて、Polars は `NaN` 値の使用を許可しています。これらの `NaN` 値は欠損データとは見なされず、特別な浮動小数点値として扱われます。
 
-In pandas an integer column with missing values is cast to be a float column with `NaN` values for the missing values (unless using optional nullable integer dtypes). In Polars any missing values in an integer column are simply `null` values and the column remains an integer column.
+pandas では、欠損値を持つ整数列は、欠損値のために `NaN` 値を持つ浮動小数点列にキャストされます（オプションの null を許容する整数型の dtype を使用しない限り）。Polars では、整数列の欠損値は単に `null` 値であり、列は引き続き整数列のままです。
 
-See the [missing data](../expressions/missing-data.md) section for more details.
+詳細については、[欠損データ](../expressions/missing-data.md) セクションを参照してください。
 
-## Pipe littering
+## パイプの使用
 
-A common usage in pandas is utilizing `pipe` to apply some function to a `DataFrame`. Copying this coding style to Polars
-is unidiomatic and leads to suboptimal query plans.
+pandas で一般的な使用方法は、`pipe` を利用して `DataFrame` に何らかの関数を適用することです。
+このコーディングスタイルを Polars にそのまま適用するのは自然ではなく、最適ではないなクエリ計画につながります。
 
-The snippet below shows a common pattern in pandas.
+以下のスニペットは、pandas でよく見られるパターンを示しています。
 
 ```python
 def add_foo(df: pd.DataFrame) -> pd.DataFrame:
@@ -344,11 +344,11 @@ def add_ham(df: pd.DataFrame) -> pd.DataFrame:
 )
 ```
 
-If we do this in polars, we would create 3 `with_columns` contexts, that forces Polars to run the 3 pipes sequentially,
-utilizing zero parallelism.
+Polars でこれを行うと、3つの `with_columns` 式を作成してしまい、
+Polars に3つのパイプを順番に実行させることになり、並列処理は一切利用されません。
 
-The way to get similar abstractions in polars is creating functions that create expressions.
-The snippet below creates 3 expressions that run on a single context and thus are allowed to run in parallel.
+Polars で同様の抽象化を得る方法は、エクスプレッションを生成する関数を作成することです。
+以下のスニペットでは、単一の式で実行される3つのエクスプレッションを作成し、これにより並列実行が可能になります。
 
 ```python
 def get_foo(input_column: str) -> pl.Expr:
@@ -368,7 +368,7 @@ df.with_columns(
 )
 ```
 
-If you need the schema in the functions that generate the expressions, you can utilize a single `pipe`:
+式を生成する関数内でスキーマが必要な場合、単一の `pipe` を利用することができます：
 
 ```python
 from collections import OrderedDict
@@ -400,5 +400,5 @@ lf.pipe(lambda lf: lf.with_columns(
 )
 ```
 
-Another benefit of writing functions that return expressions, is that these functions are composable as expressions can
-be chained and partially applied, leading to much more flexibility in the design.
+エクスプレッションを返す関数を書くことのもう一つの利点は、これらの関数が組み合わせ可能であることです。
+式は連鎖させたり部分適用することができ、設計の柔軟性が大幅に向上します。

@@ -1,10 +1,10 @@
-# Coming from Apache Spark
+# Apache Spark からの移行
 
-## Column-based API vs. Row-based API
+## カラムベースの API と行ベースの API
 
-Whereas the `Spark` `DataFrame` is analogous to a collection of rows, a Polars `DataFrame` is closer to a collection of columns. This means that you can combine columns in Polars in ways that are not possible in `Spark`, because `Spark` preserves the relationship of the data in each row.
+`Spark` の `DataFrame` は行の集合に相当するのに対し、Polars の `DataFrame` はカラムの集合に近いです。これは、`Spark` が各行のデータの関連性を保持するのに対し、Polars では `Spark` では不可能な方法で列を組み合わせることができることを意味します。
 
-Consider this sample dataset:
+以下にサンプルデータセットを示します：
 
 ```python
 import polars as pl
@@ -26,9 +26,9 @@ dfs = spark.createDataFrame(
 )
 ```
 
-### Example 1: Combining `head` and `sum`
+### 例1： `head` と `sum` を組み合わせる
 
-In Polars you can write something like this:
+Polars では次のように記述できます：
 
 ```python
 df.select(
@@ -52,9 +52,9 @@ shape: (2, 2)
 └─────┴─────┘
 ```
 
-The expressions on columns `foo` and `bar` are completely independent. Since the expression on `bar` returns a single value, that value is repeated for each value output by the expression on `foo`. But `a` and `b` have no relation to the data that produced the sum of `9`.
+カラム `foo` と `bar` に対する式は完全に独立しています。`bar` に対するエクスプレッションが単一の値を返すため、その値は `foo` に対するエクスプレッションによって出力される各値に対して繰り返されます。しかし、`a` と `b` は `9` の合計を生成したデータとは関連がありません。
 
-To do something similar in `Spark`, you'd need to compute the sum separately and provide it as a literal:
+`Spark` で同様のことを行うには、合計を別途計算し、リテラルとして提供する必要があります：
 
 ```python
 from pyspark.sql.functions import col, sum, lit
@@ -87,9 +87,9 @@ Output:
 +---+---+
 ```
 
-### Example 2: Combining Two `head`s
+### 例2： 2つの `head` を組み合わせる
 
-In Polars you can combine two different `head` expressions on the same DataFrame, provided that they return the same number of values.
+Polars では、同じ DataFrame に対して異なる `head` 式を組み合わせることができますが、それらが同じ数の値を返す場合に限ります。
 
 ```python
 df.select(
@@ -113,9 +113,9 @@ shape: (3, 2)
 └─────┴─────┘
 ```
 
-Again, the two `head` expressions here are completely independent, and the pairing of `a` to `5` and `b` to `4` results purely from the juxtaposition of the two columns output by the expressions.
+ここでも2つの `head` 式は完全に独立しており、`a` が `5` に、`b` が `4` に対応するのは、式によって出力された二つのカラムを並べることによって純粋に結果が得られます。
 
-To accomplish something similar in `Spark`, you would need to generate an artificial key that enables you to join the values in this way.
+`Spark` で同様のことを実現するには、このように値を結合するために人工的なキーを生成する必要があります。
 
 ```python
 from pyspark.sql import Window
