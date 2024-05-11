@@ -1,8 +1,8 @@
-# Visualization
+# 可視化
 
-Data in a Polars `DataFrame` can be visualized using common visualization libraries.
+Polars の `DataFrame` 内のデータは、一般的な可視化ライブラリを使用して可視化することができます。
 
-We illustrate plotting capabilities using the Iris dataset. We scan a CSV and then do a group-by on the `species` column and get the mean of the `petal_length`.
+ここでは、Iris データセットを使用してプロット機能を示します。CSV をスキャンし、`species` カラムでグループ化を行い、`petal_length` の平均を取得します。
 
 {{code_block('user-guide/misc/visualization','dataframe',[])}}
 
@@ -10,9 +10,9 @@ We illustrate plotting capabilities using the Iris dataset. We scan a CSV and th
 --8<-- "python/user-guide/misc/visualization.py:dataframe"
 ```
 
-## Built-in plotting with hvPlot
+## hvPlot による組み込みのプロット
 
-Polars has a `plot` method to create interactive plots using [hvPlot](https://hvplot.holoviz.org/).
+Polars には [hvPlot](https://hvplot.holoviz.org/) を使用してインタラクティブなプロットを作成するための `plot` メソッドがあります。
 
 {{code_block('user-guide/misc/visualization','hvplot_show_plot',[])}}
 
@@ -22,8 +22,8 @@ Polars has a `plot` method to create interactive plots using [hvPlot](https://hv
 
 ## Matplotlib
 
-To create a bar chart we can pass columns of a `DataFrame` directly to Matplotlib as a `Series` for each column. Matplotlib does not have explicit support for Polars objects but Matplotlib can accept a Polars `Series` because it can convert each Series to a numpy array, which is zero-copy for numeric
-data without null values.
+棒グラフを作成するには、DataFrame の各カラムを Matplotlib に Series として直接渡すことができます。Matplotlib は Polars オブジェクトを明示的にサポートしていませんが、Polars の Series を受け入れることができます。これは、null 値がないデータは Series をゼロコピーで numpy 配列に変換できるためです。
+
 
 {{code_block('user-guide/misc/visualization','matplotlib_show_plot',[])}}
 
@@ -33,7 +33,7 @@ data without null values.
 
 ## Seaborn, Plotly & Altair
 
-[Seaborn](https://seaborn.pydata.org/), [Plotly](https://plotly.com/) & [Altair](https://altair-viz.github.io/) can accept a Polars `DataFrame` by leveraging the [dataframe interchange protocol](https://data-apis.org/dataframe-api/), which offers zero-copy conversion where possible.
+[Seaborn](https://seaborn.pydata.org/)、[Plotly](https://plotly.com/) 、[Altair](https://altair-viz.github.io/) は [Dataframe 変換プロトコル](https://data-apis.org/dataframe-api/)を活用して Polars の `DataFrame` を受け入れることができます。これにより、可能な場合はゼロコピー変換が提供されます。
 
 ### Seaborn
 
