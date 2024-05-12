@@ -1,0 +1,282 @@
+name: Release Python
+
+on:
+  workflow_dispatch:
+    inputs:
+      # Latest commit to include with the release. If omitted, use the latest commit on the main branch.
+      sha:
+        description: Commit SHA
+        type: string
+      # Create the sdist and build the wheels, but do not publish to PyPI / GitHub.
+      dry-run:
+        description: Dry run
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: '3.8'
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+  RUSTUP_MAX_RETRIES: 10
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  create-sdist:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [polars, polars-lts-cpu, polars-u64-idx]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha }}
+
+      # Avoid potential out-of-memory errors
+      - name: Set swap space for Linux
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 10
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install yq
+        if: matrix.package != 'polars'
+        run: pip install yq
+      - name: Update package name
+        if: matrix.package != 'polars'
+        run: tomlq -i -t ".project.name = \"${{ matrix.package }}\"" py-polars/pyproject.toml
+      - name: Add bigidx feature
+        if: matrix.package == 'polars-u64-idx'
+        run: tomlq -i -t '.dependencies.polars.features += ["bigidx"]' py-polars/Cargo.toml
+
+      - name: Create source distribution
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: >
+            --manifest-path py-polars/Cargo.toml
+            --out dist
+
+      - name: Test sdist
+        run: |
+          pip install --force-reinstall --verbose dist/*.tar.gz
+          python -c 'import polars'
+
+      - name: Upload sdist
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist-${{ matrix.package }}
+          path: dist/*.tar.gz
+
+  build-wheels:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [polars, polars-lts-cpu, polars-u64-idx]
+        os: [ubuntu-latest, macos-13, windows-32gb-ram]
+        architecture: [x86-64, aarch64]
+        exclude:
+          - os: windows-32gb-ram
+            architecture: aarch64
+
+    env:
+      SED_INPLACE: ${{ matrix.os == 'macos-13' && '-i ''''' || '-i'}}
+      CPU_CHECK_MODULE: py-polars/polars/_cpu_check.py
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha }}
+
+      # Avoid potential out-of-memory errors
+      - name: Set swap space for Linux
+        if: matrix.os == 'ubuntu-latest'
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 10
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install yq
+        if: matrix.package != 'polars'
+        run: pip install yq
+      - name: Update package name
+        if: matrix.package != 'polars'
+        run: tomlq -i -t ".project.name = \"${{ matrix.package }}\"" py-polars/pyproject.toml
+      - name: Add bigidx feature
+        if: matrix.package == 'polars-u64-idx'
+        run: tomlq -i -t '.dependencies.polars.features += ["bigidx"]' py-polars/Cargo.toml
+
+      - name: Determine CPU features for x86-64
+        id: features
+        if: matrix.architecture == 'x86-64'
+        env:
+          IS_LTS_CPU: ${{ matrix.package == 'polars-lts-cpu' }}
+          IS_MACOS: ${{ matrix.os == 'macos-13' }}
+        # IMPORTANT: All features enabled here should also be included in py-polars/polars/_cpu_check.py
+        run: |
+          if [[ "$IS_LTS_CPU" = true ]]; then
+            FEATURES=+sse3,+ssse3,+sse4.1,+sse4.2,+popcnt
+          elif [[ "$IS_MACOS" = true ]]; then
+            FEATURES=+sse3,+ssse3,+sse4.1,+sse4.2,+popcnt,+avx,+fma,+pclmulqdq
+          else
+            FEATURES=+sse3,+ssse3,+sse4.1,+sse4.2,+popcnt,+avx,+avx2,+fma,+bmi1,+bmi2,+lzcnt,+pclmulqdq
+          fi
+          echo "features=$FEATURES" >> $GITHUB_OUTPUT
+
+      - name: Set RUSTFLAGS for x86-64
+        if: matrix.architecture == 'x86-64'
+        env:
+          FEATURES: ${{ steps.features.outputs.features }}
+          CFG: ${{ matrix.package == 'polars-lts-cpu' && '--cfg default_allocator' || '' }}
+        run: echo "RUSTFLAGS=-C target-feature=${{ steps.features.outputs.features }} $CFG" >> $GITHUB_ENV
+
+      - name: Set variables in CPU check module
+        run: |
+          sed $SED_INPLACE 's/^_POLARS_ARCH = \"unknown\"$/_POLARS_ARCH = \"${{ matrix.architecture }}\"/g' $CPU_CHECK_MODULE
+          sed $SED_INPLACE 's/^_POLARS_FEATURE_FLAGS = \"\"$/_POLARS_FEATURE_FLAGS = \"${{ steps.features.outputs.features }}\"/g' $CPU_CHECK_MODULE
+      - name: Set variables in CPU check module - LTS_CPU
+        if: matrix.package == 'polars-lts-cpu'
+        run: |
+          sed $SED_INPLACE 's/^_LTS_CPU = False$/_LTS_CPU = True/g' $CPU_CHECK_MODULE
+
+      - name: Set Rust target for aarch64
+        if: matrix.architecture == 'aarch64'
+        id: target
+        run: |
+          TARGET=${{ matrix.os == 'macos-13' && 'aarch64-apple-darwin' || 'aarch64-unknown-linux-gnu'}}
+          echo "target=$TARGET" >> $GITHUB_OUTPUT
+
+      - name: Set jemalloc for aarch64 Linux
+        if: matrix.architecture == 'aarch64' && matrix.os == 'ubuntu-latest'
+        run: |
+          echo "JEMALLOC_SYS_WITH_LG_PAGE=16" >> $GITHUB_ENV
+
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          command: build
+          target: ${{ steps.target.outputs.target }}
+          args: >
+            --release
+            --manifest-path py-polars/Cargo.toml
+            --out dist
+          manylinux: ${{ matrix.architecture == 'aarch64' && '2_24' || 'auto' }}
+
+      - name: Test wheel
+        # Only test on x86-64 for now as this matches the runner architecture
+        if: matrix.architecture == 'x86-64'
+        run: |
+          pip install --force-reinstall --verbose dist/*.whl
+          python -c 'import polars'
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.package }}-${{ matrix.os }}-${{ matrix.architecture }}
+          path: dist/*.whl
+
+  publish-to-pypi:
+    needs: [create-sdist, build-wheels]
+    environment:
+      name: release-python
+      url: https://pypi.org/project/polars
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download sdists and wheels
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Publish to PyPI
+        if: inputs.dry-run == false
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+
+  publish-to-github:
+    needs: publish-to-pypi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha }}
+
+      - name: Download sdist
+        uses: actions/download-artifact@v4
+        with:
+          name: sdist-polars
+          path: dist
+
+      - name: Get version from Cargo.toml
+        id: version
+        working-directory: py-polars
+        run: |
+          VERSION=$(grep -m 1 -oP 'version = "\K[^"]+' Cargo.toml)
+          if [[ "$VERSION" == *"-"* ]]; then
+            IS_PRERELEASE=true
+          else
+            IS_PRERELEASE=false
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub release
+        id: github-release
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter-python.yml
+          name: Python Polars ${{ steps.version.outputs.version }}
+          tag: py-${{ steps.version.outputs.version }}
+          version: ${{ steps.version.outputs.version }}
+          prerelease: ${{ steps.version.outputs.is_prerelease }}
+          commitish: ${{ inputs.sha || github.sha }}
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload sdist to GitHub release
+        run: gh release upload $TAG $FILES --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.github-release.outputs.tag_name }}
+          FILES: dist/polars-*.tar.gz
+
+      - name: Publish GitHub release
+        if: inputs.dry-run == false
+        run: gh release edit $TAG --draft=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.github-release.outputs.tag_name }}
+
+      - name: Trigger other workflows related to the release
+        if: inputs.dry-run == false && steps.version.outputs.is_prerelease == 'false'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: python-release
+          client-payload: >
+            {
+              "version": "${{ steps.version.outputs.version }}",
+              "tag": "${{ steps.github-release.outputs.tag_name }}",
+              "sha": "${{ inputs.sha || github.sha }}"
+            }

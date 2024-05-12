@@ -1,0 +1,159 @@
+# https://www.mkdocs.org/user-guide/configuration/
+
+# Project information
+site_name: Polars 日本語ユーザーガイド
+site_url: https://docs.pola.rs/
+repo_url: https://github.com/polars-ja/docs-ja
+repo_name: polars-ja/docs-ja
+
+# Documentation layout
+nav:
+  - User guide:
+    - index.md
+    - user-guide/getting-started.md
+    - user-guide/installation.md
+    - Concepts:
+      - user-guide/concepts/index.md
+      - Data types:
+        - user-guide/concepts/data-types/overview.md
+        - user-guide/concepts/data-types/categoricals.md
+      - user-guide/concepts/data-structures.md
+      - user-guide/concepts/contexts.md
+      - user-guide/concepts/expressions.md
+      - user-guide/concepts/lazy-vs-eager.md
+      - user-guide/concepts/streaming.md
+    - Expressions:
+      - user-guide/expressions/index.md
+      - user-guide/expressions/operators.md
+      - user-guide/expressions/column-selections.md
+      - user-guide/expressions/functions.md
+      - user-guide/expressions/casting.md
+      - user-guide/expressions/strings.md
+      - user-guide/expressions/aggregation.md
+      - user-guide/expressions/missing-data.md
+      - user-guide/expressions/window.md
+      - user-guide/expressions/folds.md
+      - user-guide/expressions/lists.md
+      - user-guide/expressions/plugins.md
+      - user-guide/expressions/user-defined-functions.md
+      - user-guide/expressions/structs.md
+      - user-guide/expressions/numpy.md
+    - Transformations:
+      - user-guide/transformations/index.md
+      - user-guide/transformations/joins.md
+      - user-guide/transformations/concatenation.md
+      - user-guide/transformations/pivot.md
+      - user-guide/transformations/melt.md
+      - Time series:
+        - user-guide/transformations/time-series/parsing.md
+        - user-guide/transformations/time-series/filter.md
+        - user-guide/transformations/time-series/rolling.md
+        - user-guide/transformations/time-series/resampling.md
+        - user-guide/transformations/time-series/timezones.md
+    - Lazy API:
+      - user-guide/lazy/index.md
+      - user-guide/lazy/using.md
+      - user-guide/lazy/optimizations.md
+      - user-guide/lazy/schemas.md
+      - user-guide/lazy/query-plan.md
+      - user-guide/lazy/execution.md
+      - user-guide/lazy/streaming.md
+    - IO:
+      - user-guide/io/index.md
+      - user-guide/io/csv.md
+      - user-guide/io/excel.md
+      - user-guide/io/parquet.md
+      - user-guide/io/json.md
+      - user-guide/io/multiple.md
+      - user-guide/io/database.md
+      - user-guide/io/cloud-storage.md
+      - user-guide/io/bigquery.md
+    - SQL:
+      - user-guide/sql/intro.md
+      - user-guide/sql/show.md
+      - user-guide/sql/select.md
+      - user-guide/sql/create.md
+      - user-guide/sql/cte.md
+    - Migrating:
+      - user-guide/migration/pandas.md
+      - user-guide/migration/spark.md
+    - user-guide/ecosystem.md
+    - Misc:
+      - user-guide/misc/multiprocessing.md
+      - user-guide/misc/visualization.md
+      - user-guide/misc/comparison.md
+
+# Build directories
+theme:
+  name: material
+  locale: en
+  custom_dir: docs/_build/overrides
+  palette:
+  # Palette toggle for light mode
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    toggle:
+      icon: material/brightness-7
+      name: Switch to dark mode
+  # Palette toggle for dark mode
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+  logo: _build/assets/logo.png
+  features:
+    - navigation.tracking
+    - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.footer
+    - navigation.indexes
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+extra_css:
+  - _build/css/extra.css
+extra:
+  analytics:
+    provider: plausible
+    domain: guide.pola.rs,combined.pola.rs
+
+# Preview controls
+strict: true
+
+# Formatting options
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets:
+      base_path: ['.','docs/src/']
+      check_paths: true
+      dedent_subsections: true
+  - footnotes
+
+hooks:
+  - docs/_build/scripts/people.py
+
+plugins:
+  - search:
+      lang: en
+  - markdown-exec
+  - material-plausible
+  - macros:
+      module_name: docs/_build/scripts/macro
+  - redirects:
+      redirect_maps:
+        'user-guide/index.md': 'index.md'
+        'user-guide/basics/index.md': 'user-guide/getting-started.md'
+        'user-guide/basics/reading-writing.md': 'user-guide/getting-started.md'
+        'user-guide/basics/expressions.md': 'user-guide/getting-started.md'
+        'user-guide/basics/joins.md': 'user-guide/getting-started.md'
