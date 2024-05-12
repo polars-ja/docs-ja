@@ -2,9 +2,6 @@
 Polars 公式ドキュメントの日本語翻訳リポジトリです。本リポジトリで、現状以下のドキュメントの翻訳作業を管理しています。
 - [Polars User guide](https://docs.pola.rs/)
 
-## How to contribute
-hoge
-
 ## 翻訳の標準スタイル
 - [JTF日本語標準スタイルガイド（翻訳用）](https://www.jtf.jp/tips/styleguide) - 基本的な翻訳スタイルはこれに従う。
 
@@ -36,3 +33,33 @@ hoge
   > NG：以下に例を示します。  
 * SQLの表記は PostgreSQL の日本語ドキュメントに従う。（https://www.postgresql.jp/document/15/html/sql-commands.html)
   > 例：truncate a table → 「テーブルを空にする」
+
+## コントリビュートの方法
+準備中
+
+### ローカルでの動作確認方法
+
+#### 前提
+以下がローカルにインストール済みであること
+- python
+- rust
+- cmake
+- graphviz
+
+#### ビルド
+```
+make build
+```
+
+#### 仮想環境の activate
+```
+source .venv/bin/activate
+```
+
+#### mkdocs サーバーの起動
+```
+mkdocs serve
+```
+
+#### ブラウザからのアクセス
+ブラウザから `http://127.0.0.1:8000/` にアクセス
