@@ -4,7 +4,7 @@ pyarrow
 
 hypothesis==6.97.4
 
-sphinx==7.2.4
+sphinx==7.3.7
 
 # Third-party Sphinx extensions
 autodocsumm==0.2.11
