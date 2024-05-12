@@ -1,0 +1,87 @@
+name: Build Python documentation
+
+on:
+  pull_request:
+    paths:
+      - py-polars/docs/**
+      - py-polars/polars/**
+      - .github/workflows/docs-python.yml
+  push:
+    branches:
+      - main
+    paths:
+      - py-polars/docs/**
+      - py-polars/polars/**
+      - .github/workflows/docs-python.yml
+  repository_dispatch:
+    types:
+      - python-release
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build-python-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Create virtual environment
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv venv
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
+          echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/.venv" >> $GITHUB_ENV
+
+      - name: Install Python dependencies
+        working-directory: py-polars/docs
+        run: uv pip install -r requirements-docs.txt
+
+      - name: Build Python documentation
+        working-directory: py-polars/docs
+        env:
+          POLARS_VERSION: ${{ github.event.client_payload.tag || 'main' }}
+        run: make html
+
+      - name: Deploy Python docs for latest development version
+        if: ${{ github.ref_name == 'main' }}
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: py-polars/docs/build/html
+          target-folder: docs/python/dev
+          single-commit: true
+
+      - name: Parse the tag to find the major/minor version of Polars
+        id: version
+        if: github.event_name == 'repository_dispatch'
+        shell: bash
+        run: |
+          tag="${{ github.event.client_payload.tag }}"
+          regex="py-([0-9]+\.[0-9]+)\.[0-9]+.*"
+          [[ $tag =~ $regex ]]
+          version=${BASH_REMATCH[1]}
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy Python docs for latest release version - versioned
+        if: github.event_name == 'repository_dispatch'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: py-polars/docs/build/html
+          target-folder: docs/python/version/${{ steps.version.outputs.version }}
+          single-commit: true
+
+      - name: Deploy Python docs for latest release version - stable
+        if: github.event_name == 'repository_dispatch'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: py-polars/docs/build/html
+          # Keeping this folder for backwards compatibility
+          target-folder: py-polars/html
+          single-commit: true

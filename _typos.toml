@@ -1,0 +1,32 @@
+[default]
+extend-ignore-identifiers-re = [
+  "splitted.*",
+]
+
+[default.extend-identifiers]
+arange = "arange"
+bck = "bck"
+Fo = "Fo"
+ND = "ND"
+ba = "ba"
+nd = "nd"
+opt_nd = "opt_nd"
+ser = "ser"
+strat = "strat"
+width_strat = "width_strat"
+
+[default.extend-words]
+iif = "iif"
+'"r0ot"' = "r0ot"
+wee = "wee"
+
+[type.csv]
+extend-glob = ["*.csv"]
+check-file = false
+
+[type.gz]
+extend-glob = ["*.gz"]
+check-file = false
+
+[files]
+extend-exclude = ["_typos.toml", "dists.dss"]

@@ -1,0 +1,79 @@
+name: Benchmark
+
+on:
+  pull_request:
+    paths:
+      - crates/**
+      - Cargo.toml
+      - py-polars/tests/benchmark/**
+      - .github/workflows/benchmark.yml
+  push:
+    branches:
+      - main
+    paths:
+      - crates/**
+      - Cargo.toml
+      - py-polars/tests/benchmark/**
+      - .github/workflows/benchmark.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SCCACHE_GHA_ENABLED: 'true'
+  RUSTC_WRAPPER: sccache
+  RUST_BACKTRACE: 1
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Graphviz
+        uses: ts-graphviz/setup-graphviz@v2
+
+      - name: Create virtual environment
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv venv
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
+          echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/.venv" >> $GITHUB_ENV
+
+      - name: Install Python dependencies
+        working-directory: py-polars
+        run: uv pip install --compile-bytecode -r requirements-dev.txt
+
+      - name: Set up Rust
+        run: rustup show
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: py-polars
+          save-if: ${{ github.ref_name == 'main' }}
+
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.3
+
+      - name: Install Polars release build
+        env:
+          RUSTFLAGS: -C embed-bitcode -D warnings
+        working-directory: py-polars
+        run: maturin develop --release -- -C codegen-units=8 -C lto=thin -C target-cpu=native
+
+      - name: Run benchmark tests
+        uses: CodSpeedHQ/action@v2
+        with:
+          working-directory: py-polars
+          run: pytest -m benchmark --codspeed -v
+
+      - name: Run non-benchmark tests
+        working-directory: py-polars
+        run: pytest -m 'not benchmark and not debug' -n auto --dist loadgroup
