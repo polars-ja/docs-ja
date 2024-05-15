@@ -32,12 +32,12 @@ __pycache__/
 target/
 
 # Data
-*.csv
-*.parquet
-*.feather
-*.tbl
+# *.csv
+# *.parquet
+# *.feather
+# *.tbl
 
 # Project
-/docs/data/
-/docs/images/
+# /docs/data/
+# /docs/images/
 /docs/people.md
