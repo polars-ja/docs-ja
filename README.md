@@ -68,7 +68,7 @@ mkdocs serve
 ### Dockerでの動作確認方法
 
 ```bash
-docker build -t mkdocs-image .
-docker run -p 8000:8000 -it -e  mkdocs-image # 300s程かかります
+docker build -t mkdocs-image . # 300s程かかります
+docker run -p 8000:8000 -v "$(pwd)/docs":/app/docs -it mkdocs-image
 # access http://127.0.0.1:8000
 ```
