@@ -63,3 +63,12 @@ mkdocs serve
 
 #### ブラウザからのアクセス
 ブラウザから `http://127.0.0.1:8000/` にアクセス
+
+
+### Dockerでの動作確認方法
+
+```bash
+docker build -t mkdocs-image .
+docker run -p 8000:8000 -it -e  mkdocs-image # 300s程かかります
+# access http://127.0.0.1:8000
+```
