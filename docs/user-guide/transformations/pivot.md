@@ -20,7 +20,7 @@
 --8<-- "python/user-guide/transformations/pivot.py:df"
 ```
 
-## 積極的
+## Eager
 
 {{code_block('user-guide/transformations/pivot','eager',['pivot'])}}
 
@@ -28,7 +28,7 @@
 --8<-- "python/user-guide/transformations/pivot.py:eager"
 ```
 
-## 遅延
+## Lazy
 
 Polars の `LazyFrame` は、常に計算のスキーマを静的に（クエリを収集する前に）知る必要があります。
 ピボットの出力スキーマはデータに依存するため、クエリを実行せずにスキーマを決定することはできません。
