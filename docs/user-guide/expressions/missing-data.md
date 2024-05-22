@@ -116,7 +116,7 @@ API ドキュメントで他の補完戦略を見つけることができます�
 
 {{code_block('user-guide/expressions/missing-data','nan',['DataFrame'])}}
 
-```python exec="on" result="text" session="user-guide/missing-data
+```python exec="on" result="text" session="user-guide/missing-data"
 --8<-- "python/user-guide/expressions/missing-data.py:nan"
 ```
 
@@ -135,6 +135,6 @@ Polars には `is_nan` と `fill_nan` のメソッドがあり、`is_null` と `
 
 {{code_block('user-guide/expressions/missing-data','nanfill',['fill_nan'])}}
 
-```python exec="on" result="text" session="user-guide/missing-data
+```python exec="on" result="text" session="user-guide/missing-data"
 --8<-- "python/user-guide/expressions/missing-data.py:nanfill"
 ```
