@@ -2,7 +2,7 @@
 
 このセクションの焦点は、さまざまな種類のデータ変換を説明し、それらの使用例を提供することです。
 
-- [Joins](joins.md)
-- [Concatenation](concatenation.md)
-- [Pivot](pivot.md)
-- [Melt](melt.md)
+- [結合](joins.md)
+- [連結](concatenation.md)
+- [ピボット](pivot.md)
+- [ピボット解除(Melt)](melt.md)
