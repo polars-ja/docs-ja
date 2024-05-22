@@ -208,3 +208,120 @@ Polarsは文字列値を出現順にエンコーディングします。その�
         </tr>
     </tbody>
 </table>
+
+</td>
+<td>
+
+<table>
+    <thead>
+        <tr>
+            <th>Categories</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Panda</td>
+        </tr>
+        <tr>
+            <td>Brown</td>
+        </tr>
+        <tr>
+            <td>Polar</td>
+        </tr>
+    </tbody>
+</table>
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+`Series` の結合は、両方の `Series` における物理的な値0が異なる意味を持つため、非自明で高コストなタスクとなります。Polarsは利便性のためにこの種の操作をサポートしていますが、一般的にはパフォーマンスが低下するため避けるべきです。これは、マージ操作を行う前に両方のエンコーディングを互換性のあるものにする必要があるためです。
+
+##### グローバルな string cache を使う
+
+この問題を解決する一つの方法は、`StringCache` を有効にすることです。`StringCache` を有効にすると、文字列は列ごとに出現順にエンコードされるのではなく、各文字列に対して単一のエンコードが保証されます。つまり、`StringCache` を使用することで、文字列 `Polar` は常に同じ物理的エンコードにマップされます。これにより、マージ操作（例：追加、結合）はエンコードの互換性を事前に確保する必要がなくなるため、高速になります。これにより、上記の問題が解決されます。
+
+{{code_block('user-guide/concepts/data-types/categoricals','global_append',[])}}
+
+しかし、`StringCache` は `Series` の構築時に、キャッシュ内で文字列の検索や挿入を行うため、若干のパフォーマンス低下を招きます。したがって、事前にカテゴリーが分かっている場合は、Enumデータ型を使用することが推奨されます。
+
+#### `Enum` データ型
+
+`Enum` データ型では、事前にカテゴリーを指定します。これにより、異なる列や異なるデータセットからのカテゴリカルデータが同じエンコードを持つことが保証され、高コストな再エンコードやキャッシュ検索が不要になります。
+
+{{code_block('user-guide/concepts/data-types/categoricals','enum_append',[])}}
+
+Polarsは、`Enum` で指定されていない値が見つかった場合、`OutOfBounds` エラーを発生させます。
+
+{{code_block('user-guide/concepts/data-types/categoricals','enum_error',[])}}
+
+```python exec="on" result="text" session="user-guide/datatypes/categoricals"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:setup"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:enum_error"
+```
+
+### 比較
+
+カテゴリカルデータに対して許可されている比較演算子は次のとおりです：
+
+- Categorical vs Categorical
+- Categorical vs String
+
+#### `Categorical` 型
+
+
+`Categorical` 型の比較は、同じグローバルキャッシュセットを持っている場合、または同じ順序で同じ基礎カテゴリーを持っている場合に有効です。
+
+{{code_block('user-guide/concepts/data-types/categoricals','global_equality',[])}}
+
+```python exec="on" result="text" session="user-guide/datatypes/categoricals"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:setup"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:global_equality"
+```
+
+CategoricalとStringの比較では、Polarsは語彙順を使用して結果を決定します：
+
+{{code_block('user-guide/concepts/data-types/categoricals','str_compare_single',[])}}
+
+```python exec="on" result="text" session="user-guide/datatypes/categoricals"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:str_compare_single"
+```
+
+{{code_block('user-guide/concepts/data-types/categoricals','str_compare',[])}}
+
+```python exec="on" result="text" session="user-guide/datatypes/categoricals"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:str_compare"
+```
+
+#### `Enum` 型
+
+`Enum` 型の比較は、同じカテゴリーを持っている場合に有効です。
+
+{{code_block('user-guide/concepts/data-types/categoricals','equality',[])}}
+
+```python exec="on" result="text" session="user-guide/datatypes/categoricals"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:equality"
+```
+
+`Enum` と `String` の比較では、語彙順ではなくカテゴリー内の順序が使用されます。比較が有効であるためには、`String` 列のすべての値が `Enum` のカテゴリーリストに含まれている必要があります。
+
+{{code_block('user-guide/concepts/data-types/categoricals','str_enum_compare_error',[])}}
+
+```python exec="on" result="text" session="user-guide/datatypes/categoricals"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:str_enum_compare_error"
+```
+
+{{code_block('user-guide/concepts/data-types/categoricals','str_enum_compare_single',[])}}
+
+```python exec="on" result="text" session="user-guide/datatypes/categoricals"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:str_enum_compare_single"
+```
+
+{{code_block('user-guide/concepts/data-types/categoricals','str_enum_compare',[])}}
+
+```python exec="on" result="text" session="user-guide/datatypes/categoricals"
+--8<-- "python/user-guide/concepts/data-types/categoricals.py:str_enum_compare"
+```
