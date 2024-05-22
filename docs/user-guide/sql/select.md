@@ -1,4 +1,4 @@
-# SELECT
+# 選択(SELECT)
 
 Polars SQL では、`SELECT` 文を使用して、テーブルからデータを `DataFrame` に取り出します。Polars SQL の `SELECT` 文の基本的な構文は次のとおりです：
 
