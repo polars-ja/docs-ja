@@ -31,7 +31,7 @@
 
 {{code_block('user-guide/expressions/casting','downcast',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast
+```python exec="on" result="text" session="user-guide/cast"
 --8<-- "python/user-guide/expressions/casting.py:downcast"
 ```
 
@@ -59,7 +59,7 @@
 
 {{code_block('user-guide/expressions/casting','strings',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast
+```python exec="on" result="text" session="user-guide/cast"
 --8<-- "python/user-guide/expressions/casting.py:strings"
 ```
 
@@ -67,7 +67,7 @@
 
 {{code_block('user-guide/expressions/casting','strings2',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast
+```python exec="on" result="text" session="user-guide/cast"
 --8<-- "python/user-guide/expressions/casting.py:strings2"
 ```
 
@@ -77,7 +77,7 @@
 
 {{code_block('user-guide/expressions/casting','bool',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast
+```python exec="on" result="text" session="user-guide/cast"
 --8<-- "python/user-guide/expressions/casting.py:bool"
 ```
 
@@ -87,7 +87,7 @@
 
 {{code_block('user-guide/expressions/casting','dates',['cast'])}}
 
-```python exec="on" result="text" session="user-guide/cast
+```python exec="on" result="text" session="user-guide/cast"
 --8<-- "python/user-guide/expressions/casting.py:dates"
 ```
 
@@ -95,6 +95,6 @@
 
 {{code_block('user-guide/expressions/casting','dates2',['dt.to_string','str.to_date'])}}
 
-```python exec="on" result="text" session="user-guide/cast
+```python exec="on" result="text" session="user-guide/cast"
 --8<-- "python/user-guide/expressions/casting.py:dates2"
 ```
