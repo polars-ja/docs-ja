@@ -2628,9 +2628,9 @@
 │ ---    ┆ --- ┆ ---   ┆ ---        ┆ ---            │
 │ str    ┆ i64 ┆ u32   ┆ f64        ┆ list[str]      │
 ╞════════╪═════╪═══════╪════════════╪════════════════╡
-│ C      ┆ 0   ┆ 1     ┆ 0.533739   ┆ [&quot;egg&quot;]        │
 │ B      ┆ 8   ┆ 2     ┆ 0.263315   ┆ [null, &quot;spam&quot;] │
 │ A      ┆ 3   ┆ 2     ┆ 0.894213   ┆ [&quot;ham&quot;, &quot;foo&quot;] │
+│ C      ┆ 0   ┆ 1     ┆ 0.533739   ┆ [&quot;egg&quot;]        │
 └────────┴─────┴───────┴────────────┴────────────────┘
 </code></pre></div>
 <p>結果から分かるように、<code>group_by</code> コンテキストで定義されたグループに対してすべての式が適用されます。標準の <code>group_by</code> の他に、<code>group_by_dynamic</code> および <code>group_by_rolling</code> もグループ化コンテキストです。</p>
