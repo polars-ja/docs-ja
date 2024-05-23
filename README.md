@@ -2,6 +2,9 @@
 Polars 公式ドキュメントの日本語翻訳リポジトリです。本リポジトリで、現状以下のドキュメントの翻訳作業を管理しています。
 - [Polars User guide](https://docs.pola.rs/)
 
+## ドキュメントのデプロイ先
+[こちら](https://polars-ja.github.io/docs-ja/) にデプロイされます（CI/CD 準備中）
+
 ## 翻訳の標準スタイル
 - [JTF日本語標準スタイルガイド（翻訳用）](https://www.jtf.jp/tips/styleguide) - 基本的な翻訳スタイルはこれに従う。
 
